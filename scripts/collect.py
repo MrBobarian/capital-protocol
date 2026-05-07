@@ -6,6 +6,7 @@ warnings.filterwarnings("ignore")
 
 import argparse  # noqa: E402
 import logging  # noqa: E402
+import os  # noqa: E402
 import sys  # noqa: E402
 import time  # noqa: E402
 from datetime import date, datetime, timezone  # noqa: E402
@@ -13,6 +14,7 @@ from logging.handlers import RotatingFileHandler  # noqa: E402
 from pathlib import Path  # noqa: E402
 
 from cycle_metrics import collect_cycle_metrics  # noqa: E402
+from fred_client import fetch_all_fred_series  # noqa: E402
 from holdings import ALTERNATIVE_BASKETS, SOXX_TICKERS, SOXX_WEIGHT  # noqa: E402
 from utils import load_json, retry, safe_float, trading_days_back, write_json  # noqa: E402
 
@@ -506,6 +508,250 @@ def collect_alternatives() -> dict:
 
 
 # ---------------------------------------------------------------------------
+# FRED macro data collection
+# ---------------------------------------------------------------------------
+
+FRED_SERIES_WEEKLY = [
+    # ISM Manufacturing (monthly, but we pull on every weekly run — FRED is idempotent)
+    "ism_manufacturing_pmi",
+    "ism_new_orders",
+    "ism_employment",
+    "ism_prices_paid",
+    "ism_supplier_deliveries",
+    # Capital Goods — Census Advance Durable Goods (~25th of month)
+    "capital_goods_new_orders_mom",
+    "capital_goods_shipments_mom",
+    "durable_goods_new_orders_mom",
+    # Real economy
+    "industrial_production_idx",
+    "capacity_utilization_pct",
+    # Inflation / real yields (daily — always fresh)
+    "pce_yoy",
+    "ppi_final_demand_yoy",
+    "breakeven_inflation_5yr",
+    "breakeven_inflation_10yr",
+    "real_yield_5yr",
+    "real_yield_10yr",
+    # Credit conditions (daily)
+    "hy_credit_spread",
+    "ig_credit_spread",
+    "financial_conditions_idx",
+    # Labour market (weekly)
+    "initial_jobless_claims",
+    "continued_jobless_claims",
+    # Korea trade (OECD via FRED — monthly)
+    "korea_electronics_exports_yoy",
+    "korea_total_exports_yoy",
+]
+
+
+def collect_fred_macro(api_key: str | None) -> dict:
+    """Collect macroeconomic data from FRED.
+
+    Auto-populates ISM/CapEx override fields and extends macro_regime with
+    market-derived real yields, breakeven inflation, and credit spreads.
+
+    Falls back to {"fred_available": False} gracefully if api_key is None
+    or any individual fetch fails — never raises.
+    """
+    if not api_key:
+        logging.warning(
+            "FRED_API_KEY not set — skipping FRED collection. "
+            "Set the FRED_API_KEY secret (GitHub Actions) or local env var to enable."
+        )
+        return {"fred_available": False}
+
+    logging.info("--- Starting FRED macro data collection (%d series) ---",
+                 len(FRED_SERIES_WEEKLY))
+
+    raw = fetch_all_fred_series(api_key, FRED_SERIES_WEEKLY)
+
+    def _val(key: str) -> float | None:
+        r = raw.get(key)
+        return r["latest_value"] if r else None
+
+    def _date(key: str) -> str | None:
+        r = raw.get(key)
+        return r["latest_date"] if r else None
+
+    def _mom_chg(key: str) -> float | None:
+        """Absolute month-over-month change (level series)."""
+        r = raw.get(key)
+        if not r or r.get("prior_value") is None:
+            return None
+        try:
+            return round(r["latest_value"] - r["prior_value"], 4)
+        except Exception:
+            return None
+
+    def _mom_pct(key: str) -> float | None:
+        """Month-over-month percentage change."""
+        r = raw.get(key)
+        if not r or not r.get("prior_value"):
+            return None
+        try:
+            return round(
+                (r["latest_value"] - r["prior_value"]) / abs(r["prior_value"]) * 100,
+                4,
+            )
+        except Exception:
+            return None
+
+    # ------------------------------------------------------------------
+    # ISM + Capital Goods block
+    # ------------------------------------------------------------------
+    ism_pmi = _val("ism_manufacturing_pmi")
+
+    if ism_pmi is not None:
+        if ism_pmi >= 60.0:
+            ism_signal = (
+                f"PMI {ism_pmi} — early-to-mid CapEx acceleration (Jordi trigger). "
+                "Consistent with hyperscaler backlog data."
+            )
+        elif ism_pmi >= 55.0:
+            ism_signal = (
+                f"PMI {ism_pmi} — strong expansion. CapEx cycle confirmation."
+            )
+        elif ism_pmi >= 50.0:
+            ism_signal = (
+                f"PMI {ism_pmi} — expansion but moderating. Monitor for deceleration."
+            )
+        elif ism_pmi >= 48.0:
+            ism_signal = (
+                f"PMI {ism_pmi} — borderline contraction. CapEx cycle signal weakening."
+            )
+        else:
+            ism_signal = (
+                f"PMI {ism_pmi} — contraction. Thesis headwind: CapEx-receiver demand at risk."
+            )
+    else:
+        ism_signal = "ISM PMI unavailable from FRED — check series NAPM."
+
+    ism_block: dict = {
+        "ism_manufacturing_pmi":            ism_pmi,
+        "ism_manufacturing_pmi_date":       _date("ism_manufacturing_pmi"),
+        "ism_new_orders":                   _val("ism_new_orders"),
+        "ism_employment":                   _val("ism_employment"),
+        "ism_prices_paid":                  _val("ism_prices_paid"),
+        "ism_supplier_deliveries":          _val("ism_supplier_deliveries"),
+        "capital_goods_new_orders_mom_mn":  _val("capital_goods_new_orders_mom"),
+        "capital_goods_new_orders_date":    _date("capital_goods_new_orders_mom"),
+        "capital_goods_shipments_mom_mn":   _val("capital_goods_shipments_mom"),
+        "durable_goods_new_orders_mom_mn":  _val("durable_goods_new_orders_mom"),
+        "industrial_production_idx":        _val("industrial_production_idx"),
+        "capacity_utilization_pct":         _val("capacity_utilization_pct"),
+        "ism_signal":                       ism_signal,
+        "source":                           "FRED (St. Louis Fed) — auto-collected",
+        "fred_available":                   True,
+    }
+
+    # ------------------------------------------------------------------
+    # Inflation / real yields block
+    # ------------------------------------------------------------------
+    be_10yr = _val("breakeven_inflation_10yr")
+    ry_10yr = _val("real_yield_10yr")
+
+    inflation_block: dict = {
+        "pce_yoy":                          _val("pce_yoy"),
+        "pce_yoy_date":                     _date("pce_yoy"),
+        "ppi_final_demand_yoy":             _val("ppi_final_demand_yoy"),
+        "breakeven_inflation_5yr":          _val("breakeven_inflation_5yr"),
+        "breakeven_inflation_10yr":         be_10yr,
+        "real_yield_5yr_tips":              _val("real_yield_5yr"),
+        "real_yield_10yr_tips":             ry_10yr,
+        "source":   "FRED — TIPS breakevens and real yields are market-derived, updated daily",
+    }
+
+    if be_10yr is not None and ry_10yr is not None:
+        # Positive spread = market pricing in above-real-yield inflation expectations
+        inflation_block["inflation_expectations_vs_real_yield"] = round(
+            be_10yr - ry_10yr, 4
+        )
+
+    # ------------------------------------------------------------------
+    # Credit conditions block
+    # ------------------------------------------------------------------
+    hy_spread = _val("hy_credit_spread")
+    ig_spread = _val("ig_credit_spread")
+    nfci      = _val("financial_conditions_idx")
+
+    if hy_spread is not None:
+        if hy_spread > 500:
+            credit_signal = (
+                f"HY spread {hy_spread:.0f}bps — elevated stress. "
+                "Risk-off. Semi/crypto de-risking risk elevated."
+            )
+        elif hy_spread > 350:
+            credit_signal = (
+                f"HY spread {hy_spread:.0f}bps — moderate caution. Monitor for widening."
+            )
+        else:
+            credit_signal = (
+                f"HY spread {hy_spread:.0f}bps — benign. Risk appetite intact."
+            )
+    else:
+        credit_signal = None
+
+    if nfci is not None:
+        nfci_signal = (
+            "Loose — supportive for risk assets." if nfci < 0
+            else "Tight — headwind for risk assets and CapEx cycle."
+        )
+    else:
+        nfci_signal = None
+
+    credit_block: dict = {
+        "hy_credit_spread_bps":         hy_spread,
+        "hy_credit_spread_date":        _date("hy_credit_spread"),
+        "ig_credit_spread_bps":         ig_spread,
+        "financial_conditions_idx":     nfci,
+        "hy_spread_mom_chg":            _mom_chg("hy_credit_spread"),
+        "credit_signal":                credit_signal,
+        "financial_conditions_signal":  nfci_signal,
+        "source":   "FRED — ICE BofA indices (BAMLH0A0HYM2 / BAMLC0A0CM), Chicago Fed NFCI",
+    }
+
+    # ------------------------------------------------------------------
+    # Labour market block
+    # ------------------------------------------------------------------
+    labour_block: dict = {
+        "initial_jobless_claims":       _val("initial_jobless_claims"),
+        "continued_jobless_claims":     _val("continued_jobless_claims"),
+        "initial_claims_wow_chg":       _mom_chg("initial_jobless_claims"),
+        "claims_date":                  _date("initial_jobless_claims"),
+        "source":   "FRED — weekly SA claims, released each Thursday (ICSA / CCSA)",
+    }
+
+    logging.info(
+        "FRED complete — ISM PMI: %s | HY spread: %sbps | 10yr breakeven: %s%% | NFCI: %s",
+        ism_pmi, hy_spread, be_10yr, nfci,
+    )
+
+    korea_electronics_yoy = _val("korea_electronics_exports_yoy")
+    korea_block: dict = {
+        "korea_electronics_exports_yoy_pct": korea_electronics_yoy,
+        "korea_total_exports_yoy_pct":       _val("korea_total_exports_yoy"),
+        "korea_exports_date":                _date("korea_electronics_exports_yoy"),
+        "jordi_reference_yoy_pct":           182.5,
+        "signal": (
+            f"Korea electronics exports YoY: {korea_electronics_yoy}%. "
+            "This is the supply-side demand confirmation for the AI trade. "
+            "Sustained double-digit growth = hyperscaler CapEx cycle intact."
+        ) if korea_electronics_yoy is not None else "Korea export data unavailable from FRED.",
+        "source": "FRED — OECD Korea trade statistics (XTEXVA01KRM667S), updated monthly",
+    }
+
+    return {
+        "fred_available":    True,
+        "ism_and_capex":     ism_block,
+        "inflation_fred":    inflation_block,
+        "credit_conditions": credit_block,
+        "labour_market":     labour_block,
+        "korea_trade":       korea_block,
+    }
+
+
+# ---------------------------------------------------------------------------
 # Main orchestration
 # ---------------------------------------------------------------------------
 def run(mode: str) -> None:
@@ -595,6 +841,31 @@ def run(mode: str) -> None:
         except Exception as e:
             logging.error("collect_cycle_metrics failed: %s", e)
 
+        # FRED macro data — ISM/CapEx, real yields, credit spreads, labour market
+        fred_api_key = os.environ.get("FRED_API_KEY")
+        fred_data = collect_fred_macro(fred_api_key)
+        existing["fred_macro"] = fred_data
+
+        # Merge FRED ISM data into market_structure so compute_rotation_signal
+        # can see ISM regime even when ism_override.json hasn't been manually updated
+        if fred_data.get("fred_available") and "ism_and_capex" in fred_data:
+            ms = existing.setdefault("market_structure", {})
+            # FRED takes precedence; any manual ism_override.json fields fill gaps
+            for k, v in fred_data["ism_and_capex"].items():
+                if v is not None:
+                    ms[f"ms3_{k}"] = v   # prefix matches collect_market_structure keys
+
+        # Merge FRED real yields and breakevens into macro_regime
+        if fred_data.get("fred_available") and "inflation_fred" in fred_data:
+            mr = existing.setdefault("macro_regime", {})
+            for k, v in fred_data["inflation_fred"].items():
+                if v is not None and k != "source":
+                    mr[f"mr_fred_{k}"] = v
+
+        # Merge Korea trade data into macro_regime (FRED takes precedence over manual override)
+        if fred_data.get("fred_available") and "korea_trade" in fred_data:
+            existing.setdefault("macro_regime", {}).update(fred_data["korea_trade"])
+
     # Final assembly
     output = {
         "generated_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
@@ -615,6 +886,8 @@ def run(mode: str) -> None:
         "market_structure": existing.get("market_structure", {}),
         "crypto_cycle": existing.get("crypto_cycle", {}),
         "cycle_rotation_signal": existing.get("cycle_rotation_signal", {}),
+        # FRED macro data (populated on weekly/full runs)
+        "fred_macro": existing.get("fred_macro", {"fred_available": False}),
     }
 
     write_json(METRICS_PATH, output)

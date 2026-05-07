@@ -64,6 +64,7 @@ jobs:
       - name: Run data collection
         env:
           CMC_API_KEY: ${{ secrets.CMC_API_KEY }}
+          FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
         run: |
           cd scripts
           python collect.py --mode ${{ steps.mode.outputs.mode }}

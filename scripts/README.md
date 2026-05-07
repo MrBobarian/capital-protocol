@@ -289,12 +289,71 @@ The `software_deterioration_score` in `cycle_rotation_signal` (0-100) aggregates
 
 ### Full override file update schedule
 
-| File | Cadence | Primary source |
-|------|---------|----------------|
-| `data/bofams_override.json` | Monthly (first Tuesday) | BofA Global Fund Manager Survey press release |
-| `data/power_demand_override.json` | Monthly | EIA Short-Term Energy Outlook (eia.gov/steo) |
-| `data/humanoid_milestones.json` | As-needed | Earnings calls, The Information, humanoid.press |
-| `data/cpi_override.json` | Monthly (CPI release day, 2nd/3rd Tuesday) | BLS CPI press release (bls.gov/cpi) |
-| `data/ism_override.json` | Monthly (1st business day + ~25th) | ISM Report + Census Advance Durable Goods |
-| `data/korea_exports_override.json` | Monthly (first week) | Korea Customs Service / KITA press release |
-| `data/crypto_override.json` | Weekly | CoinGecko global charts + congress.gov |
+| File | Cadence | Primary source | Auto? |
+|------|---------|----------------|-------|
+| `data/bofams_override.json` | Monthly (first Tuesday) | BofA Global Fund Manager Survey press release | ❌ Manual |
+| `data/power_demand_override.json` | Monthly | EIA Short-Term Energy Outlook (eia.gov/steo) | ❌ Manual |
+| `data/humanoid_milestones.json` | As-needed | Earnings calls, The Information, humanoid.press | ❌ Manual |
+| `data/cpi_override.json` | Monthly (auto on each run) | BLS public API v1 + FRED DFEDTARU/DFEDTARL CSV | ✅ Auto |
+| `data/ism_override.json` | Superseded by FRED | FRED NAPM / NAPMNOI / ACOGNO series | ✅ Auto (FRED) |
+| `data/korea_exports_override.json` | Monthly (first week) | Korea Customs Service / KITA press release | ❌ Manual |
+| `data/crypto_override.json` | Daily (auto on each run) | CoinMarketCap REST API v1 — CMC_API_KEY secret | ✅ Auto |
+
+> **Note on `data/ism_override.json`:** ISM Manufacturing PMI, new orders, and capital goods data are now fetched automatically via FRED on every weekly/full run and stored in `fred_macro.ism_and_capex` in `metrics.json`. The manual override file is still read as a fallback but no longer needs to be updated manually.
+
+---
+
+## FRED API Integration
+
+`scripts/fred_client.py` provides automatic collection of 21 macroeconomic series from the St. Louis Fed's free public API. No manual updates required once the GitHub secret is set.
+
+### Setup
+
+1. Register for a free FRED API key at [fred.stlouisfed.org/docs/api](https://fred.stlouisfed.org/docs/api) (instant, no payment)
+2. Add to GitHub Actions: **Settings → Secrets → Actions → New repository secret**
+   - Name: `FRED_API_KEY`
+   - Value: your key
+3. For local runs: `$env:FRED_API_KEY = "your-key"` (PowerShell)
+
+### Series collected
+
+| Group | Series | FRED ID | Frequency |
+|-------|--------|---------|-----------|
+| ISM Manufacturing | PMI composite | NAPM | Monthly |
+| ISM Manufacturing | New Orders | NAPMNOI | Monthly |
+| ISM Manufacturing | Employment | NAPMEI | Monthly |
+| ISM Manufacturing | Prices Paid | NAPMPI | Monthly |
+| ISM Manufacturing | Supplier Deliveries | NAPMSDI | Monthly |
+| Capital Goods | New Orders excl. Aircraft | ACOGNO | Monthly |
+| Capital Goods | Shipments excl. Aircraft | ACDGNO | Monthly |
+| Capital Goods | Total Durable Goods Orders | DGORDER | Monthly |
+| Real Economy | Industrial Production Index | INDPRO | Monthly |
+| Real Economy | Capacity Utilization % | TCU | Monthly |
+| Inflation | PCE Price Index YoY | PCEPI | Monthly |
+| Inflation | PPI Final Demand YoY | PPIFID | Monthly |
+| Real Yields | 5-Year TIPS Breakeven | T5YIE | Daily |
+| Real Yields | 10-Year TIPS Breakeven | T10YIE | Daily |
+| Real Yields | 5-Year TIPS Real Yield | DFII5 | Daily |
+| Real Yields | 10-Year TIPS Real Yield | DFII10 | Daily |
+| Credit | US HY OAS (ICE BofA) | BAMLH0A0HYM2 | Daily |
+| Credit | US IG OAS (ICE BofA) | BAMLC0A0CM | Daily |
+| Credit | Chicago Fed NFCI | NFCI | Weekly |
+| Labour | Initial Jobless Claims | ICSA | Weekly |
+| Labour | Continued Claims | CCSA | Weekly |
+
+### Output location in `metrics.json`
+
+```
+fred_macro/
+  fred_available          — bool (false if key missing)
+  ism_and_capex/          — ISM + capital goods data + ism_signal narrative
+  inflation_fred/         — PCE, PPI, TIPS breakevens, real yields
+  credit_conditions/      — HY/IG spreads, NFCI, credit_signal narrative
+  labour_market/          — initial + continued claims, WoW change
+```
+
+FRED data is also merged into `market_structure` (ISM fields, prefixed `ms3_`) and `macro_regime` (real yields, prefixed `mr_fred_`) so the rotation signal scores can consume it automatically.
+
+### Fallback behaviour
+
+If `FRED_API_KEY` is not set, `fred_macro.fred_available` is `false`, a warning is logged, and all FRED fields are null. Every other metric group continues to work normally. The manual `data/ism_override.json` file remains readable as a fallback for `market_structure.ms3_*` fields.
