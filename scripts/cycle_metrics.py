@@ -850,6 +850,185 @@ def collect_layer5(existing_metrics: dict) -> dict:
 
 
 # ---------------------------------------------------------------------------
+# CPI auto-fetch — BLS RSS + BLS public data API + FRED CSV
+# ---------------------------------------------------------------------------
+
+# BLS public data API v1 — no API key required (500 req/day, 10yr history)
+BLS_API_URL = "https://api.bls.gov/publicAPI/v1/timeseries/data/"
+# FRED public CSV — no API key required
+FRED_CSV_URL = "https://fred.stlouisfed.org/graph/fredgraph.csv?id={series}"
+
+
+def collect_cpi_auto() -> dict:
+    """Auto-fetch CPI data from BLS public data API and FRED public CSV.
+
+    Sources (all free, no API key required):
+      - BLS public data API v1:
+          CUUR0000SA0     — Headline CPI, NSA index levels → YoY
+          CUSR0000SA0     — Headline CPI, SA index levels  → MoM (seasonally adj.)
+          CUUR0000SA0L1E  — Core CPI, NSA index levels     → Core YoY
+      - FRED public CSV:
+          DFEDTARU / DFEDTARL — Fed funds target range upper/lower
+
+    Writes data/cpi_override.json and returns the parsed data dict.
+    Falls back gracefully to the existing override file on any fetch failure.
+    """
+    try:
+        import requests
+    except ImportError:
+        logging.error("requests not installed — collect_cpi_auto skipped")
+        return load_json(CPI_PATH)
+
+    existing = load_json(CPI_PATH) or {}
+
+    def _parse_bls_series(series_data: list) -> dict[str, float]:
+        """Return {YYYY-MM: index_value} dict sorted ascending."""
+        out: dict[str, float] = {}
+        for item in series_data:
+            yr = item.get("year", "")
+            period = item.get("period", "")   # "M01" … "M12"
+            val = item.get("value")
+            if period.startswith("M") and val not in (None, "-"):
+                try:
+                    month = int(period[1:])
+                    key = f"{yr}-{month:02d}"
+                    out[key] = float(val)
+                except (ValueError, TypeError):
+                    pass
+        return dict(sorted(out.items()))
+
+    # ------------------------------------------------------------------
+    # Step 1: BLS public data API
+    #   CUUR0000SA0     NSA headline → YoY (standard BLS headline print)
+    #   CUSR0000SA0     SA  headline → MoM (seasonally adjusted, matches BLS press release)
+    #   CUUR0000SA0L1E  NSA core    → Core YoY
+    # ------------------------------------------------------------------
+    cpi_yoy: float | None = None
+    cpi_mom: float | None = None
+    core_cpi_yoy: float | None = None
+    core_cpi_mom: float | None = None
+    report_month: str | None = None
+    try:
+        bls_resp = requests.post(
+            BLS_API_URL,
+            json={"seriesid": ["CUUR0000SA0", "CUSR0000SA0", "CUUR0000SA0L1E"]},
+            headers={"Content-type": "application/json"},
+            timeout=20,
+        )
+        bls_resp.raise_for_status()
+        bls_json = bls_resp.json()
+        if bls_json.get("status") != "REQUEST_SUCCEEDED":
+            raise ValueError(f"BLS API status: {bls_json.get('status')}")
+
+        series_map: dict[str, list] = {}
+        for s in bls_json.get("Results", {}).get("series", []):
+            series_map[s["seriesID"]] = s.get("data", [])
+
+        # Headline CPI YoY (NSA)
+        nsa = _parse_bls_series(series_map.get("CUUR0000SA0", []))
+        if len(nsa) >= 13:
+            months = sorted(nsa.keys())
+            latest_key = months[-1]
+            year_ago_key = months[-13]
+            cpi_yoy = round((nsa[latest_key] / nsa[year_ago_key] - 1.0) * 100.0, 2)
+            report_month = latest_key
+
+        # Headline CPI MoM (SA) — seasonally adjusted consecutive-month change
+        sa = _parse_bls_series(series_map.get("CUSR0000SA0", []))
+        if len(sa) >= 2:
+            sa_months = sorted(sa.keys())
+            cpi_mom = round(
+                (sa[sa_months[-1]] / sa[sa_months[-2]] - 1.0) * 100.0, 2
+            )
+
+        # Core CPI YoY + MoM (NSA)
+        core = _parse_bls_series(series_map.get("CUUR0000SA0L1E", []))
+        if len(core) >= 13:
+            c_months = sorted(core.keys())
+            core_cpi_yoy = round(
+                (core[c_months[-1]] / core[c_months[-13]] - 1.0) * 100.0, 2
+            )
+        if len(core) >= 2:
+            c_months = sorted(core.keys())
+            core_cpi_mom = round(
+                (core[c_months[-1]] / core[c_months[-2]] - 1.0) * 100.0, 2
+            )
+
+        logging.info(
+            "BLS API: CPI YoY=%.2f%% MoM=%.2f%% Core YoY=%.2f%% report=%s",
+            cpi_yoy or 0, cpi_mom or 0, core_cpi_yoy or 0, report_month,
+        )
+    except Exception as exc:
+        logging.warning("BLS API fetch failed: %s — using cached CPI values", exc)
+        cpi_yoy = safe_float(existing.get("cpi_yoy_pct"))
+        cpi_mom = safe_float(existing.get("cpi_mom_pct"))
+        core_cpi_yoy = safe_float(existing.get("core_cpi_yoy_pct"))
+        report_month = existing.get("report_month")
+
+    # ------------------------------------------------------------------
+    # Step 2: FRED public CSV → Fed funds target range
+    # DFEDTARU = upper target rate, DFEDTARL = lower target rate (daily)
+    # ------------------------------------------------------------------
+    fed_upper: float | None = None
+    fed_lower: float | None = None
+    try:
+        def _fred_latest(series_id: str) -> float | None:
+            url = FRED_CSV_URL.format(series=series_id)
+            r = requests.get(
+                url, timeout=15,
+                headers={"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"},
+            )
+            r.raise_for_status()
+            lines = r.text.strip().splitlines()
+            for line in reversed(lines[1:]):
+                parts = line.split(",")
+                if len(parts) == 2 and parts[1].strip() not in (".", ""):
+                    try:
+                        return float(parts[1].strip())
+                    except ValueError:
+                        continue
+            return None
+
+        fed_upper = _fred_latest("DFEDTARU")
+        fed_lower = _fred_latest("DFEDTARL")
+        logging.info("FRED: Fed funds %.2f–%.2f%%", fed_lower or 0, fed_upper or 0)
+    except Exception as exc:
+        logging.warning("FRED fed funds fetch failed: %s — using cached", exc)
+        fed_upper = safe_float(existing.get("fed_funds_rate_upper"))
+        fed_lower = safe_float(existing.get("fed_funds_rate_lower"))
+
+    # ------------------------------------------------------------------
+    # Assemble and write override file
+    # ------------------------------------------------------------------
+    updated = {
+        "updated_date": datetime.now(timezone.utc).strftime("%Y-%m-%d"),
+        "cpi_yoy_pct": cpi_yoy,
+        "cpi_mom_pct": cpi_mom,
+        "core_cpi_yoy_pct": core_cpi_yoy,
+        "core_cpi_mom_pct": core_cpi_mom,
+        "fed_funds_rate_upper": fed_upper,
+        "fed_funds_rate_lower": fed_lower,
+        "report_month": report_month,
+        "source": "BLS public API v1 (api.bls.gov) + FRED public CSV (fred.stlouisfed.org). No API key required.",
+        "notes": existing.get("notes", ""),
+        "auto_fetched": True,
+    }
+
+    # Merge: prefer freshly fetched non-null values; keep existing for any still-null
+    merged = {**existing, **{k: v for k, v in updated.items() if v is not None}}
+    for k in ("updated_date", "source", "auto_fetched"):
+        merged[k] = updated[k]
+
+    try:
+        write_json(CPI_PATH, merged)
+        logging.info("CPI override written: %s", CPI_PATH)
+    except Exception as exc:
+        logging.error("Failed to write CPI override: %s", exc)
+
+    return merged
+
+
+# ---------------------------------------------------------------------------
 # Jordi Visser thesis — ticker sets for new collectors
 # ---------------------------------------------------------------------------
 
@@ -1325,6 +1504,147 @@ def _empty_market_structure() -> dict:
 # ---------------------------------------------------------------------------
 
 
+CMC_API_BASE = "https://pro-api.coinmarketcap.com"
+
+
+def collect_crypto_cmc() -> dict:
+    """Auto-fetch crypto cycle data from CoinMarketCap REST API.
+
+    Requires environment variable CMC_API_KEY (set as a GitHub Actions secret;
+    never hardcoded). Falls back gracefully to the existing override file if the
+    key is absent or the request fails.
+
+    Endpoints used:
+      GET /v1/global-metrics/quotes/latest  — BTC dominance, total market cap
+      GET /v1/cryptocurrency/quotes/latest  — BTC + ETH prices → ETH/BTC ratio
+
+    Writes data/crypto_override.json so that collect_crypto_cycle() picks up
+    fresh CC2 values without any manual edits.
+    """
+    import os
+
+    try:
+        import requests
+    except ImportError:
+        logging.error("requests not installed — collect_crypto_cmc skipped")
+        return load_json(CRYPTO_PATH) or {}
+
+    existing = load_json(CRYPTO_PATH) or {}
+
+    api_key = os.environ.get("CMC_API_KEY", "").strip()
+    if not api_key:
+        logging.warning(
+            "CMC_API_KEY not set — skipping CoinMarketCap fetch (using cached crypto data)"
+        )
+        return existing
+
+    headers = {
+        "X-CMC_PRO_API_KEY": api_key,
+        "Accept": "application/json",
+    }
+
+    # ------------------------------------------------------------------
+    # Global metrics — BTC dominance, total market cap, 24h volume
+    # ------------------------------------------------------------------
+    btc_dominance: float | None = None
+    total_market_cap_usd: float | None = None
+    total_volume_24h_usd: float | None = None
+    try:
+        resp = requests.get(
+            f"{CMC_API_BASE}/v1/global-metrics/quotes/latest",
+            headers=headers,
+            timeout=15,
+        )
+        resp.raise_for_status()
+        gdata = resp.json().get("data", {})
+        btc_dominance = safe_float(gdata.get("btc_dominance"))
+        quote = gdata.get("quote", {}).get("USD", {})
+        total_market_cap_usd = safe_float(quote.get("total_market_cap"))
+        total_volume_24h_usd = safe_float(quote.get("total_volume_24h"))
+        logging.info(
+            "CMC global: BTC dom=%.2f%% total_mcap=$%.0fB",
+            btc_dominance or 0,
+            (total_market_cap_usd or 0) / 1e9,
+        )
+    except Exception as exc:
+        logging.warning("CMC global metrics failed: %s", exc)
+        btc_dominance = safe_float(existing.get("btc_dominance_pct"))
+
+    # ------------------------------------------------------------------
+    # BTC + ETH quotes — prices and ETH/BTC ratio
+    # ------------------------------------------------------------------
+    btc_price: float | None = None
+    eth_price: float | None = None
+    eth_btc_ratio: float | None = None
+    btc_pct_24h: float | None = None
+    eth_pct_24h: float | None = None
+    try:
+        resp2 = requests.get(
+            f"{CMC_API_BASE}/v1/cryptocurrency/quotes/latest",
+            headers=headers,
+            params={"symbol": "BTC,ETH", "convert": "USD"},
+            timeout=15,
+        )
+        resp2.raise_for_status()
+        qdata = resp2.json().get("data", {})
+
+        btc_q = qdata.get("BTC", {}).get("quote", {}).get("USD", {})
+        eth_q = qdata.get("ETH", {}).get("quote", {}).get("USD", {})
+
+        btc_price = safe_float(btc_q.get("price"))
+        eth_price = safe_float(eth_q.get("price"))
+        btc_pct_24h = safe_float(btc_q.get("percent_change_24h"))
+        eth_pct_24h = safe_float(eth_q.get("percent_change_24h"))
+
+        if btc_price and eth_price and btc_price > 0:
+            eth_btc_ratio = round(eth_price / btc_price, 6)
+
+        logging.info(
+            "CMC quotes: BTC=$%.0f (%.2f%%) ETH=$%.0f (%.2f%%) ETH/BTC=%.5f",
+            btc_price or 0, btc_pct_24h or 0,
+            eth_price or 0, eth_pct_24h or 0,
+            eth_btc_ratio or 0,
+        )
+    except Exception as exc:
+        logging.warning("CMC quotes failed: %s", exc)
+        eth_btc_ratio = safe_float(existing.get("eth_btc_ratio"))
+
+    # ------------------------------------------------------------------
+    # Assemble and write override file
+    # Clarity Act status is still manual — preserve existing value
+    # ------------------------------------------------------------------
+    updated = {
+        "updated_date": datetime.now(timezone.utc).strftime("%Y-%m-%d"),
+        "btc_dominance_pct": btc_dominance,
+        "eth_btc_ratio": eth_btc_ratio,
+        "btc_price_usd": safe_float(btc_price, 2),
+        "eth_price_usd": safe_float(eth_price, 2),
+        "btc_pct_change_24h": safe_float(btc_pct_24h, 4),
+        "eth_pct_change_24h": safe_float(eth_pct_24h, 4),
+        "total_market_cap_usd": safe_float(total_market_cap_usd, 0),
+        "total_volume_24h_usd": safe_float(total_volume_24h_usd, 0),
+        # preserve manual-entry fields
+        "clarity_act_status": existing.get("clarity_act_status"),
+        "clarity_act_note": existing.get("clarity_act_note"),
+        "source": "CoinMarketCap REST API v1 (pro-api.coinmarketcap.com). Key via CMC_API_KEY env var.",
+        "notes": existing.get("notes", ""),
+        "auto_fetched": True,
+    }
+
+    # Merge: fresh non-null values win; manual fields preserved
+    merged = {**existing, **{k: v for k, v in updated.items() if v is not None}}
+    for k in ("updated_date", "source", "auto_fetched"):
+        merged[k] = updated[k]
+
+    try:
+        write_json(CRYPTO_PATH, merged)
+        logging.info("Crypto override written: %s", CRYPTO_PATH)
+    except Exception as exc:
+        logging.error("Failed to write crypto override: %s", exc)
+
+    return merged
+
+
 def collect_crypto_cycle() -> dict:
     """Collect crypto cycle signals per Jordi Visser sequencing framework.
 
@@ -1776,6 +2096,13 @@ def collect_cycle_metrics(existing_metrics: dict | None = None) -> dict:
     if existing_metrics is None:
         existing_metrics = {}
 
+    # Auto-refresh CPI override file before macro_regime reads it
+    logging.info("--- Auto-fetching CPI data (BLS + FRED) ---")
+    try:
+        collect_cpi_auto()
+    except Exception as exc:
+        logging.error("collect_cpi_auto failed: %s", exc)
+
     logging.info("--- Collecting cycle metrics: Layer 1 ---")
     layer1: dict = {}
     try:
@@ -1837,6 +2164,13 @@ def collect_cycle_metrics(existing_metrics: dict | None = None) -> dict:
     except Exception as exc:
         logging.error("collect_market_structure failed: %s", exc)
         market_structure = _empty_market_structure()
+
+    # Refresh crypto_override.json from CMC API before collect_crypto_cycle reads it
+    logging.info("--- Auto-fetching crypto data (CoinMarketCap) ---")
+    try:
+        collect_crypto_cmc()
+    except Exception as exc:
+        logging.error("collect_crypto_cmc failed: %s", exc)
 
     logging.info("--- Collecting crypto cycle signals ---")
     crypto_cycle: dict = {}

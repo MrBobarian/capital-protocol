@@ -1,11 +1,13 @@
 {
-  "updated_date": null,
-  "cpi_yoy_pct": null,
-  "cpi_mom_pct": null,
-  "core_cpi_yoy_pct": null,
-  "fed_funds_rate_upper": null,
-  "fed_funds_rate_lower": null,
-  "report_month": null,
-  "source": "BLS Consumer Price Index press release — bls.gov/cpi",
-  "notes": "Update on CPI release day (second or third Tuesday of each month). Key figure: headline CPI YoY%. Jordi trigger: CPI YoY% > 3-month T-bill yield. Current Fed funds 3.50-3.75% (as of May 2026)."
+  "updated_date": "2026-05-07",
+  "cpi_yoy_pct": 3.49,
+  "cpi_mom_pct": 0.87,
+  "core_cpi_yoy_pct": 2.81,
+  "fed_funds_rate_upper": 3.75,
+  "fed_funds_rate_lower": 3.5,
+  "report_month": "2026-03",
+  "source": "BLS public API v1 (api.bls.gov) + FRED public CSV (fred.stlouisfed.org). No API key required.",
+  "notes": "Update on CPI release day (second or third Tuesday of each month). Key figure: headline CPI YoY%. Jordi trigger: CPI YoY% > 3-month T-bill yield. Current Fed funds 3.50-3.75% (as of May 2026).",
+  "core_cpi_mom_pct": 0.34,
+  "auto_fetched": true
 }
