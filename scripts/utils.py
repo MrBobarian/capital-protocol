@@ -4,16 +4,17 @@ import json
 import logging
 import math
 import os
+import random
 from datetime import date, timedelta
 from pathlib import Path
 from typing import Any
 
 
-def retry(max_attempts: int = 3, base_delay: float = 1.0):
+def retry(max_attempts: int = 4, base_delay: float = 2.0):
     """Decorator. Retries wrapped function on any Exception with exponential
-    backoff: delays are base_delay, base_delay*2, base_delay*4, ...
-    Logs each retry attempt at WARNING level with attempt number and exception.
-    Re-raises the last exception after all attempts are exhausted.
+    backoff and jitter: delays are roughly 2s, 5s, 11s (base_delay * 2^n + jitter).
+    Jitter prevents thundering-herd re-triggers when multiple tickers retry together.
+    Logs each retry attempt at WARNING level. Re-raises after all attempts exhausted.
     """
     import functools
     import time
@@ -28,11 +29,11 @@ def retry(max_attempts: int = 3, base_delay: float = 1.0):
                 except Exception as e:
                     last_exc = e
                     if attempt < max_attempts:
-                        delay = base_delay * (2 ** (attempt - 1))
+                        delay = base_delay * (2 ** (attempt - 1)) + random.uniform(0, 1)
                         logging.warning(
                             "Retry %d/%d for %s — %s: %s. Waiting %.1fs.",
                             attempt,
-                            max_attempts,
+                            max_attempts - 1,
                             func.__name__,
                             type(e).__name__,
                             e,

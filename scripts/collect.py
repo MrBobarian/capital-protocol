@@ -58,7 +58,7 @@ def setup_logging() -> None:
 # ---------------------------------------------------------------------------
 # Internal helper — retried yfinance info fetch
 # ---------------------------------------------------------------------------
-@retry(max_attempts=3, base_delay=1.0)
+@retry(max_attempts=4, base_delay=2.0)
 def _fetch_info(ticker: str) -> dict:
     import yfinance as yf
 
@@ -234,6 +234,7 @@ def load_bofams() -> dict:
 def collect_soxx_valuation() -> dict:
     import yfinance as yf  # noqa: F401 — used via _fetch_info
 
+    time.sleep(5)  # cold-start pause before bulk fetching — reduces burst rate
     pe_values: dict[str, tuple[float, float]] = {}
     pb_values: dict[str, tuple[float, float]] = {}
 
@@ -242,7 +243,7 @@ def collect_soxx_valuation() -> dict:
             info = _fetch_info(ticker)
         except Exception as e:
             logging.warning("collect_soxx_valuation: could not fetch %s: %s", ticker, e)
-            time.sleep(0.3)
+            time.sleep(1.5)
             continue
 
         weight = SOXX_WEIGHT.get(ticker, 0.0)
@@ -254,7 +255,7 @@ def collect_soxx_valuation() -> dict:
         if pb is not None:
             pb_values[ticker] = (pb, weight)
 
-        time.sleep(0.3)
+        time.sleep(1.5)
 
     def _weighted_avg(values: dict[str, tuple[float, float]]) -> float | None:
         total_w = sum(w for _, w in values.values())
@@ -464,6 +465,7 @@ def _compute_alt_baseline(basket_key: str) -> tuple[float | None, float | None]:
 def collect_alternatives() -> dict:
     import yfinance as yf  # noqa: F401 — used via _fetch_info
 
+    time.sleep(5)  # cold-start pause before bulk fetching — reduces burst rate
     result: dict[str, dict] = {}
 
     for basket_key, basket in ALTERNATIVE_BASKETS.items():
@@ -477,7 +479,7 @@ def collect_alternatives() -> dict:
                 logging.warning(
                     "collect_alternatives: could not fetch %s: %s", ticker, e
                 )
-                time.sleep(0.3)
+                time.sleep(1.5)
                 continue
 
             pe = safe_float(info.get("forwardPE"))
@@ -487,7 +489,7 @@ def collect_alternatives() -> dict:
             if pb is not None:
                 pb_vals.append(pb)
 
-            time.sleep(0.3)
+            time.sleep(1.5)
 
         avg_pe = (sum(pe_vals) / len(pe_vals)) if pe_vals else None
         avg_pb = (sum(pb_vals) / len(pb_vals)) if pb_vals else None
@@ -752,6 +754,372 @@ def collect_fred_macro(api_key: str | None) -> dict:
 
 
 # ---------------------------------------------------------------------------
+# Dashboard fields — NowcastIQ-pattern frontend data contract
+# ---------------------------------------------------------------------------
+def compute_dashboard_fields(existing_metrics: dict) -> dict:
+    """Compute display fields for the three always-visible NowcastIQ sections.
+
+    Reads up to 8 archive snapshots to compute 7-day trends.
+    Never raises — returns empty dict on any failure.
+
+    Output keys (all consumed by index.html renderDrivers / renderRegimeHero /
+    renderLayerSentiment):
+      drivers              list[dict]  — 8 key metric cards with 7d delta/trend
+      regime_probs         dict        — {spring, summer, fall, winter} pct
+      current_regime       str
+      regime_narrative     str
+      what_you_need_to_know list[str]  — up to 5 bullets
+      layer_sentiment      dict        — L1–L6 signal dicts
+      computed_at          str
+    """
+    try:
+        # ── Historical snapshot for 7-day trend deltas ──────────────────────
+        archive_files = sorted(ARCHIVE_DIR.glob("metrics_*.json"))
+        hist_snap: dict = {}
+        if len(archive_files) >= 2:
+            old_idx = max(0, len(archive_files) - 8)
+            hist_snap = load_json(archive_files[old_idx])
+
+        def _hv(*key_path) -> float | None:
+            v = hist_snap
+            for k in key_path:
+                if not isinstance(v, dict):
+                    return None
+                v = v.get(k)
+            return safe_float(v)
+
+        def _trend(current: float | None, prior: float | None, invert: bool = False) -> str:
+            if current is None or prior is None:
+                return "flat"
+            delta = current - prior
+            if abs(delta) < max(abs(prior) * 0.005, 0.001):
+                return "flat"
+            going_up = delta > 0
+            if invert:
+                return "bearish" if going_up else "bullish"
+            return "bullish" if going_up else "bearish"
+
+        # ── Current values ───────────────────────────────────────────────────
+        m = existing_metrics
+        fred      = m.get("fred_macro", {})
+        ism_data  = fred.get("ism_and_capex", {})
+        infl_data = fred.get("inflation_fred", {})
+        credit    = fred.get("credit_conditions", {})
+        korea     = fred.get("korea_trade", {})
+        breadth_d = m.get("breadth", {})
+        val_d     = m.get("valuation", {})
+        sent_d    = m.get("sentiment", {})
+        rot       = m.get("cycle_rotation_signal", {})
+
+        breadth_now = safe_float(breadth_d.get("soxx_breadth_above_200ma_pct"))
+        hy_now      = safe_float(credit.get("hy_credit_spread_bps"))
+        ism_now     = safe_float(ism_data.get("ism_manufacturing_pmi"))
+        be_now      = safe_float(infl_data.get("breakeven_inflation_10yr"))
+        ry_now      = safe_float(infl_data.get("real_yield_10yr_tips"))
+        ke_now      = safe_float(korea.get("korea_electronics_exports_yoy_pct"))
+        pe_now      = safe_float(val_d.get("soxx_forward_pe"))
+        pe_avg      = safe_float(val_d.get("soxx_forward_pe_3yr_avg"))
+        pcr_now     = safe_float(sent_d.get("soxx_put_call_ratio"))
+        indpro      = safe_float(ism_data.get("industrial_production_idx"))
+        cap_util    = safe_float(ism_data.get("capacity_utilization_pct"))
+        nfci        = safe_float(credit.get("financial_conditions_idx"))
+
+        # ── DRIVERS ─────────────────────────────────────────────────────────
+        def _driver(id_, label, value, unit, prior, color_fn, note="", invert=False):
+            v = safe_float(value)
+            p = safe_float(prior)
+            delta = round(v - p, 4) if (v is not None and p is not None) else None
+            d_fmt = None
+            if delta is not None:
+                sign = "+" if delta > 0 else ""
+                d_fmt = f"{sign}{delta:.1f}{unit}"
+            return {
+                "id":        id_,
+                "label":     label,
+                "value":     v,
+                "value_fmt": f"{v:.1f}{unit}" if v is not None else "—",
+                "delta":     delta,
+                "delta_fmt": d_fmt or "—",
+                "trend":     _trend(v, p, invert=invert),
+                "color":     color_fn(v) if v is not None else "muted",
+                "note":      note,
+            }
+
+        def _pe_color(v):
+            if pe_avg is None:
+                return "muted"
+            return "red" if v > pe_avg * 1.2 else ("amber" if v > pe_avg else "green")
+
+        drivers = [
+            _driver("breadth",    "SOXX Breadth",       breadth_now, "%",
+                    _hv("breadth", "soxx_breadth_above_200ma_pct"),
+                    lambda v: "green" if v > 70 else ("amber" if v > 40 else "red"),
+                    "% of SOXX constituents above 200d MA"),
+            _driver("hy_spread",  "HY Credit Spread",   hy_now, "bps",
+                    _hv("fred_macro", "credit_conditions", "hy_credit_spread_bps"),
+                    lambda v: "red" if v > 500 else ("amber" if v > 350 else "green"),
+                    "ICE BofA US HY OAS", invert=True),
+            _driver("ism_pmi",    "ISM Mfg PMI",         ism_now, "",
+                    _hv("fred_macro", "ism_and_capex", "ism_manufacturing_pmi"),
+                    lambda v: "green" if v >= 55 else ("amber" if v >= 50 else "red"),
+                    "Above 50 = expansion"),
+            _driver("be_10yr",    "10yr Breakeven",      be_now, "%",
+                    _hv("fred_macro", "inflation_fred", "breakeven_inflation_10yr"),
+                    lambda v: "amber" if v > 2.5 else ("green" if v > 1.5 else "red"),
+                    "Market inflation expectations"),
+            _driver("ry_10yr",    "Real Yield 10yr",     ry_now, "%",
+                    _hv("fred_macro", "inflation_fred", "real_yield_10yr_tips"),
+                    lambda v: "red" if v > 2.0 else ("amber" if v > 1.0 else "green"),
+                    "TIPS real yield", invert=True),
+            _driver("korea_elec", "Korea Semi Exports",  ke_now, "%",
+                    _hv("fred_macro", "korea_trade", "korea_electronics_exports_yoy_pct"),
+                    lambda v: "green" if v > 20 else ("amber" if v > 0 else "red"),
+                    "YoY %, 4-8w ISM lead"),
+            _driver("soxx_pe",    "SOXX Fwd P/E",        pe_now, "x",
+                    _hv("valuation", "soxx_forward_pe"),
+                    _pe_color,
+                    f"3yr avg: {pe_avg:.1f}x" if pe_avg else "baseline building"),
+            _driver("soxx_pcr",   "SOXX Put/Call",       pcr_now, "",
+                    _hv("sentiment", "soxx_put_call_ratio"),
+                    lambda v: "red" if v > 1.2 else ("amber" if v < 0.6 else "green"),
+                    ">1.2 fear | <0.6 complacency"),
+        ]
+
+        # ── REGIME PROBABILITIES ─────────────────────────────────────────────
+        ism_v  = ism_now  if ism_now  is not None else 50.0
+        be_v   = be_now   if be_now   is not None else 2.0
+        brd_v  = breadth_now if breadth_now is not None else 50.0
+
+        growth_score = max(0.0, min(100.0, (ism_v - 45.0) * 5.0 + (brd_v - 50.0) * 0.4))
+        infl_score   = max(0.0, min(100.0, (be_v  - 1.5) * 40.0))
+        g   = growth_score / 100.0
+        inf = infl_score  / 100.0
+
+        raw_p = {
+            "spring": g * (1 - inf),
+            "summer": g * inf,
+            "fall":   (1 - g) * inf,
+            "winter": (1 - g) * (1 - inf),
+        }
+        total_p = sum(raw_p.values()) or 1.0
+        regime_probs = {k: round(v / total_p * 100, 1) for k, v in raw_p.items()}
+        current_regime = max(regime_probs, key=lambda k: regime_probs[k])
+
+        # ── NARRATIVE ────────────────────────────────────────────────────────
+        rotation_narrative = rot.get("rotation_narrative", "")
+        regime_narrative = (
+            rotation_narrative if rotation_narrative
+            else (
+                f"Growth score {growth_score:.0f}/100. "
+                f"Inflation pressure {infl_score:.0f}/100. "
+                f"Current regime: {current_regime.capitalize()}."
+            )
+        )
+
+        # ── WHAT YOU NEED TO KNOW ────────────────────────────────────────────
+        bullets: list[str] = []
+
+        if ism_now is not None:
+            if ism_now >= 55:
+                bullets.append(
+                    f"ISM PMI {ism_now:.1f} — CapEx cycle expansion confirmed. "
+                    "Hyperscaler backlog thesis intact."
+                )
+            elif ism_now >= 50:
+                bullets.append(
+                    f"ISM PMI {ism_now:.1f} — expanding but moderating. "
+                    "Watch for deceleration below 50."
+                )
+            else:
+                bullets.append(
+                    f"ISM PMI {ism_now:.1f} — contraction territory. "
+                    "CapEx cycle thesis under pressure."
+                )
+
+        if ke_now is not None:
+            if ke_now > 20:
+                bullets.append(
+                    f"Korea electronics exports +{ke_now:.1f}% YoY — "
+                    "strong AI demand confirmation (4-8w ISM lead)."
+                )
+            elif ke_now > 0:
+                bullets.append(
+                    f"Korea electronics exports +{ke_now:.1f}% YoY — "
+                    "slowing. Monitor for reversal."
+                )
+            else:
+                bullets.append(
+                    f"Korea electronics exports {ke_now:.1f}% YoY — "
+                    "contraction. AI demand cycle caution flag."
+                )
+
+        if hy_now is not None:
+            if hy_now > 500:
+                bullets.append(
+                    f"HY spread {hy_now:.0f}bps — elevated stress. "
+                    "Consider reducing gross exposure."
+                )
+            elif hy_now <= 350:
+                bullets.append(
+                    f"HY spread {hy_now:.0f}bps — benign credit conditions. "
+                    "Risk appetite intact."
+                )
+
+        if breadth_now is not None:
+            if breadth_now < 40:
+                bullets.append(
+                    f"SOXX breadth {breadth_now:.0f}% below 200d MA — "
+                    "narrow rally. Concentration risk elevated."
+                )
+            elif breadth_now > 70:
+                bullets.append(
+                    f"SOXX breadth {breadth_now:.0f}% — broad participation. "
+                    "Rally on solid footing."
+                )
+
+        if ry_now is not None and ry_now > 2.0:
+            bullets.append(
+                f"10yr real yield {ry_now:.2f}% — elevated. "
+                "High-multiple semis facing valuation headwind."
+            )
+
+        try:
+            harvest_days = (date(2026, 10, 1) - date.today()).days
+            if harvest_days <= 180:
+                bullets.append(
+                    f"Harvest window in {harvest_days}d (Oct 2026). "
+                    "Begin de-risking plan if regime deteriorates."
+                )
+        except Exception:
+            pass
+
+        bullets = bullets[:5]
+
+        # ── LAYER SENTIMENT ──────────────────────────────────────────────────
+        def _layer_signal(score: float | None) -> str:
+            if score is None:
+                return "neutral"
+            if score >= 60:
+                return "bullish"
+            if score <= 35:
+                return "bearish"
+            return "neutral"
+
+        # L1 Semis — breadth + PCR + P/E vs avg
+        l1_parts = [v for v in [
+            breadth_now / 100 if breadth_now is not None else None,
+            (1 - min(pcr_now / 1.5, 1.0)) if pcr_now is not None else None,
+            (1 - min(max((pe_now - (pe_avg or pe_now) * 0.8)
+                         / max((pe_avg or pe_now) * 0.4, 0.001), 0), 1))
+            if pe_now is not None else None,
+        ] if v is not None]
+        l1_score = sum(l1_parts) / len(l1_parts) * 100 if l1_parts else None
+
+        # L2 Power/Grid — IndPro + CapUtil
+        l2_parts = [v for v in [
+            min(max((indpro - 95.0) / 20.0, 0), 1) if indpro is not None else None,
+            min(max((cap_util - 70.0) / 20.0, 0), 1) if cap_util is not None else None,
+        ] if v is not None]
+        l2_score = sum(l2_parts) / len(l2_parts) * 100 if l2_parts else None
+
+        # L3 Robotics — ISM PMI
+        l3_score = min(max((ism_v - 45.0) / 20.0, 0), 1) * 100
+
+        # L4 Monetary — NFCI + real yield
+        l4_parts = [v for v in [
+            (1.0 if nfci < 0 else 0.3) if nfci is not None else None,
+            max(0.0, 1.0 - (ry_now / 3.0)) if ry_now is not None else None,
+        ] if v is not None]
+        l4_score = sum(l4_parts) / len(l4_parts) * 100 if l4_parts else None
+
+        # L5 Sovereign — HY spread
+        l5_score = (
+            max(0.0, 1.0 - max(hy_now - 200.0, 0.0) / 500.0) * 100
+            if hy_now is not None else None
+        )
+
+        # L6 Longevity — alt basket P/E vs avg
+        alts = m.get("alternatives", {})
+        l6_parts: list[float] = []
+        for alt_key in ["european_industrials", "grid_infrastructure", "specialty_chemicals"]:
+            alt = alts.get(alt_key, {})
+            pe_a     = safe_float(alt.get("forward_pe"))
+            pe_avg_a = safe_float(alt.get("forward_pe_3yr_avg"))
+            if pe_a is not None and pe_avg_a is not None and pe_avg_a > 0:
+                ratio = pe_a / pe_avg_a
+                l6_parts.append(max(0.0, 1.0 - max(ratio - 0.8, 0.0) / 0.8))
+        l6_score = sum(l6_parts) / len(l6_parts) * 100 if l6_parts else None
+
+        layer_sentiment = {
+            "L1": {
+                "name":       "Semis & AI Silicon",
+                "signal":     _layer_signal(l1_score),
+                "score":      safe_float(l1_score),
+                "key_metric": (
+                    f"Breadth {breadth_now:.0f}%, PCR {pcr_now:.2f}"
+                    if (breadth_now is not None and pcr_now is not None) else "—"
+                ),
+                "assets": ["SOXX", "NVDA", "AVGO", "AMD", "TSM"],
+            },
+            "L2": {
+                "name":       "Power & Grid Infra",
+                "signal":     _layer_signal(l2_score),
+                "score":      safe_float(l2_score),
+                "key_metric": (
+                    f"IndPro {indpro:.1f}, CapUtil {cap_util:.1f}%"
+                    if (indpro is not None and cap_util is not None) else "—"
+                ),
+                "assets": ["NEE", "AES", "ETN", "VST", "CEG"],
+            },
+            "L3": {
+                "name":       "Robotics & Automation",
+                "signal":     _layer_signal(l3_score),
+                "score":      safe_float(l3_score),
+                "key_metric": f"ISM PMI {ism_v:.1f}" if ism_now is not None else "—",
+                "assets": ["BOTZ", "ROBO", "ABB", "ROK"],
+            },
+            "L4": {
+                "name":       "Monetary Architecture",
+                "signal":     _layer_signal(l4_score),
+                "score":      safe_float(l4_score),
+                "key_metric": (
+                    f"Real yield {ry_now:.2f}%, NFCI {nfci:.2f}"
+                    if (ry_now is not None and nfci is not None) else "—"
+                ),
+                "assets": ["BTC", "GLD", "MSTR", "TLT"],
+            },
+            "L5": {
+                "name":       "Sovereign Debt Cycle",
+                "signal":     _layer_signal(l5_score),
+                "score":      safe_float(l5_score),
+                "key_metric": f"HY spread {hy_now:.0f}bps" if hy_now is not None else "—",
+                "assets": ["TLT", "IEF", "EMB", "HYG"],
+            },
+            "L6": {
+                "name":       "Longevity & Healthcare",
+                "signal":     _layer_signal(l6_score),
+                "score":      safe_float(l6_score),
+                "key_metric": "Alt basket P/E vs 3yr avg",
+                "assets": ["XLV", "ARKG", "UNH", "LLY", "NVO"],
+            },
+        }
+
+        return {
+            "drivers":               drivers,
+            "regime_probs":          regime_probs,
+            "current_regime":        current_regime,
+            "regime_narrative":      regime_narrative,
+            "what_you_need_to_know": bullets,
+            "layer_sentiment":       layer_sentiment,
+            "computed_at":           datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+        }
+
+    except Exception as e:
+        logging.error("compute_dashboard_fields failed: %s", e)
+        return {}
+
+
+# ---------------------------------------------------------------------------
 # Main orchestration
 # ---------------------------------------------------------------------------
 def run(mode: str) -> None:
@@ -889,6 +1257,21 @@ def run(mode: str) -> None:
         # FRED macro data (populated on weekly/full runs)
         "fred_macro": existing.get("fred_macro", {"fred_available": False}),
     }
+
+    # Dashboard fields for NowcastIQ-pattern frontend (always compute)
+    try:
+        output["dashboard"] = compute_dashboard_fields(output)
+        logging.info(
+            "Dashboard computed — regime: %s (spring %.0f%% / summer %.0f%% / fall %.0f%% / winter %.0f%%)",
+            output["dashboard"].get("current_regime", "—"),
+            output["dashboard"].get("regime_probs", {}).get("spring", 0),
+            output["dashboard"].get("regime_probs", {}).get("summer", 0),
+            output["dashboard"].get("regime_probs", {}).get("fall", 0),
+            output["dashboard"].get("regime_probs", {}).get("winter", 0),
+        )
+    except Exception as e:
+        logging.error("compute_dashboard_fields failed: %s", e)
+        output["dashboard"] = {}
 
     write_json(METRICS_PATH, output)
     archive_path = ARCHIVE_DIR / f"metrics_{date.today().isoformat()}.json"

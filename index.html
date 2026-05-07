@@ -299,6 +299,50 @@
   }
   .note.warn{border-left-color:var(--amber);color:var(--amber)}
   .note.danger{border-left-color:var(--red);color:var(--red)}
+
+  /* === NOWCAST: DRIVER CARDS === */
+  .drivers-grid{display:grid;gap:10px;grid-template-columns:repeat(4,1fr);margin-bottom:14px}
+  @media(max-width:900px){.drivers-grid{grid-template-columns:repeat(2,1fr)}}
+  .driver-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px 14px;transition:border-color .15s}
+  .driver-card:hover{border-color:var(--accent)}
+  .d-label{font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:4px}
+  .d-value{font-family:var(--mono);font-size:24px;font-weight:600;line-height:1.1}
+  .d-delta{font-family:var(--mono);font-size:10px;margin-top:3px}
+  .d-note{font-size:10px;color:var(--muted);margin-top:5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .d-trend{display:inline-block;font-size:10px;margin-right:2px}
+  .d-trend.bullish{color:var(--green)}
+  .d-trend.bearish{color:var(--red)}
+  .d-trend.flat{color:var(--muted)}
+
+  /* === NOWCAST: REGIME HERO === */
+  .regime-hero{display:grid;grid-template-columns:152px 1fr 1fr;gap:12px;margin-bottom:14px;align-items:start}
+  @media(max-width:900px){.regime-hero{grid-template-columns:1fr 1fr}}
+  @media(max-width:560px){.regime-hero{grid-template-columns:1fr}}
+  .regime-season-block{text-align:center;padding:14px 10px}
+  .regime-season-icon{font-size:46px;line-height:1;margin-bottom:6px}
+  .regime-season-name{font-family:var(--mono);font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.12em}
+  .regime-prob-row{display:flex;align-items:center;gap:8px;margin-bottom:7px}
+  .regime-prob-label{font-size:10px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);width:52px;flex-shrink:0}
+  .regime-prob-outer{flex:1;height:5px;background:var(--border);border-radius:3px;overflow:hidden}
+  .regime-prob-inner{height:100%;border-radius:3px;transition:width .4s}
+  .regime-prob-pct{font-family:var(--mono);font-size:10px;width:34px;text-align:right;flex-shrink:0}
+  .wyntk-list{list-style:none;display:flex;flex-direction:column;gap:7px}
+  .wyntk-list li{font-size:11px;line-height:1.55;padding-left:14px;position:relative}
+  .wyntk-list li::before{content:"›";position:absolute;left:0;color:var(--accent);font-weight:700}
+
+  /* === NOWCAST: LAYER SENTIMENT === */
+  .layers-grid{display:grid;gap:10px;grid-template-columns:repeat(3,1fr);margin-bottom:20px}
+  @media(max-width:900px){.layers-grid{grid-template-columns:repeat(2,1fr)}}
+  @media(max-width:480px){.layers-grid{grid-template-columns:1fr}}
+  .layer-card{background:var(--card);border:1px solid var(--border);border-left:3px solid var(--border);border-radius:10px;padding:13px 14px}
+  .layer-card.bullish{border-left-color:var(--green)}
+  .layer-card.bearish{border-left-color:var(--red)}
+  .layer-card.neutral{border-left-color:var(--amber)}
+  .layer-num{font-size:9px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted)}
+  .layer-name{font-size:12px;font-weight:600;margin:2px 0 6px}
+  .layer-metric{font-size:10px;color:var(--muted);margin-bottom:7px;font-family:var(--mono)}
+  .layer-assets{display:flex;flex-wrap:wrap;gap:3px}
+  .layer-tag{font-size:9px;font-family:var(--mono);background:var(--bg);border:1px solid var(--border);border-radius:3px;padding:2px 5px;color:var(--muted)}
 </style>
 </head>
 <body>
@@ -340,6 +384,46 @@
 </header>
 
 <main>
+
+  <!-- ======== NOWCAST: DRIVERS ======== -->
+  <section id="s-drivers" style="margin-bottom:4px">
+    <div class="section-head"><h2>What's Driving Markets</h2><div class="line"></div></div>
+    <div class="drivers-grid" id="drivers-grid">
+      <div class="driver-card" style="grid-column:1/-1;text-align:center"><div class="muted small">Loading pipeline metrics…</div></div>
+    </div>
+  </section>
+
+  <!-- ======== NOWCAST: REGIME SUMMARY ======== -->
+  <section id="s-regime" style="margin-bottom:4px">
+    <div class="section-head"><h2>Current Regime</h2><div class="line"></div></div>
+    <div class="regime-hero" id="regime-hero">
+      <div class="card regime-season-block">
+        <div class="regime-season-icon" id="rh-icon">—</div>
+        <div class="regime-season-name" id="rh-name">—</div>
+        <div class="muted tiny" style="margin-top:8px">TLS <span id="rh-tls" class="mono">—</span></div>
+        <div style="margin-top:8px" id="rh-override"></div>
+      </div>
+      <div class="card">
+        <div class="card-h"><span class="t">Season Probabilities</span></div>
+        <div id="regime-prob-rows"><div class="muted small">Loading…</div></div>
+        <div class="muted tiny" style="margin-top:8px">Derived from ISM · breakeven · SOXX breadth</div>
+      </div>
+      <div class="card">
+        <div class="card-h"><span class="t">What You Need to Know</span></div>
+        <ul class="wyntk-list" id="wyntk-list"><li>Loading pipeline data…</li></ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======== NOWCAST: LAYER SENTIMENT ======== -->
+  <section id="s-layers" style="margin-bottom:4px">
+    <div class="section-head"><h2>Trade Sentiment by Layer</h2><div class="line"></div></div>
+    <div class="layers-grid" id="layers-grid">
+      <div class="layer-card" style="grid-column:1/-1"><div class="muted small">Loading pipeline data…</div></div>
+    </div>
+  </section>
+
+  <div class="section-head" style="margin-top:8px"><h2>Advanced Analysis</h2><div class="line"></div></div>
 
   <!-- ======== COMMAND ======== -->
   <section class="panel active" id="p-command">
@@ -2928,6 +3012,12 @@ function rerender(){
   const recs   = buildRecommendations(cls.season, tls, tlsRoc, guard);
   const cbs    = computeCircuitBreakers(STATE, scores, fred);
 
+  // NOWCAST SECTIONS (pipeline-driven)
+  const db = STATE.metrics?.dashboard || null;
+  renderDrivers(db);
+  renderRegimeHero(db, tls, tlsRoc, cls.season, cls.override);
+  renderLayerSentiment(db);
+
   // COMMAND
   renderTLSGauge(tls, tlsRoc);
   renderSeasonBig(cls.season, cls.override, growth, infl, tls, tlsRoc);
@@ -3101,6 +3191,106 @@ async function runHealthCheck(){
       </tr>`;
     }).join('')}</tbody>
   </table>`;
+}
+
+/* ---------- 13c. NOWCAST DASHBOARD RENDER ---------- */
+
+function renderDrivers(dashboard){
+  const grid = document.getElementById('drivers-grid');
+  if(!grid) return;
+  const d = dashboard?.drivers;
+  if(!d || !d.length){
+    grid.innerHTML = '<div class="driver-card" style="grid-column:1/-1;text-align:center"><div class="muted small">Driver data unavailable — pipeline metrics not loaded yet</div></div>';
+    return;
+  }
+  const trendIcon = t => {
+    if(t==='bullish') return '<span class="d-trend bullish">▲</span>';
+    if(t==='bearish') return '<span class="d-trend bearish">▼</span>';
+    return '<span class="d-trend flat">—</span>';
+  };
+  grid.innerHTML = d.map(dr => `
+    <div class="driver-card">
+      <div class="d-label">${dr.label}</div>
+      <div class="d-value ${dr.color||''}">${dr.value_fmt||'—'}</div>
+      <div class="d-delta ${dr.color==='green'?'green':dr.color==='red'?'red':'muted'}">
+        ${trendIcon(dr.trend)}${dr.delta_fmt||'—'}
+        <span class="muted" style="font-size:9px"> 7d</span>
+      </div>
+      <div class="d-note">${dr.note||''}</div>
+    </div>
+  `).join('');
+}
+
+function renderRegimeHero(dashboard, tls, tlsRoc, season, override){
+  const seasonMap = {
+    spring:{icon:'🌱', cls:'season-spring'},
+    summer:{icon:'☀',  cls:'season-summer'},
+    fall:  {icon:'🍂', cls:'season-fall'},
+    winter:{icon:'❄',  cls:'season-winter'},
+  };
+  const sm = seasonMap[season] || {icon:'?', cls:''};
+
+  const rhIcon  = document.getElementById('rh-icon');
+  const rhName  = document.getElementById('rh-name');
+  const rhTls   = document.getElementById('rh-tls');
+  const rhOvr   = document.getElementById('rh-override');
+  if(rhIcon) rhIcon.textContent = sm.icon;
+  if(rhName){ rhName.textContent = (season||'—').toUpperCase(); rhName.className = 'regime-season-name ' + sm.cls; }
+  if(rhTls)  rhTls.textContent = tls==null ? '—' : Math.round(tls);
+  if(rhOvr)  rhOvr.innerHTML = override ? `<span class="badge gold">${override}</span>` : '';
+
+  // Season probability bars
+  const probRows = document.getElementById('regime-prob-rows');
+  if(probRows && dashboard?.regime_probs){
+    const p = dashboard.regime_probs;
+    const barColors = {spring:'var(--green)',summer:'var(--gold)',fall:'var(--amber)',winter:'var(--ice)'};
+    probRows.innerHTML = ['spring','summer','fall','winter'].map(k => `
+      <div class="regime-prob-row">
+        <div class="regime-prob-label">${k}</div>
+        <div class="regime-prob-outer">
+          <div class="regime-prob-inner" style="width:${p[k]||0}%;background:${barColors[k]}"></div>
+        </div>
+        <div class="regime-prob-pct ${k===season?'accent':'muted'}">${(p[k]||0).toFixed(0)}%</div>
+      </div>
+    `).join('');
+  }
+
+  // What you need to know
+  const wyntk = document.getElementById('wyntk-list');
+  if(wyntk){
+    const bullets = dashboard?.what_you_need_to_know;
+    if(bullets && bullets.length){
+      wyntk.innerHTML = bullets.map(b=>`<li>${b}</li>`).join('');
+    } else {
+      wyntk.innerHTML = '<li class="muted">Awaiting pipeline data (run collect.py or wait for GitHub Action)</li>';
+    }
+  }
+}
+
+function renderLayerSentiment(dashboard){
+  const grid = document.getElementById('layers-grid');
+  if(!grid) return;
+  const layers = dashboard?.layer_sentiment;
+  if(!layers || !Object.keys(layers).length){
+    grid.innerHTML = '<div class="layer-card" style="grid-column:1/-1"><div class="muted small">Layer data unavailable</div></div>';
+    return;
+  }
+  const sigBadge = sig => {
+    const cls = sig==='bullish'?'green':sig==='bearish'?'red':'amber';
+    return `<span class="badge ${cls}">${sig||'neutral'}</span>`;
+  };
+  grid.innerHTML = Object.entries(layers).map(([key, L]) => `
+    <div class="layer-card ${L.signal||'neutral'}">
+      <div class="row between" style="margin-bottom:6px">
+        <div class="layer-num">${key} · ${L.name||''}</div>
+        ${sigBadge(L.signal)}
+      </div>
+      <div class="layer-metric">${L.key_metric||'—'}</div>
+      <div class="layer-assets">
+        ${(L.assets||[]).map(a=>`<span class="layer-tag">${a}</span>`).join('')}
+      </div>
+    </div>
+  `).join('');
 }
 
 /* ---------- 16. INIT ---------- */
