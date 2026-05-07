@@ -1,0 +1,10 @@
+{
+  "updated_date": null,
+  "btc_dominance_pct": null,
+  "eth_btc_ratio": null,
+  "clarity_act_status": null,
+  "clarity_act_note": null,
+  "report_date": null,
+  "source": "CoinGecko global chart (coingecko.com/en/global-charts) for BTC dominance. Congress.gov for Clarity Act status.",
+  "notes": "Update weekly. BTC dominance rising = capital concentrating in BTC within crypto. ETH/BTC ratio rising = altcoin season approaching. Clarity Act passage would be a structural catalyst for ETH. Monitor at: congress.gov search 'Digital Asset Market Structure'."
+}

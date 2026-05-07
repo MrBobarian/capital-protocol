@@ -1,0 +1,23 @@
+{
+  "updated_date": null,
+  "tesla_optimus": {
+    "production_phase": null,
+    "units_deployed_internal": null,
+    "external_availability": null,
+    "next_milestone": null,
+    "timeline_confidence": null
+  },
+  "figure_ai": {
+    "units_deployed": null,
+    "partner": null,
+    "external_availability": null
+  },
+  "agility_robotics": {
+    "units_deployed": null,
+    "partner": null,
+    "commercial": null
+  },
+  "bofa_shipments_forecast_2026": 90000,
+  "bofa_shipments_forecast_2030": 1200000,
+  "notes": "Update when major deployment announcements occur. Primary sources: company earnings calls, The Information, IEEE Spectrum, humanoid.press."
+}

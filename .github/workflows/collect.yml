@@ -1,0 +1,85 @@
+name: Capital Protocol — Data Collection
+
+on:
+  schedule:
+    # Daily run weekdays at 16:30 UTC (after US market close)
+    - cron: "30 16 * * 1-5"
+    # Weekly full run every Sunday at 18:00 UTC
+    - cron: "0 18 * * 0"
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "Collection mode"
+        required: true
+        default: "daily"
+        type: choice
+        options:
+          - daily
+          - weekly
+          - full
+
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Cache pip dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: pip-${{ hashFiles('requirements.txt') }}
+          restore-keys: |
+            pip-
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      # Determine run mode:
+      # - workflow_dispatch: use the user-supplied input
+      # - Sunday cron (0 18 * * 0): weekly
+      # - Weekday cron (30 16 * * 1-5): daily
+      - name: Determine run mode
+        id: mode
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "mode=${{ github.event.inputs.mode }}" >> "$GITHUB_OUTPUT"
+          elif [ "$(date -u +%u)" = "7" ]; then
+            echo "mode=weekly" >> "$GITHUB_OUTPUT"
+          else
+            echo "mode=daily" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Run data collection
+        run: |
+          cd scripts
+          python collect.py --mode ${{ steps.mode.outputs.mode }}
+
+      - name: Check for changes
+        id: diff
+        run: |
+          git diff --quiet data/metrics.json data/archive/ || echo "changed=true" >> "$GITHUB_OUTPUT"
+
+      - name: Commit and push updated metrics
+        if: steps.diff.outputs.changed == 'true'
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/metrics.json data/archive/
+          git commit -m "chore(data): update metrics [$(date -u +%Y-%m-%d)] mode=${{ steps.mode.outputs.mode }} [skip ci]"
+          git push
+
+      - name: No changes to commit
+        if: steps.diff.outputs.changed != 'true'
+        run: echo "metrics.json unchanged — nothing to commit"

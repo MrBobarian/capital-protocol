@@ -1,0 +1,10 @@
+{
+  "updated_date": null,
+  "ism_manufacturing_pmi": null,
+  "ism_new_orders": null,
+  "capital_goods_shipments_mom_pct": null,
+  "capital_goods_new_orders_mom_pct": null,
+  "report_month": null,
+  "source": "ISM Manufacturing Report (ismworld.org) + Census Bureau Manufacturers' Shipments (census.gov/manufacturing/m3)",
+  "notes": "Update on first business day of each month (ISM) and around the 25th (Census Advance Durable Goods). Jordi's signal: capital goods near PMI 60 = CapEx cycle in early-to-mid acceleration. Consistent with hyperscaler backlog data."
+}

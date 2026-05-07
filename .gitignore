@@ -1,0 +1,20 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.venv/
+venv/
+.env
+
+# Pipeline logs (regenerated each run)
+data/collect.log
+data/collect.log.*
+
+# Archive is committed intentionally — do NOT ignore data/archive/
+# data/archive/
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db

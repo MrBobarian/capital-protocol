@@ -1,0 +1,8 @@
+{
+  "updated_date": null,
+  "semiconductor_exports_yoy_pct": null,
+  "semiconductor_exports_mom_pct": null,
+  "report_month": null,
+  "source": "Korea Customs Service monthly trade statistics — unipass.customs.go.kr or press.koreatrade.or.kr",
+  "notes": "Update monthly when Korea trade data released (typically first week of following month). Jordi reference figure: +182.5% YoY as of context window. This is the supply-side confirmation of hyperscaler demand."
+}
