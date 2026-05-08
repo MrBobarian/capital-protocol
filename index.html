@@ -1122,50 +1122,89 @@ function persist(){
 const CLAUDE_PROMPT_HEADER = `
 You are reviewing a Capital Protocol export — a snapshot of the Danish investor Emil Skriver's macro intelligence terminal.
 
-The attached JSON contains:
-  • meta             — export timestamp, schema version, build context
-  • profile          — investor profile (age, NW target, constraints, harvest window)
-  • frameworkContext — what each composite score, framework lens, and regime rule means
-  • inputs.fredKey   — FRED key (redacted unless explicitly included)
-  • inputs.manual    — manually entered monthly readings (GLI, MOVE, Korea exports, MVRV, etc.) with last-update dates
-  • inputs.hormuz    — Hormuz (ceasefire status, flow, days since) + income disruption flag
-  • inputs.scenarios — 5 scenarios with user-set probabilities
-  • data.fred        — raw FRED observations per series (depth-limited)
-  • data.yahoo       — raw Yahoo Finance series and last prices
-  • derived          — Fed Net Liquidity series, computed spreads
-  • analysis.scores         — eight composite scores 0-100 with internals (level, ROC, percentile, asof, notes)
-  • analysis.tls            — Total Liquidity Score + 3m ROC
-  • analysis.regime         — current season, growth axis, inflation axis, override status
-  • analysis.frameworks     — Pal/Howell/Steno/Cowen reads + signals + quadrant position
-  • analysis.guardrails     — MOVE/DXY/Liquidity-override status
-  • analysis.recommendations — current ASK/Pension/BTC bias text
-  • analysis.circuitBreakers — four breakers with OK/TRIPPED state
-  • analysis.scenarios      — probability-weighted SEMI EV (DKK from 60,000 base)
-  • analysis.hormuz         — derived SEMI override status
+The JSON has two independent data planes. Read both and cross-reference them:
+
+PLANE A — Browser-computed (live FRED + Yahoo Finance fetched in the browser):
+  • data.fred              — raw FRED time-series per series (depth-limited by export setting)
+  • data.yahoo             — Yahoo Finance daily closes + current prices
+  • derived                — Fed Net Liquidity (WALCL-TGA-RRP), SOFR-EFFR spread, M2 YoY, Core CPI 3m ann.
+  • analysis.scores        — eight composite scores 0-100 (FNL, QE Momentum, Private Liquidity,
+                             Financial Conditions, Collateral Health, Dollar Valve, China Impulse, Korea Export)
+  • analysis.tls           — Total Liquidity Score (weighted avg of 8 scores) + 3m ROC
+  • analysis.regime        — season (spring/summer/fall/winter), growth axis, inflation axis, TLS override
+  • analysis.frameworks    — Pal / Howell / Steno / Cowen signal reads + Quadrant (I–IV)
+  • analysis.guardrails    — collateral/DXY/liquidity override flags
+  • analysis.recommendations — ASK / Pension / BTC bias text from regime engine
+  • analysis.circuitBreakers — four circuit breakers (MOVE, Hormuz, harvest cliff, income)
+  • analysis.scenarios     — probability-weighted SEMI EV (DKK from 60,000 base)
+  • analysis.hormuz        — ceasefire status, WTI, SEMI override state
+
+PLANE B — Pipeline-computed (GitHub Actions daily run, yfinance + FRED Python client):
+  • pipeline.data_date              — date pipeline last ran successfully
+  • pipeline.dashboard              — NowcastIQ display fields:
+      .drivers[]                    — 8 key metrics with 7-day delta and trend direction
+      .regime_probs                 — {spring, summer, fall, winter} probabilities (ISM + breakeven + breadth)
+      .current_regime               — highest-probability season from pipeline
+      .what_you_need_to_know[]      — up to 5 plain-English bullets synthesising current signals
+      .layer_sentiment              — L1 Semis / L2 Power / L3 Robotics / L4 Monetary / L5 Sovereign / L6 Longevity
+  • pipeline.fred_macro             — FRED Python client results:
+      .ism_and_capex                — ISM PMI, new orders, employment, prices paid, capital goods orders/shipments,
+                                     industrial production, capacity utilisation
+      .inflation_fred               — PCE YoY, PPI YoY, 5/10yr TIPS breakevens, 5/10yr real yields,
+                                     inflation_expectations_vs_real_yield spread
+      .credit_conditions            — HY OAS spread, IG OAS, NFCI, MoM change, credit signal text
+      .labour_market                — initial + continued jobless claims, WoW change
+      .korea_trade                  — Korea electronics exports YoY%, total exports YoY%, Jordi 182.5% reference
+  • pipeline.sentiment              — SOXX put/call ratio, weighted short interest ratio, BofA FMS tech/semis allocation
+  • pipeline.valuation              — SOXX forward P/E + P/B vs 3yr averages, premium/discount %, baseline weeks
+  • pipeline.breadth                — % of SOXX constituents above 200d MA (unweighted + market-cap weighted)
+  • pipeline.macro_regime           — Jordi Visser thesis signals MR1–MR5
+                                     (CPI trigger, energy regime, gold/DXY, BTC sequencing, Korea EWY)
+  • pipeline.benchmark_arbitrage    — BA1 IGV vs SOXX/QQQ/SPY spreads; BA2 software 200MA flags + deterioration
+  • pipeline.market_structure       — MS1 SPY/RSP concentration; MS2 11 SPDR sector breadth; MS3 ISM passthrough
+  • pipeline.crypto_cycle           — CC1 BITO vs SPY/SOXX/QQQ; CC2 BTC dominance, ETH/BTC ratio
+  • pipeline.cycle_rotation_signal  — rotation narrative + 7 weighted signal scores
+  • pipeline.layer_signals          — five-layer cycle metrics (L1 semis through L5 crypto)
+  • pipeline.alternatives           — European industrials / grid infra / specialty chemicals P/E + P/B vs avg
+
+CROSS-REFERENCE:
+  • combined_signals — pre-computed disagreements between the two planes. Check regime_agree and all _pipeline vs
+    browser-derived values. Disagreements are diagnostically valuable — one plane may lag the other.
+
+INPUTS:
+  • inputs.resolvedInputs  — all 11 manual fields resolved (override > auto > legacy manual)
+  • inputs.hormuz          — Hormuz manual state
+  • inputs.scenarios       — 5 probability-weighted scenarios with SEMI ΔP/L
 
 Your task — unless the user specifies otherwise:
-1. Verify internal consistency. Flag any contradiction between raw data and computed scores (e.g. negative SOFR-EFFR but Steno read bullish? FNL above pain but TLS below 50?).
-2. Identify the strongest signal and the strongest dissenting signal in the snapshot. Explain why each matters for Q4 2026 harvest timing specifically.
-3. Stress-test the regime classification. Is the season label genuinely supported by growth + inflation + liquidity, or is it leaning on one axis?
-4. Critique the framework contradiction reads. If Pal and Howell disagree, which historically has the better diagnostic in this exact setup (Quadrant + TLS level + ROC sign)?
-5. Surface anything stale or missing that would meaningfully change the read if updated. Rank by impact.
-6. Give one specific allocation question Emil should answer before his next allocation decision — not generic advice, something the data points to.
+1. Cross-plane consistency. Are the two regime reads (analysis.regime.season vs pipeline.dashboard.current_regime)
+   aligned? If not, which plane has fresher data and which signal is driving the disagreement?
+2. Strongest signal and strongest dissenting signal. Cite the exact series name, value, and date. Explain
+   why each matters specifically for the Q4 2026 harvest window.
+3. Stress-test the season. Is it supported by growth + inflation + liquidity across BOTH planes, or is one
+   axis overriding a contradicting signal?
+4. Jordi thesis check. Read pipeline.macro_regime (MR1–MR5) and pipeline.benchmark_arbitrage (BA1–BA2).
+   Does the thesis remain intact? Flag any sub-signal that has flipped since the rotation narrative was written.
+5. SOXX position checklist. Evaluate four gates: (a) breadth > 70%, (b) PCR in neutral 0.6–1.2,
+   (c) forward P/E within 20% of 3yr avg, (d) HY spread < 350bps. How many are green?
+6. Stale data. Surface any series where the latest_date or data_date is >14 days old. Rank by impact.
+7. One allocation question — not generic advice, something the specific data points to.
 
 Constraints to respect (non-negotiable):
   • BTC hard cap: 40% investable NW
   • Apartment timing: Q4 2026 — liquid savings 200,000 DKK locked, untouchable
   • Pension new contributions: 100% ACWI IMI (do not propose changes)
   • ASK lifetime cap: 174,200 DKK deposits — internal reallocation unlimited
-  • This is a decision-support tool, not a trade execution system. Frame answers as questions and trade-offs, not orders.
+  • This is a decision-support tool, not a trade execution system. Frame answers as questions and trade-offs.
 
-Be specific. Cite series names, score values, dates. Do not hedge with disclaimers — the disclaimer is already in the footer.
+Be specific. Cite series names, score values, dates. Do not hedge with disclaimers — the disclaimer is in the footer.
 `.trim() + '\n';
 
 function buildFullExport(){
   const depth = document.getElementById('export-depth')?.value || 'recent';
   const includeKey = document.getElementById('export-keys')?.value === 'include';
 
-  // Recompute fresh analysis from current STATE
+  // ── Recompute fresh analysis from current STATE (Plane A) ──────────────────
   const fred = fredSnapshot();
   const yahoo = yahooSnapshot();
   const scores = {
@@ -1178,7 +1217,7 @@ function buildFullExport(){
     s7: score7_ChinaCredit(),
     s8: score8_KoreaExport(),
   };
-  const tls = computeTLS(scores);
+  const tls    = computeTLS(scores);
   const tlsRoc = computeTLSRoc(scores);
   const growth = growthAxis(fred);
   const infl   = inflationAxis(fred);
@@ -1189,13 +1228,12 @@ function buildFullExport(){
   const recs   = buildRecommendations(cls.season, tls, tlsRoc, guard);
   const cbs    = computeCircuitBreakers(STATE, scores, fred);
 
-  // Trim FRED/Yahoo data per depth choice
+  // ── Trim FRED/Yahoo time-series per depth setting ──────────────────────────
   const trimSeries = (arr)=>{
     if(!arr || !arr.length) return null;
-    if(depth==='full') return arr;
+    if(depth==='full')   return arr;
     if(depth==='latest') return arr.slice(-1);
-    // 'recent' — last 24 months ≈ 730 days
-    const cutoff = Date.now() - 730*86400000;
+    const cutoff = Date.now() - 730*86400000; // 24 months
     return arr.filter(o=>new Date(o.d).getTime()>=cutoff);
   };
 
@@ -1203,33 +1241,40 @@ function buildFullExport(){
   for(const k of Object.keys(FRED_SERIES)){
     const arr = STATE.fred[k]?.data;
     fredOut[k] = {
-      label: FRED_SERIES[k].label,
-      units: FRED_SERIES[k].units,
-      freq:  FRED_SERIES[k].freq,
-      asof:  arr?.length ? arr[arr.length-1].d : null,
-      latest:arr?.length ? arr[arr.length-1].v : null,
+      label:        FRED_SERIES[k].label,
+      units:        FRED_SERIES[k].units,
+      freq:         FRED_SERIES[k].freq,
+      latest:       arr?.length ? arr[arr.length-1].v  : null,
+      latest_date:  arr?.length ? arr[arr.length-1].d  : null,
+      prior:        arr?.length>1 ? arr[arr.length-2].v : null,
+      prior_date:   arr?.length>1 ? arr[arr.length-2].d : null,
       observations: trimSeries(arr),
-      cachedAt: STATE.fred[k]?.ts ? new Date(STATE.fred[k].ts).toISOString() : null,
+      cachedAt:     STATE.fred[k]?.ts ? new Date(STATE.fred[k].ts).toISOString() : null,
     };
   }
   const yahooOut = {};
   for(const k of Object.keys(YAHOO_SYMBOLS)){
     const y = STATE.yahoo[k]?.data;
     yahooOut[k] = y ? {
-      label: YAHOO_SYMBOLS[k].label,
-      key:   YAHOO_SYMBOLS[k].key,
-      price: y.price, prevClose: y.prev, currency: y.currency,
-      asof:  y.data?.length ? y.data[y.data.length-1].d : null,
+      label:        YAHOO_SYMBOLS[k].label,
+      key:          YAHOO_SYMBOLS[k].key,
+      price:        y.price,
+      prevClose:    y.prev,
+      changePct:    (y.price!=null && y.prev!=null && y.prev!==0)
+                      ? +((y.price - y.prev)/y.prev*100).toFixed(3) : null,
+      currency:     y.currency,
+      latest_date:  y.data?.length ? y.data[y.data.length-1].d : null,
       observations: trimSeries(y.data),
-      cachedAt: STATE.yahoo[k]?.ts ? new Date(STATE.yahoo[k].ts).toISOString() : null,
+      cachedAt:     STATE.yahoo[k]?.ts ? new Date(STATE.yahoo[k].ts).toISOString() : null,
     } : null;
   }
 
-  // Derived: full Fed Net Liquidity series
+  // ── Derived series ─────────────────────────────────────────────────────────
   const fnlSeries = fedNetLiquidity(STATE.fred.WALCL?.data, STATE.fred.WTREGEN?.data, STATE.fred.RRPONTSYD?.data);
   const sofr = lastVal(STATE.fred.SOFR?.data), effr = lastVal(STATE.fred.FEDFUNDS?.data);
+  const sprd = (sofr!=null&&effr!=null) ? sofr-effr : null;
 
-  // Scenario EV recomputation
+  // ── Scenario EV ────────────────────────────────────────────────────────────
   const scenTotal = STATE.scen.reduce((s,x)=>s+x.pct,0) || 1;
   const evPct = DEFAULT_SCENARIOS.reduce((s,d)=>{
     const cur = STATE.scen.find(x=>x.id===d.id)?.pct || 0;
@@ -1237,7 +1282,7 @@ function buildFullExport(){
   }, 0);
   const evSemi = 60000 * (1 + evPct/100);
 
-  // Hormuz derived state
+  // ── Hormuz ─────────────────────────────────────────────────────────────────
   const wti = lastVal(STATE.fred.DCOILWTICO?.data);
   const horFire = STATE.ah?.horFire || 'No deal';
   let semiOverride = 'Deactivated';
@@ -1245,108 +1290,220 @@ function buildFullExport(){
   else if(wti>100) semiOverride = 'Active (hard-cap)';
   else if(horFire==='Expired') semiOverride = 'Monitoring';
 
-  // Pal/Howell quadrant
-  const palUp = scores.s1?.score!=null && scores.s1.score>50;
+  // ── Pal/Howell quadrant ────────────────────────────────────────────────────
+  const palUp   = scores.s1?.score!=null && scores.s1.score>50;
   const flowSig = (scores.s1?.roc||0) + (scores.s2?.ann||0);
-  const howUp = flowSig > 0;
-  let quadrant = palUp&&howUp?'I':palUp&&!howUp?'II':!palUp&&howUp?'III':'IV';
+  const howUp   = flowSig > 0;
+  const quadrant = palUp&&howUp?'I' : palUp&&!howUp?'II' : !palUp&&howUp?'III' : 'IV';
 
+  // ── Pipeline (Plane B) — STATE.metrics from data/metrics.json ─────────────
+  const pm = STATE.metrics;
+  const pmSent = pm?.sentiment    || {};
+  const pmVal  = pm?.valuation    || {};
+  const pmBrd  = pm?.breadth      || {};
+  const pmFred = pm?.fred_macro   || {};
+
+  const pipelineOut = pm ? {
+    available:       true,
+    data_date:       pm.data_date   || null,
+    generated_at:    pm.generated_at || null,
+    fetched_at:      pm._fetchedAt ? new Date(pm._fetchedAt).toISOString() : null,
+
+    // NowcastIQ display fields
+    dashboard: pm.dashboard || null,
+
+    // Market intelligence (yfinance pipeline)
+    sentiment: {
+      soxx_put_call_ratio:             pmSent.soxx_put_call_ratio             ?? null,
+      soxx_short_interest_ratio:       pmSent.soxx_short_interest_ratio       ?? null,
+      bofams_survey_month:             pmSent.bofams_survey_month             ?? null,
+      bofams_tech_allocation_pct_ow:   pmSent.bofams_tech_allocation          ?? null,
+      bofams_semis_allocation_pct_ow:  pmSent.bofams_semis_allocation         ?? null,
+    },
+    valuation: (()=>{
+      const pe = pmVal.soxx_forward_pe, peA = pmVal.soxx_forward_pe_3yr_avg;
+      const pb = pmVal.soxx_price_to_book, pbA = pmVal.soxx_price_to_book_3yr_avg;
+      return {
+        soxx_forward_pe:          pe  ?? null,
+        soxx_forward_pe_3yr_avg:  peA ?? null,
+        soxx_pe_vs_avg_pct:       (pe&&peA) ? +((pe-peA)/peA*100).toFixed(1) : null,
+        soxx_price_to_book:       pb  ?? null,
+        soxx_pb_3yr_avg:          pbA ?? null,
+        soxx_pb_vs_avg_pct:       (pb&&pbA) ? +((pb-pbA)/pbA*100).toFixed(1) : null,
+        baseline_weeks:           pmVal.soxx_valuation_baseline_weeks_available ?? null,
+      };
+    })(),
+    breadth: {
+      soxx_breadth_above_200ma_pct:          pmBrd.soxx_breadth_above_200ma_pct          ?? null,
+      soxx_breadth_above_200ma_weighted_pct: pmBrd.soxx_breadth_above_200ma_weighted_pct ?? null,
+      sample_size:                           pmBrd.soxx_breadth_sample_size              ?? null,
+      // soxx_breadth_detail omitted — large ticker array, not useful in summary export
+    },
+
+    // FRED Python client results (ISM, yields, credit, labour, Korea)
+    fred_macro: pmFred.fred_available ? {
+      available:         true,
+      ism_and_capex:     pmFred.ism_and_capex     || null,
+      inflation_fred:    pmFred.inflation_fred    || null,
+      credit_conditions: pmFred.credit_conditions || null,
+      labour_market:     pmFred.labour_market     || null,
+      korea_trade:       pmFred.korea_trade       || null,
+    } : { available: false },
+
+    // Jordi Visser thesis signals
+    macro_regime:         pm.macro_regime          || null,
+    benchmark_arbitrage:  pm.benchmark_arbitrage   || null,
+    market_structure:     (()=>{
+      // strip ms3_ ISM passthrough duplicates — already in fred_macro.ism_and_capex
+      const ms = pm.market_structure || {};
+      const out = {};
+      for(const [k,v] of Object.entries(ms)){
+        if(!k.startsWith('ms3_ism') && !k.startsWith('ms3_capital')
+            && !k.startsWith('ms3_durable') && !k.startsWith('ms3_industrial')
+            && !k.startsWith('ms3_capacity')){
+          out[k] = v;
+        }
+      }
+      return out;
+    })(),
+    crypto_cycle:         pm.crypto_cycle          || null,
+    cycle_rotation_signal:pm.cycle_rotation_signal || null,
+    layer_signals: {
+      layer1: pm.layer1 || null,
+      layer2: pm.layer2 || null,
+      layer3: pm.layer3 || null,
+      layer4: pm.layer4 || null,
+      layer5: pm.layer5 || null,
+    },
+    alternatives:         pm.alternatives          || null,
+  } : { available: false, reason: 'Pipeline metrics not loaded — run collect.py or wait for GitHub Action' };
+
+  // ── Combined signals — pre-computed cross-plane comparison ────────────────
+  const pipelineRegime  = pm?.dashboard?.current_regime || null;
+  const pipelineDrivers = pm?.dashboard?.drivers || [];
+  const driverByKey = (id) => pipelineDrivers.find(d=>d.id===id) || null;
+  const palSig = scores.s1?.aboveThreshold ? 'Bullish' : (scores.s1?.score>40 ? 'Neutral' : 'Bearish');
+  const howSig = flowSig>2 ? 'Bullish' : flowSig>-2 ? 'Neutral' : 'Bearish';
+  const steSig = (scores.s1?.aboveThreshold && sprd!=null && sprd<0) ? 'Bullish' : (sprd!=null&&sprd>0.05) ? 'Bearish' : 'Neutral';
+  const mvrv   = resolveManual('mvrv').value;
+  const cowSig = (mvrv!=null&&mvrv>5) ? 'Bearish' : (mvrv!=null&&mvrv<0) ? 'Bullish' : 'Neutral';
+
+  const combinedOut = {
+    _note: 'Cross-source synthesis. TLS scores from browser FRED; pipeline_* values from Python pipeline. Disagreements highlight potential lags or divergences worth investigating.',
+    // Regime
+    regime_tls_season:         cls.season,
+    regime_tls_override:       cls.override,
+    regime_pipeline_current:   pipelineRegime,
+    regime_agree:              cls.season === pipelineRegime || pipelineRegime === null,
+    regime_probs_pipeline:     pm?.dashboard?.regime_probs || null,
+    // TLS engine
+    tls_score:                 tls,
+    tls_roc_3m:                tlsRoc,
+    tls_zone:                  tls==null?'unknown':tls<30?'winter':tls<50?'fall':tls<70?'summer':'spring',
+    // Framework signals (browser)
+    frameworks: { pal:palSig, howell:howSig, steno:steSig, cowen:cowSig, quadrant },
+    // Key pipeline readings with 7d trends
+    ism_pmi:              { value: pmFred.ism_and_capex?.ism_manufacturing_pmi??null, date: pmFred.ism_and_capex?.ism_manufacturing_pmi_date??null, driver: driverByKey('ism_pmi') },
+    hy_spread_bps:        { value: pmFred.credit_conditions?.hy_credit_spread_bps??null, date: pmFred.credit_conditions?.hy_credit_spread_date??null, driver: driverByKey('hy_spread') },
+    breakeven_10yr:       { value: pmFred.inflation_fred?.breakeven_inflation_10yr??null, driver: driverByKey('be_10yr') },
+    real_yield_10yr:      { value: pmFred.inflation_fred?.real_yield_10yr_tips??null, driver: driverByKey('ry_10yr') },
+    korea_electronics_yoy:{ value: pmFred.korea_trade?.korea_electronics_exports_yoy_pct??null, date: pmFred.korea_trade?.korea_exports_date??null, driver: driverByKey('korea_elec') },
+    soxx_breadth_pct:     { value: pmBrd.soxx_breadth_above_200ma_pct??null, driver: driverByKey('breadth') },
+    soxx_forward_pe:      { value: pmVal.soxx_forward_pe??null, vs_avg_pct: (pmVal.soxx_forward_pe&&pmVal.soxx_forward_pe_3yr_avg) ? +((pmVal.soxx_forward_pe-pmVal.soxx_forward_pe_3yr_avg)/pmVal.soxx_forward_pe_3yr_avg*100).toFixed(1):null, driver: driverByKey('soxx_pe') },
+    soxx_put_call_ratio:  { value: pmSent.soxx_put_call_ratio??null, driver: driverByKey('soxx_pcr') },
+    soxx_short_interest:  pmSent.soxx_short_interest_ratio ?? null,
+    nfci:                 pmFred.credit_conditions?.financial_conditions_idx ?? null,
+    // Rotation signal
+    rotation_narrative:   pm?.cycle_rotation_signal?.rotation_narrative || null,
+    // WYNTK bullets
+    what_you_need_to_know: pm?.dashboard?.what_you_need_to_know || [],
+    // Layer sentiment summary
+    layer_sentiment_summary: pm?.dashboard?.layer_sentiment
+      ? Object.fromEntries(Object.entries(pm.dashboard.layer_sentiment)
+          .map(([k,L])=>[k, {name:L.name, signal:L.signal, key_metric:L.key_metric}]))
+      : null,
+    // SOXX position checklist (four gates)
+    soxx_gates: {
+      breadth_above_70pct:     (pmBrd.soxx_breadth_above_200ma_pct??0) > 70,
+      pcr_neutral_zone:        ((pmSent.soxx_put_call_ratio??0) >= 0.6 && (pmSent.soxx_put_call_ratio??2) <= 1.2),
+      pe_within_20pct_of_avg:  pmVal.soxx_forward_pe && pmVal.soxx_forward_pe_3yr_avg
+                                 ? Math.abs(pmVal.soxx_forward_pe - pmVal.soxx_forward_pe_3yr_avg) / pmVal.soxx_forward_pe_3yr_avg < 0.20
+                                 : null,
+      hy_spread_below_350bps:  (pmFred.credit_conditions?.hy_credit_spread_bps??999) < 350,
+    },
+  };
+
+  // ── Final package ──────────────────────────────────────────────────────────
   const pkg = {
     _claudePrompt: CLAUDE_PROMPT_HEADER,
     meta: {
-      schema:'capital-protocol/1.0',
-      exportedAt: new Date().toISOString(),
-      lastRefresh: STATE.lastRefresh ? new Date(STATE.lastRefresh).toISOString() : null,
-      depth, includeKey,
-      buildVersion:'1.0',
-      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+      schema:           'capital-protocol/2.0',
+      exportedAt:       new Date().toISOString(),
+      lastRefresh:      STATE.lastRefresh ? new Date(STATE.lastRefresh).toISOString() : null,
+      pipelineDataDate: pm?.data_date || null,
+      depth,
+      includeKey,
+      timezone:         Intl.DateTimeFormat().resolvedOptions().timeZone,
     },
     profile: {
-      name:'Emil Skriver',
-      age:27,
-      city:'Copenhagen',
-      role:'Senior game artist',
+      name:'Emil Skriver', age:27, city:'Copenhagen', role:'Senior game artist',
       vehicle:'Enkeltmandsvirksomhed (CVR registered)',
       monthlyInvestableDKK: 20000,
-      netWorthTargetDKK: 1000000,
-      netWorthTargetYear: 2030,
-      apartmentPurchaseYear: 2027,
-      liquidSavingsLockedDKK: 200000,
-      freelanceAnnualDKK: 50000,
-      annualRaisePct: 5,
+      netWorthTargetDKK: 1000000, netWorthTargetYear: 2030,
+      apartmentPurchaseYear: 2027, liquidSavingsLockedDKK: 200000,
       btcHardCapPctOfInvestableNW: 40,
-      harvestWindowStart:'2026-10-01',
-      harvestWindowEnd:'2026-12-31',
+      harvestWindowStart:'2026-10-01', harvestWindowEnd:'2026-12-31',
       harvestWindowReason:'Apartment timing — non-negotiable',
       taxStructure: {
-        ASK:        '17% lagerbeskatning, lifetime deposit cap 174,200 DKK, internal reallocation unlimited',
-        Pension:    '15.3% PAL on Nordnet ratepension',
-        AldersOps:  '8,900 DKK/yr cap — MSTR satellite vehicle',
-        Taxable:    'Realisationsprincip for individual equities, avoid ETFs',
+        ASK:       '17% lagerbeskatning, lifetime deposit cap 174,200 DKK, internal reallocation unlimited',
+        Pension:   '15.3% PAL on Nordnet ratepension',
+        AldersOps: '8,900 DKK/yr cap — MSTR satellite vehicle',
+        Taxable:   'Realisationsprincip for individual equities, avoid ETFs',
       },
     },
     frameworkContext: {
-      regimeEngine:'Eight composite scores (0-100) compose the Total Liquidity Score (TLS). TLS direction (3m ROC) distinguishes Pal "stock" level from Howell "flow" change.',
-      seasons:{
-        spring:'Growth ↑ + Inflation ↓ — risk-on bias',
-        summer:'Growth ↑ + Inflation ↑ — late-cycle bias',
-        fall:  'Growth ↓ + Inflation ↑ — stagflation bias',
-        winter:'Growth ↓ + Inflation ↓ — defensive bias',
-      },
-      tlsWeights: TLS_WEIGHTS,
-      tlsZones:'0-30 Winter (red), 30-50 Fall (amber), 50-70 Summer (gold), 70-100 Spring (green)',
-      painThresholdUSD: PAIN_THRESHOLD * 1e6,
-      painThresholdSeries:'Fed Net Liquidity = WALCL - WTREGEN - RRPONTSYD',
-      frameworks:{
-        pal:'Stock-level liquidity. G5 nominal level, M2, Fed B/S. Bullish if level near ATH.',
-        howell:'Flow ROC. GLI, Shadow Monetary Base 3m annualised. Bullish if accelerating.',
-        steno:'Narrow USD plumbing. Fed Net Liq vs pain, SOFR-EFFR, eSLR primary dealer capacity. Bullish above pain + SOFR<=EFFR.',
-        cowen:'On-chain cycle. MVRV-Z, supply in profit, social participation, time-based cycle.',
-      },
-      hormuzRules:{
-        oilOver100:'SEMI hard-cap logic activates',
-        oilOver110:'Emergency reduce gross',
-        ceasefireDay35:'Helium supply chain concern',
-        ceasefireDay45:'Critical supply threshold',
-      },
-      threeQuestionFilter:[
-        'Most tax-efficient vehicle for this exposure? (ASK → Pension → Taxable)',
-        'Sizing consistent with probability target, not emotion?',
-        'Compounds existing exposures rather than duplicating them?',
-      ],
+      regimeEngine:  'Eight composite scores (0-100) → TLS. TLS direction (3m ROC) separates Pal "stock" level from Howell "flow" change.',
+      seasons:       { spring:'Growth↑ Infl↓ — risk-on', summer:'Growth↑ Infl↑ — late cycle', fall:'Growth↓ Infl↑ — stagflation', winter:'Growth↓ Infl↓ — defensive' },
+      tlsWeights:    TLS_WEIGHTS,
+      tlsZones:      '0-30 Winter, 30-50 Fall, 50-70 Summer, 70-100 Spring',
+      painThreshold: '$5.9T Fed Net Liquidity = WALCL - TGA - RRP',
+      frameworks:    { pal:'G5 stock level', howell:'Flow ROC', steno:'SOFR-EFFR + FNL vs pain', cowen:'MVRV-Z + on-chain cycle' },
+      jordiThesis:   { MR1:'CPI trigger (>4% core)', MR2:'Energy regime', MR3:'Gold/DXY divergence', MR4:'BTC sequencing', MR5:'Korea EWY lead' },
+      layers:        { L1:'Semis & AI Silicon', L2:'Power & Grid Infra', L3:'Robotics & Automation', L4:'Monetary Architecture', L5:'Sovereign Debt Cycle', L6:'Longevity & Healthcare' },
+      hormuzRules:   { oilOver100:'SEMI hard-cap', oilOver110:'Emergency reduce', day35:'Helium concern', day45:'Critical threshold' },
+      threeQFilter:  ['Tax-efficient vehicle? (ASK→Pension→Taxable)', 'Sizing vs probability target?', 'Compounds vs duplicates?'],
     },
     inputs: {
-      fredKey: includeKey ? STATE.fredKey : '***REDACTED***',
-      rssKey:  includeKey ? STATE.rssKey  : '***REDACTED***',
-      autoFilled: Object.fromEntries(MANUAL_FIELDS.map(f=>[f.id, {
-        ...(STATE.auto[f.id]||{value:null,source:null,asof:null}),
-        proxy: !!MANUAL_AUTO[f.id]?.proxy,
-        canonicalSource: MANUAL_AUTO[f.id]?.source || 'manual',
-      }])),
+      fredKey:        includeKey ? STATE.fredKey : '***REDACTED***',
+      rssKey:         includeKey ? STATE.rssKey  : '***REDACTED***',
+      autoFilled:     Object.fromEntries(MANUAL_FIELDS.map(f=>[f.id, {
+                        ...(STATE.auto[f.id]||{value:null,source:null,asof:null}),
+                        proxy: !!MANUAL_AUTO[f.id]?.proxy,
+                        canonicalSource: MANUAL_AUTO[f.id]?.source || 'manual',
+                      }])),
       manualOverride: STATE.manualOverride,
-      manualLegacy: STATE.manual,        // pre-auto manual entries (deprecated)
-      manualDates: STATE.manualDates,
+      manualDates:    STATE.manualDates,
       resolvedInputs: Object.fromEntries(MANUAL_FIELDS.map(f=>[f.id, resolveManual(f.id)])),
-      hormuz: STATE.ah,
-      scenarios: STATE.scen,
+      hormuz:         STATE.ah,
+      scenarios:      STATE.scen,
       scenarioDefinitions: DEFAULT_SCENARIOS,
     },
     data: {
-      fred: fredOut,
+      fred:  fredOut,
       yahoo: yahooOut,
-      news: STATE.news,
+      news:  STATE.news,
     },
     derived: {
       fedNetLiquidity: {
-        formula:'WALCL - WTREGEN - (RRPONTSYD * 1000)  [units: $M]',
-        latest: fnlSeries?.length ? fnlSeries[fnlSeries.length-1] : null,
-        observations: trimSeries(fnlSeries),
-        painThresholdUSD: PAIN_THRESHOLD * 1e6,
+        formula:       'WALCL - WTREGEN - (RRPONTSYD × 1000)  [units: $M]',
+        latest:        fnlSeries?.length ? fnlSeries[fnlSeries.length-1] : null,
+        observations:  trimSeries(fnlSeries),
+        painThreshold: PAIN_THRESHOLD * 1e6,
         deltaVsPainPct: scores.s1?.painDelta ?? null,
         aboveThreshold: scores.s1?.aboveThreshold ?? null,
       },
       spreads: {
-        sofrEffrBps: (sofr!=null && effr!=null) ? Math.round((sofr-effr)*100) : null,
+        sofrEffrBps: sprd!=null ? Math.round(sprd*100) : null,
         twos10sPct:  lastVal(STATE.fred.T10Y2Y?.data),
       },
       coreCpi3mAnnualised: STATE.fred.CPILFESL?.data
@@ -1358,69 +1515,53 @@ function buildFullExport(){
     },
     analysis: {
       scores: {
-        s1_fedNetLiquidity: scores.s1,
-        s2_qeMomentum:      scores.s2,
-        s3_privateLiquidity:scores.s3,
-        s4_financialConditions: scores.s4,
-        s5_collateralHealth:scores.s5,
-        s6_dollarValve:     scores.s6,
-        s7_chinaCredit:     scores.s7,
-        s8_koreaExport:     scores.s8,
+        s1_fedNetLiquidity:      scores.s1,
+        s2_qeMomentum:           scores.s2,
+        s3_privateLiquidity:     scores.s3,
+        s4_financialConditions:  scores.s4,
+        s5_collateralHealth:     scores.s5,
+        s6_dollarValve:          scores.s6,
+        s7_chinaCredit:          scores.s7,
+        s8_koreaExport:          scores.s8,
       },
       tls: { value: tls, roc3m: tlsRoc, weights: TLS_WEIGHTS },
       regime: {
-        season: cls.season,
-        override: cls.override,
-        growth: { value: growth.value, accelerating: growth.accelerating, sources: growth.sources },
-        inflation: { value: infl.value, rising: infl.rising, sources: infl.sources },
+        season: cls.season, override: cls.override,
+        growth:    { value: growth.value, accelerating: growth.accelerating, sources: growth.sources },
+        inflation: { value: infl.value,   rising:       infl.rising,         sources: infl.sources  },
       },
-      frameworks: (function(){
-        const palSig = scores.s1?.aboveThreshold ? 'Bullish' : (scores.s1?.score>40 ? 'Neutral' : 'Bearish');
-        const flow = (scores.s1?.roc||0) + (scores.s2?.ann||0);
-        const howSig = flow>2 ? 'Bullish' : flow>-2 ? 'Neutral' : 'Bearish';
-        const sprd = (sofr!=null&&effr!=null) ? sofr-effr : null;
-        const steSig = (scores.s1?.aboveThreshold && sprd!=null && sprd<0) ? 'Bullish' : (sprd>0.05) ? 'Bearish' : 'Neutral';
-        const mvrv = resolveManual('mvrv').value;
-        const cowSig = (mvrv!=null && mvrv>5) ? 'Bearish' : (mvrv!=null && mvrv<0) ? 'Bullish' : 'Neutral';
-        return {
-          pal:   { signal: palSig, level: scores.s1?.level, painDeltaPct: scores.s1?.painDelta },
-          howell:{ signal: howSig, flowRocPct: flow, gli: resolveManual('gli').value, shadowMB: resolveManual('shadowMB').value },
-          steno: { signal: steSig, sofrEffrSpread: sprd, fnlAbovePain: scores.s1?.aboveThreshold },
-          cowen: { signal: cowSig, mvrvZ: mvrv, sentiment: resolveManual('sentiment').value },
-          quadrant: quadrant,
-          quadrantNote: 'In Quadrant II, Howell historically has better 6-18 month diagnostic accuracy. Pal wins structurally.',
-        };
-      })(),
+      frameworks: {
+        pal:   { signal: palSig, level: scores.s1?.level, painDeltaPct: scores.s1?.painDelta },
+        howell:{ signal: howSig, flowRocPct: flowSig, gli: resolveManual('gli').value, shadowMB: resolveManual('shadowMB').value },
+        steno: { signal: steSig, sofrEffrSpread: sprd, fnlAbovePain: scores.s1?.aboveThreshold },
+        cowen: { signal: cowSig, mvrvZ: mvrv, sentiment: resolveManual('sentiment').value },
+        quadrant, quadrantNote: 'Quadrant II: Howell historically has better 6-18m diagnostic. Pal wins structurally.',
+      },
       guardrails: {
-        collateralWarn: guard.collWarn,
-        dollarTighteningWarn: guard.dxyWarn,
-        liquidityOverrideSpring: guard.lqSpring,
-        liquidityOverrideFall:   guard.lqFall,
+        collateralWarn: guard.collWarn, dollarTighteningWarn: guard.dxyWarn,
+        liquidityOverrideSpring: guard.lqSpring, liquidityOverrideFall: guard.lqFall,
       },
       recommendations: recs,
       circuitBreakers: cbs.map(c=>({ key:c.key, trigger:c.trig, ok:c.ok, value:c.val })),
       scenarios: {
-        userProbabilities: STATE.scen,
-        sumPct: STATE.scen.reduce((s,x)=>s+x.pct,0),
-        evSemiPct: evPct,
-        evSemiDKK: evSemi,
-        baseDKK: 60000,
+        userProbabilities: STATE.scen, sumPct: STATE.scen.reduce((s,x)=>s+x.pct,0),
+        evSemiPct: evPct, evSemiDKK: evSemi, baseDKK: 60000,
       },
       hormuz: {
-        ceasefire: STATE.ah?.horFire || 'No deal',
-        ceasefireStart: STATE.ah?.horStart,
+        ceasefire: STATE.ah?.horFire||'No deal', ceasefireStart: STATE.ah?.horStart,
         daysSinceCeasefire: STATE.ah?.horStart ? fmt.daysAgo(STATE.ah.horStart) : null,
-        oilUSD: wti,
-        flowPctOfNormal: STATE.ah?.horFlow,
-        semiOverride: semiOverride,
+        oilUSD: wti, flowPctOfNormal: STATE.ah?.horFlow, semiOverride,
       },
     },
+    pipeline:        pipelineOut,
+    combined_signals: combinedOut,
     keyQuestionsForClaude: [
-      'Given the current TLS level and 3m ROC sign, which framework (Pal/Howell/Steno/Cowen) deserves the highest weight in this snapshot, and why?',
-      'Is the season classification robust, or leaning on a single axis that could flip in the next data print?',
-      'Which manual input, if updated this week, would most change the regime read? (rank by impact)',
-      'Does the recommended ASK/Pension/BTC bias survive the BTC 40% NW hard-cap and the Q4 2026 harvest constraint?',
-      'Identify any contradiction between raw FRED data and a computed score that suggests a calibration error.',
+      'Are combined_signals.regime_tls_season and regime_pipeline_current aligned? If not, which plane has fresher data and what is the specific disagreement?',
+      'What does combined_signals.rotation_narrative say, and does it agree with analysis.regime.season? Identify any Jordi thesis signal (MR1-MR5, BA1-BA2) that contradicts the overall read.',
+      'Evaluate combined_signals.soxx_gates: how many of the four SOXX gates are currently green? What does the gate state imply for new SOXX/MSTR sizing?',
+      'Given the current TLS level and 3m ROC sign, which framework (Pal/Howell/Steno/Cowen) deserves the highest weight, and why? Does the Korea export signal (4-8 week ISM lead) confirm or contradict?',
+      'Which single data point, if it deteriorated by one category in the next 30 days, would most change the Q4 2026 harvest plan? Rank by impact on the harvest window outcome.',
+      'Is there any contradiction between analysis.scores and pipeline.cycle_rotation_signal scores? Cite the specific sub-score that diverges and explain which source is more reliable.',
     ],
   };
   return pkg;
