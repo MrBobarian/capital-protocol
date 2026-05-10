@@ -109,52 +109,31 @@ class MassiveClient:
         Returns [] on failure.
 
         Endpoint: GET /v2/aggs/ticker/{ticker}/range/1/day/{from}/{to}
+
+        NOTE: Always uses self._get() (requests.Session → api.massive.com).
+        The polygon-api-client RESTClient is intentionally bypassed here because
+        it defaults to api.polygon.io, which blocks GitHub Actions IPs.
         """
         from_dt = (date.today() - timedelta(days=days + 60)).isoformat()
         to_dt = date.today().isoformat()
         try:
-            if self._poly:
-                bars = []
-                for agg in self._poly.get_aggs(
-                    ticker=ticker,
-                    multiplier=1,
-                    timespan="day",
-                    from_=from_dt,
-                    to=to_dt,
-                    adjusted=True,
-                    sort="asc",
-                    limit=500,
-                ):
-                    d = datetime.datetime.fromtimestamp(
-                        agg.timestamp / 1000, tz=datetime.timezone.utc
-                    ).strftime("%Y-%m-%d")
-                    bars.append({
-                        "d": d,
-                        "o": agg.open,
-                        "h": agg.high,
-                        "l": agg.low,
-                        "c": agg.close,
-                        "v": agg.volume,
-                    })
-                return bars
-            else:
-                data = self._get(
-                    f"/v2/aggs/ticker/{ticker}/range/1/day/{from_dt}/{to_dt}",
-                    {"adjusted": "true", "sort": "asc", "limit": 500},
-                )
-                return [
-                    {
-                        "d": datetime.datetime.fromtimestamp(
-                            b["t"] / 1000, tz=datetime.timezone.utc
-                        ).strftime("%Y-%m-%d"),
-                        "o": b.get("o"),
-                        "h": b.get("h"),
-                        "l": b.get("l"),
-                        "c": b.get("c"),
-                        "v": b.get("v"),
-                    }
-                    for b in data.get("results", [])
-                ]
+            data = self._get(
+                f"/v2/aggs/ticker/{ticker}/range/1/day/{from_dt}/{to_dt}",
+                {"adjusted": "true", "sort": "asc", "limit": 500},
+            )
+            return [
+                {
+                    "d": datetime.datetime.fromtimestamp(
+                        b["t"] / 1000, tz=datetime.timezone.utc
+                    ).strftime("%Y-%m-%d"),
+                    "o": b.get("o"),
+                    "h": b.get("h"),
+                    "l": b.get("l"),
+                    "c": b.get("c"),
+                    "v": b.get("v"),
+                }
+                for b in data.get("results", [])
+            ]
         except Exception as e:
             logger.warning("get_daily_bars(%s): %s", ticker, e)
             return []
@@ -165,46 +144,32 @@ class MassiveClient:
         Returns {ticker: {price, prev_close, pct_change, abs_change, volume, vwap}}.
 
         Endpoint: GET /v2/snapshot/locale/us/markets/stocks/tickers
+
+        NOTE: Always uses self._get() (requests.Session → api.massive.com).
+        The polygon-api-client get_snapshot_all() kwarg API is unstable across
+        versions and routes to api.polygon.io; bypassed for correctness.
         """
         if not tickers:
             return {}
         try:
-            if self._poly:
-                result = {}
-                for snap in self._poly.get_snapshot_all(
-                    "stocks", ticker_symbols=tickers
-                ):
-                    t = snap.ticker
-                    day = snap.day
-                    prev = snap.prev_day
-                    result[t] = {
-                        "price":      day.close if day else None,
-                        "prev_close": prev.close if prev else None,
-                        "pct_change": snap.todays_change_perc,
-                        "abs_change": snap.todays_change,
-                        "volume":     day.volume if day else None,
-                        "vwap":       day.vwap if day else None,
-                    }
-                return result
-            else:
-                data = self._get(
-                    "/v2/snapshot/locale/us/markets/stocks/tickers",
-                    {"tickers": ",".join(tickers)},
-                )
-                result = {}
-                for snap in data.get("tickers", []):
-                    t = snap.get("ticker")
-                    day = snap.get("day", {})
-                    prev = snap.get("prevDay", {})
-                    result[t] = {
-                        "price":      day.get("c"),
-                        "prev_close": prev.get("c"),
-                        "pct_change": snap.get("todaysChangePerc"),
-                        "abs_change": snap.get("todaysChange"),
-                        "volume":     day.get("v"),
-                        "vwap":       day.get("vw"),
-                    }
-                return result
+            data = self._get(
+                "/v2/snapshot/locale/us/markets/stocks/tickers",
+                {"tickers": ",".join(tickers)},
+            )
+            result = {}
+            for snap in data.get("tickers", []):
+                t = snap.get("ticker")
+                day = snap.get("day", {})
+                prev = snap.get("prevDay", {})
+                result[t] = {
+                    "price":      day.get("c"),
+                    "prev_close": prev.get("c"),
+                    "pct_change": snap.get("todaysChangePerc"),
+                    "abs_change": snap.get("todaysChange"),
+                    "volume":     day.get("v"),
+                    "vwap":       day.get("vw"),
+                }
+            return result
         except Exception as e:
             logger.warning("get_snapshot_bulk: %s", e)
             return {}
