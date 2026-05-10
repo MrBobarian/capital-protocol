@@ -3,3 +3,4 @@ pandas==2.2.2
 requests==2.32.3
 beautifulsoup4==4.12.3
 python-dateutil==2.9.0
+polygon-api-client>=1.14.0

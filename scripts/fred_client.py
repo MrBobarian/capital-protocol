@@ -57,6 +57,9 @@ FRED_SERIES: dict[str, str] = {
     # Korea Trade (OECD via FRED) — semiconductor export demand confirmation
     "korea_electronics_exports_yoy": "XTEXVA01KRM667S",  # Korea exports value, electronics, YoY %
     "korea_total_exports_yoy":       "XTEXVA01KRQ667S",  # Korea total exports value, YoY %
+    # Private-Sector Liquidity — eSLR repo market + Fed balance-sheet signals
+    "overnight_repo_volume":         "RPONTSYD",          # Fed overnight repo ops outstanding ($B)
+    "fed_treasury_holdings":         "WSHOTSL",           # Fed outright Treasury holdings ($B, weekly)
 }
 
 

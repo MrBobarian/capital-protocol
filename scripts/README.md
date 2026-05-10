@@ -303,6 +303,58 @@ The `software_deterioration_score` in `cycle_rotation_signal` (0-100) aggregates
 
 ---
 
+## Finnhub Technical Indicators
+
+`scripts/finnhub_client.py` fetches RSI, MACD, and Bollinger Band signals for SOXX and its top 5 weighted constituents via the Finnhub `/indicator` endpoint. Runs on every daily/weekly/full collection (8 API calls — well within the 60/min free-tier limit).
+
+### Setup
+
+1. Register for a free Finnhub API key at [finnhub.io](https://finnhub.io/) (instant, no payment)
+2. Add to GitHub Actions: **Settings → Secrets → Actions → New repository secret**
+   - Name: `FINNHUB_API_KEY`
+   - Value: your key
+3. For local runs: `$env:FINNHUB_API_KEY = "your-key"` (PowerShell)
+
+If `FINNHUB_API_KEY` is not set, the technicals block is skipped silently — all other collection continues normally.
+
+### Indicators collected
+
+| Symbol | Indicator | Parameters | Signal derived |
+|--------|-----------|-----------|----------------|
+| SOXX | RSI | period=14 | overbought (≥70) / oversold (≤30) / neutral |
+| SOXX | MACD | fast=12, slow=26, signal=9 | bullish / bearish / neutral crossover |
+| SOXX | Bollinger Bands | period=20, std=2 | %B position (0-1), squeeze flag (bandwidth < 5%) |
+| NVDA, AVGO, AMD, QCOM, INTC | RSI | period=14 | per-ticker RSI + overbought/oversold counts |
+
+### Composite momentum signal
+
+`momentum_composite` ("bullish" / "neutral" / "bearish") aggregates three signals using a simple majority rule: if ≥2 of the 3 SOXX indicators point the same direction, that direction wins.
+
+### Output location in `metrics.json`
+
+```
+sentiment/
+  technicals/
+    available                     — bool
+    soxx_rsi_14                   — float (RSI value)
+    soxx_rsi_signal               — "overbought" | "oversold" | "neutral"
+    soxx_macd                     — float
+    soxx_macd_signal_line         — float
+    soxx_macd_histogram           — float
+    soxx_macd_crossover           — "bullish" | "bearish" | "neutral"
+    soxx_bb_upper / middle / lower — float (band levels)
+    soxx_bb_pct_b                 — float (0-1 normal range; >1 = above upper band)
+    soxx_bb_squeeze               — bool (bandwidth < 5%)
+    constituent_rsi               — {NVDA: float, AVGO: float, AMD: float, QCOM: float, INTC: float}
+    constituent_rsi_avg           — float (simple average of the 5)
+    constituent_overbought_count  — int
+    constituent_oversold_count    — int
+    momentum_composite            — "bullish" | "neutral" | "bearish"
+    technicals_date               — YYYY-MM-DD
+```
+
+---
+
 ## FRED API Integration
 
 `scripts/fred_client.py` provides automatic collection of 21 macroeconomic series from the St. Louis Fed's free public API. No manual updates required once the GitHub secret is set.
@@ -357,3 +409,80 @@ FRED data is also merged into `market_structure` (ISM fields, prefixed `ms3_`) a
 ### Fallback behaviour
 
 If `FRED_API_KEY` is not set, `fred_macro.fred_available` is `false`, a warning is logged, and all FRED fields are null. Every other metric group continues to work normally. The manual `data/ism_override.json` file remains readable as a fallback for `market_structure.ms3_*` fields.
+
+---
+
+## Private-Sector Liquidity Layer
+
+**Why this matters:** Standard liquidity analysis tracks only the Fed balance sheet (QE/QT). The eSLR (enhanced Supplementary Leverage Ratio) reform in 2023 enabled banks to expand the private repo market from ~$1.5T to ~$3T without the Fed's balance sheet growing. This is invisible to models that stop at the Fed's H.4.1 release — it creates the "Cowen vs. Steno" disagreement where analysts using different liquidity frameworks reach opposite regime conclusions from the same data.
+
+Capital Protocol resolves this with a dual-confirmation framework:
+
+| Pillar | Signal | Threshold |
+|--------|--------|-----------|
+| **Private-sector repo market** | RPONTSYD — Fed overnight repo ops outstanding | > $2,500B = eSLR-enabled expansion active |
+| **Fed Treasury holdings trend** | WSHOTSL — Fed outright Treasury holdings, 200DMA | Holdings > 200DMA = functional QE bias |
+
+Both pillars above threshold simultaneously = **EXPANSION CONFIRMED** (structural liquidity floor intact).
+
+### New FRED series
+
+| Series ID | FRED Key | Description | Frequency |
+|-----------|----------|-------------|-----------|
+| `RPONTSYD` | `overnight_repo_volume` | Fed overnight repo operations outstanding ($B) | Daily |
+| `WSHOTSL` | `fed_treasury_holdings` | Fed outright Treasury holdings ($B, H.4.1) | Weekly |
+
+These are fetched automatically on every weekly/full run via the existing `FRED_API_KEY` secret. No additional secrets or manual updates required.
+
+### Output location in `metrics.json`
+
+```
+fred_macro/
+  private_liquidity/
+    overnight_repo_volume_B       — latest RPONTSYD value ($B)
+    repo_wow_change_B             — WoW change in repo volume
+    repo_date                     — observation date
+    repo_expansion_threshold_B    — 2500.0 (eSLR threshold)
+    repo_above_threshold          — bool
+    fed_treasury_holdings_B       — latest WSHOTSL value ($B)
+    tsy_wow_change_B              — WoW change in Treasury holdings
+    tsy_date                      — observation date
+    fed_treasury_200dma_B         — 200-week MA of WSHOTSL (null on daily runs)
+    fed_treasury_above_200dma     — bool (null on daily runs)
+    fed_treasury_pct_vs_200dma    — % deviation from 200DMA
+    dual_liquidity_confirmed      — bool (null if data unavailable)
+    narrative                     — human-readable regime sentence
+
+macro_regime/
+  (all private_liquidity fields are also merged here for rotation signal access)
+
+liquidity_driver/
+  score                 — composite 0-100 score
+  signal                — "EXPANDING" | "NEUTRAL" | "CONTRACTING" | "UNKNOWN"
+  component_scores      — {repo_volume, repo_momentum, fed_treasury, hy_spread, nfci}
+  weights               — {repo_volume: 0.30, repo_momentum: 0.20, fed_treasury: 0.30, hy_spread: 0.10, nfci: 0.10}
+  dual_liquidity_confirmed — passthrough from private_liquidity
+  narrative             — one-line signal summary
+```
+
+### Composite Liquidity Driver score
+
+The `liquidity_driver.score` (0-100) aggregates five components:
+
+| Component | Weight | Score derivation |
+|-----------|--------|-----------------|
+| Repo volume | 30% | Linear 0-100 scaled between $1.5T (0) and $3.5T (100) |
+| Repo momentum | 20% | 50 = flat; +$100B WoW → 100; -$100B WoW → 0 |
+| Fed Treasury vs 200DMA | 30% | 50 = at 200DMA; ±2% deviation → 0/100 |
+| HY credit spread (inverted) | 10% | 250bps → 100; 800bps → 0 |
+| NFCI (inverted) | 10% | −0.5 → 100; +0.5 → 0 |
+
+Score ≥ 70 = EXPANDING · 40–70 = NEUTRAL · < 40 = CONTRACTING
+
+### Performance note
+
+The Fed Treasury 200DMA (`WSHOTSL`) requires 210 weekly observations. To avoid unnecessary API calls, this is:
+- **Computed** on weekly/full runs (direct FRED API call, separate from the bulk fetch)
+- **Skipped** on daily runs (`fed_treasury_200dma_B` and `fed_treasury_above_200dma` remain `null`)
+
+The repo volume (`RPONTSYD`) is daily and always fetched fresh.

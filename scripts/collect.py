@@ -16,6 +16,14 @@ from pathlib import Path  # noqa: E402
 from cycle_metrics import collect_cycle_metrics  # noqa: E402
 from fred_client import fetch_all_fred_series  # noqa: E402
 from holdings import ALTERNATIVE_BASKETS, SOXX_TICKERS, SOXX_WEIGHT  # noqa: E402
+from finnhub_client import collect_technicals  # noqa: E402
+from massive_client import (  # noqa: E402
+    collect_breadth_massive,
+    collect_valuation_massive,
+    collect_pcr_massive,
+    collect_alternatives_massive,
+    collect_market_overview,
+)
 from utils import load_json, retry, safe_float, trading_days_back, write_json  # noqa: E402
 
 # ---------------------------------------------------------------------------
@@ -544,14 +552,29 @@ FRED_SERIES_WEEKLY = [
     # Korea trade (OECD via FRED — monthly)
     "korea_electronics_exports_yoy",
     "korea_total_exports_yoy",
+    # Private-sector liquidity (weekly)
+    "overnight_repo_volume",
+    "fed_treasury_holdings",
 ]
 
 
-def collect_fred_macro(api_key: str | None) -> dict:
+def collect_fred_macro(
+    api_key: str | None,
+    *,
+    mode: str = "daily",
+    cached_tsy_200dma: float | None = None,
+) -> dict:
     """Collect macroeconomic data from FRED.
 
     Auto-populates ISM/CapEx override fields and extends macro_regime with
     market-derived real yields, breakeven inflation, and credit spreads.
+
+    Args:
+        api_key: FRED API key. Falls back gracefully to {"fred_available": False} if None.
+        mode: Collection mode ("daily" | "weekly" | "full"). The Fed Treasury 200DMA
+              computation is skipped on daily runs (requires 210 observations).
+        cached_tsy_200dma: Pass a previously-computed 200DMA to avoid a redundant
+              FRED fetch when called multiple times in one run.
 
     Falls back to {"fred_available": False} gracefully if api_key is None
     or any individual fetch fails — never raises.
@@ -743,6 +766,104 @@ def collect_fred_macro(api_key: str | None) -> dict:
         "source": "FRED — OECD Korea trade statistics (XTEXVA01KRM667S), updated monthly",
     }
 
+    # ── Private-sector liquidity block ──────────────────────────────────────
+    repo_result  = raw.get("overnight_repo_volume")
+    tsy_result   = raw.get("fed_treasury_holdings")
+    repo_vol     = _val("overnight_repo_volume")
+    repo_prior   = repo_result["prior_value"] if repo_result else None
+    repo_wow_chg = round(repo_vol - repo_prior, 2) if (repo_vol and repo_prior) else None
+    repo_date    = _date("overnight_repo_volume")
+    tsy_holdings = _val("fed_treasury_holdings")
+    tsy_prior    = tsy_result["prior_value"] if tsy_result else None
+    tsy_wow_chg  = round(tsy_holdings - tsy_prior, 2) if (tsy_holdings and tsy_prior) else None
+    tsy_date     = _date("fed_treasury_holdings")
+
+    # 200DMA for Fed Treasury holdings — only computed on weekly/full runs
+    # (requires 210 weekly observations; daily runs reuse cached_tsy_200dma)
+    tsy_200dma: float | None = cached_tsy_200dma
+    if mode in ("weekly", "full") and cached_tsy_200dma is None:
+        try:
+            import requests as _req
+            _params = {
+                "series_id":        "WSHOTSL",
+                "api_key":          api_key,
+                "file_type":        "json",
+                "sort_order":       "desc",
+                "limit":            210,
+                "observation_start": "2023-01-01",
+            }
+            _resp = _req.get(
+                "https://api.stlouisfed.org/fred/series/observations",
+                params=_params,
+                timeout=10,
+            )
+            if _resp.status_code == 200:
+                _obs = [
+                    float(o["value"])
+                    for o in _resp.json().get("observations", [])
+                    if o.get("value") not in (".", None, "")
+                ]
+                if len(_obs) >= 200:
+                    tsy_200dma = round(sum(_obs[:200]) / 200, 2)
+        except Exception as _e:
+            logging.warning("Could not compute Fed Treasury 200DMA: %s", _e)
+
+    tsy_above_200dma   = (tsy_holdings > tsy_200dma) if (tsy_holdings and tsy_200dma) else None
+    tsy_pct_vs_200dma  = (
+        round((tsy_holdings - tsy_200dma) / tsy_200dma * 100, 3)
+        if (tsy_holdings and tsy_200dma) else None
+    )
+    # Dual-confirmation: repo market active (>$2.5T) AND Fed holdings expanding (above 200DMA)
+    dual_liquidity_confirmed = (
+        (repo_vol > 2500 and tsy_above_200dma is True)
+        if (repo_vol is not None and tsy_above_200dma is not None) else None
+    )
+
+    if dual_liquidity_confirmed is True:
+        liq_narrative = (
+            f"EXPANSION CONFIRMED — Overnight repo ${repo_vol:.0f}B (>{'+' if repo_wow_chg and repo_wow_chg >= 0 else ''}"
+            f"{repo_wow_chg:.1f}B WoW) with Fed Treasury holdings {tsy_pct_vs_200dma:+.2f}% above 200DMA. "
+            "eSLR-enabled repo expansion + Fed balance-sheet support = structural liquidity floor intact."
+        )
+    elif dual_liquidity_confirmed is False:
+        liq_narrative = (
+            f"CONTRACTION SIGNAL — Overnight repo ${repo_vol:.0f}B; Fed Treasury holdings "
+            f"{'above' if tsy_above_200dma else 'below'} 200DMA ({tsy_pct_vs_200dma:+.2f}%). "
+            "At least one pillar of the dual-liquidity framework is absent."
+        )
+    else:
+        liq_narrative = "Private-sector liquidity data unavailable (FRED fetch pending or RPONTSYD/WSHOTSL not yet published)."
+
+    private_liquidity_block: dict = {
+        "overnight_repo_volume_B":      repo_vol,
+        "repo_wow_change_B":            repo_wow_chg,
+        "repo_date":                    repo_date,
+        "repo_expansion_threshold_B":   2500.0,
+        "repo_above_threshold":         (repo_vol > 2500) if repo_vol is not None else None,
+        "fed_treasury_holdings_B":      tsy_holdings,
+        "tsy_wow_change_B":             tsy_wow_chg,
+        "tsy_date":                     tsy_date,
+        "fed_treasury_200dma_B":        tsy_200dma,
+        "fed_treasury_above_200dma":    tsy_above_200dma,
+        "fed_treasury_pct_vs_200dma":   tsy_pct_vs_200dma,
+        "dual_liquidity_confirmed":     dual_liquidity_confirmed,
+        "narrative":                    liq_narrative,
+        "source": (
+            "FRED — RPONTSYD (Fed overnight repo ops outstanding, daily) + "
+            "WSHOTSL (Fed outright Treasury holdings, weekly H.4.1 release). "
+            "eSLR reform (2023) enabled private-sector repo market expansion from ~$1.5T to ~$3T; "
+            "this series captures what Fed balance-sheet models miss."
+        ),
+    }
+
+    logging.info(
+        "Private liquidity — repo: $%.0fB | Fed Tsy: $%.0fB (%s 200DMA) | dual_confirmed: %s",
+        repo_vol or 0,
+        tsy_holdings or 0,
+        "above" if tsy_above_200dma else "below" if tsy_above_200dma is False else "n/a",
+        dual_liquidity_confirmed,
+    )
+
     return {
         "fred_available":    True,
         "ism_and_capex":     ism_block,
@@ -750,7 +871,121 @@ def collect_fred_macro(api_key: str | None) -> dict:
         "credit_conditions": credit_block,
         "labour_market":     labour_block,
         "korea_trade":       korea_block,
+        "private_liquidity": private_liquidity_block,
     }
+
+
+# ---------------------------------------------------------------------------
+# Private-sector liquidity driver composite
+# ---------------------------------------------------------------------------
+def compute_liquidity_driver(output: dict) -> dict:
+    """Compute a composite Liquidity Driver score (0-100) from five components.
+
+    Components and weights:
+      1. Overnight repo volume vs $2.5T threshold  — 30%
+      2. WoW change in repo volume (direction)     — 20%
+      3. Fed Treasury holdings vs 200DMA           — 30%
+      4. HY credit spread (inverted proxy)         — 10%
+      5. Financial conditions index (inverted)     — 10%
+
+    Returns a dict with the composite score, component scores, and a narrative.
+    Never raises — returns {"score": None} on any data failure.
+    """
+    try:
+        pl   = output.get("fred_macro", {}).get("private_liquidity", {})
+        cc   = output.get("fred_macro", {}).get("credit_conditions", {})
+
+        repo_vol         = pl.get("overnight_repo_volume_B")
+        repo_wow         = pl.get("repo_wow_change_B")
+        tsy_pct_vs_200   = pl.get("fed_treasury_pct_vs_200dma")
+        hy_spread        = cc.get("hy_credit_spread")       # bps — lower = looser
+        nfci             = cc.get("financial_conditions_idx")  # negative = easy
+
+        scores: dict[str, float | None] = {}
+
+        # Component 1 — Repo volume vs $2.5T threshold (0-100 linear, capped at $3.5T)
+        if repo_vol is not None:
+            scores["repo_volume"] = min(100.0, max(0.0, (repo_vol - 1500) / (3500 - 1500) * 100))
+        else:
+            scores["repo_volume"] = None
+
+        # Component 2 — Repo WoW direction: +$100B → 100, -$100B → 0, neutral → 50
+        if repo_wow is not None:
+            scores["repo_momentum"] = min(100.0, max(0.0, 50.0 + repo_wow / 2.0))
+        else:
+            scores["repo_momentum"] = None
+
+        # Component 3 — Fed Treasury vs 200DMA: +2% above → 100, -2% below → 0
+        if tsy_pct_vs_200 is not None:
+            scores["fed_treasury"] = min(100.0, max(0.0, 50.0 + tsy_pct_vs_200 * 25.0))
+        else:
+            scores["fed_treasury"] = None
+
+        # Component 4 — HY spread (inverted): 250bps → 100, 800bps → 0
+        if hy_spread is not None:
+            scores["hy_spread"] = min(100.0, max(0.0, (800 - hy_spread) / (800 - 250) * 100))
+        else:
+            scores["hy_spread"] = None
+
+        # Component 5 — NFCI (inverted): -0.5 → 100, +0.5 → 0, midpoint 0 → 50
+        if nfci is not None:
+            scores["nfci"] = min(100.0, max(0.0, 50.0 - nfci * 100.0))
+        else:
+            scores["nfci"] = None
+
+        weights = {
+            "repo_volume":  0.30,
+            "repo_momentum": 0.20,
+            "fed_treasury": 0.30,
+            "hy_spread":    0.10,
+            "nfci":         0.10,
+        }
+
+        weighted_sum  = 0.0
+        weight_used   = 0.0
+        for key, w in weights.items():
+            v = scores[key]
+            if v is not None:
+                weighted_sum += v * w
+                weight_used  += w
+
+        composite = round(weighted_sum / weight_used * 100 / 100, 1) if weight_used > 0 else None
+
+        if composite is not None:
+            if composite >= 70:
+                signal = "EXPANDING"
+                narrative = (
+                    f"Composite liquidity score {composite}/100 — structural expansion. "
+                    "Repo market depth and Fed balance-sheet support both favour risk assets."
+                )
+            elif composite >= 40:
+                signal = "NEUTRAL"
+                narrative = (
+                    f"Composite liquidity score {composite}/100 — neither expanding nor contracting. "
+                    "Monitor repo volume and Fed Treasury 200DMA crossover for directional confirmation."
+                )
+            else:
+                signal = "CONTRACTING"
+                narrative = (
+                    f"Composite liquidity score {composite}/100 — liquidity contraction warning. "
+                    "Repo volume and/or Fed holdings signal tightening financial conditions."
+                )
+        else:
+            signal    = "UNKNOWN"
+            narrative = "Insufficient data to compute composite liquidity driver."
+
+        return {
+            "score":            composite,
+            "signal":           signal,
+            "component_scores": scores,
+            "weights":          weights,
+            "narrative":        narrative,
+            "dual_liquidity_confirmed": pl.get("dual_liquidity_confirmed"),
+        }
+
+    except Exception as e:
+        logging.warning("compute_liquidity_driver failed: %s", e)
+        return {"score": None, "signal": "UNKNOWN", "narrative": str(e)}
 
 
 # ---------------------------------------------------------------------------
@@ -1143,11 +1378,22 @@ def run(mode: str) -> None:
 
     bofams = load_bofams()
 
+    massive_api_key = os.environ.get("MASSIVE_API_KEY")
+
     # Sentiment + breadth: daily, weekly, full
     if mode in {"daily", "weekly", "full"}:
         logging.info("--- Collecting sentiment ---")
 
-        pcr = collect_put_call_ratio()
+        if massive_api_key:
+            logging.info("PCR: using Massive API (ETF Global analytics)")
+            pcr = collect_pcr_massive(massive_api_key)
+            # ETF analytics block goes into sentiment; keep soxx_etf_analytics separate
+            etf_analytics = pcr.pop("soxx_etf_analytics", None)
+            if etf_analytics:
+                existing["sentiment"]["soxx_etf_analytics"] = etf_analytics
+        else:
+            logging.info("PCR: MASSIVE_API_KEY not set — falling back to yfinance")
+            pcr = collect_put_call_ratio()
         existing["sentiment"].update(pcr)
         logging.info("Put/call ratio: %s", pcr.get("soxx_put_call_ratio"))
 
@@ -1158,8 +1404,32 @@ def run(mode: str) -> None:
         existing["sentiment"].update(bofams)
         logging.info("BofA FMS loaded — survey_month: %s", bofams.get("bofams_survey_month"))
 
+        finnhub_api_key = os.environ.get("FINNHUB_API_KEY")
+        if finnhub_api_key:
+            logging.info("--- Collecting Finnhub technical indicators ---")
+            try:
+                technicals = collect_technicals(finnhub_api_key)
+                existing["sentiment"]["technicals"] = technicals
+                logging.info(
+                    "Finnhub technicals — RSI: %s (%s) | MACD: %s | momentum: %s",
+                    technicals.get("soxx_rsi_14"),
+                    technicals.get("soxx_rsi_signal"),
+                    technicals.get("soxx_macd_crossover"),
+                    technicals.get("momentum_composite"),
+                )
+            except Exception as e:
+                logging.error("collect_technicals (Finnhub) failed: %s", e)
+                existing["sentiment"]["technicals"] = {"available": False}
+        else:
+            logging.info("FINNHUB_API_KEY not set — skipping technical indicators")
+
         logging.info("--- Collecting breadth ---")
-        breadth = collect_breadth()
+        if massive_api_key:
+            logging.info("Breadth: using Massive API (daily bars → 200MA)")
+            breadth = collect_breadth_massive(massive_api_key, SOXX_TICKERS, SOXX_WEIGHT)
+        else:
+            logging.info("Breadth: MASSIVE_API_KEY not set — falling back to yfinance")
+            breadth = collect_breadth()
         existing["breadth"].update(breadth)
         logging.info(
             "Breadth above 200MA: %s%% (n=%s)",
@@ -1170,10 +1440,15 @@ def run(mode: str) -> None:
     # Valuation + alternatives: weekly, full
     if mode in {"weekly", "full"}:
         logging.info("--- Collecting valuation ---")
-        val = collect_soxx_valuation()
+        if massive_api_key:
+            logging.info("Valuation: using Massive API (ratios endpoint)")
+            val = collect_valuation_massive(massive_api_key, SOXX_TICKERS, SOXX_WEIGHT)
+        else:
+            logging.info("Valuation: MASSIVE_API_KEY not set — falling back to yfinance")
+            val = collect_soxx_valuation()
         existing["valuation"].update(val)
         logging.info(
-            "SOXX fwd P/E: %s (n=%s), P/B: %s (n=%s)",
+            "SOXX P/E: %s (n=%s), P/B: %s (n=%s)",
             val.get("soxx_forward_pe"),
             val.get("soxx_pe_sample_size"),
             val.get("soxx_price_to_book"),
@@ -1190,7 +1465,12 @@ def run(mode: str) -> None:
         )
 
         logging.info("--- Collecting alternatives ---")
-        alt = collect_alternatives()
+        if massive_api_key:
+            logging.info("Alternatives: using Massive API (ratios endpoint)")
+            alt = collect_alternatives_massive(massive_api_key, ALTERNATIVE_BASKETS)
+        else:
+            logging.info("Alternatives: MASSIVE_API_KEY not set — falling back to yfinance")
+            alt = collect_alternatives()
         existing["alternatives"] = alt.get("alternatives", {})
         for k, v in existing["alternatives"].items():
             logging.info(
@@ -1199,6 +1479,25 @@ def run(mode: str) -> None:
                 v.get("forward_pe"),
                 v.get("price_to_book"),
             )
+
+        # Market overview (yield curve, indices, movers, earnings calendar)
+        if massive_api_key:
+            logging.info("--- Collecting market overview (Massive API) ---")
+            try:
+                market_ov = collect_market_overview(massive_api_key)
+                existing["market_overview"] = market_ov
+                yc = market_ov.get("yield_curve") or {}
+                logging.info(
+                    "Market overview — 2yr: %s%% | 10yr: %s%% | spread: %sbps | SPY: %s%%",
+                    yc.get("yield_2y"), yc.get("yield_10y"),
+                    round(yc["spread_2_10"] * 100, 1) if yc.get("spread_2_10") else None,
+                    market_ov.get("indices", {}).get("SPY", {}).get("pct_change"),
+                )
+            except Exception as e:
+                logging.error("collect_market_overview failed: %s", e)
+                existing.setdefault("market_overview", {})
+        else:
+            existing.setdefault("market_overview", {})
 
         logging.info("--- Collecting five-layer cycle metrics ---")
         try:
@@ -1209,9 +1508,9 @@ def run(mode: str) -> None:
         except Exception as e:
             logging.error("collect_cycle_metrics failed: %s", e)
 
-        # FRED macro data — ISM/CapEx, real yields, credit spreads, labour market
+        # FRED macro data — ISM/CapEx, real yields, credit spreads, labour market, private liquidity
         fred_api_key = os.environ.get("FRED_API_KEY")
-        fred_data = collect_fred_macro(fred_api_key)
+        fred_data = collect_fred_macro(fred_api_key, mode=mode)
         existing["fred_macro"] = fred_data
 
         # Merge FRED ISM data into market_structure so compute_rotation_signal
@@ -1233,6 +1532,10 @@ def run(mode: str) -> None:
         # Merge Korea trade data into macro_regime (FRED takes precedence over manual override)
         if fred_data.get("fred_available") and "korea_trade" in fred_data:
             existing.setdefault("macro_regime", {}).update(fred_data["korea_trade"])
+
+        # Merge private-sector liquidity into macro_regime
+        if fred_data.get("fred_available") and "private_liquidity" in fred_data:
+            existing.setdefault("macro_regime", {}).update(fred_data["private_liquidity"])
 
     # Final assembly
     output = {
@@ -1256,7 +1559,24 @@ def run(mode: str) -> None:
         "cycle_rotation_signal": existing.get("cycle_rotation_signal", {}),
         # FRED macro data (populated on weekly/full runs)
         "fred_macro": existing.get("fred_macro", {"fred_available": False}),
+        # Massive API market overview (populated on weekly/full runs)
+        "market_overview": existing.get("market_overview", {}),
+        # Private-sector liquidity driver composite (populated after FRED on weekly/full runs)
+        "liquidity_driver": existing.get("liquidity_driver", {"score": None, "signal": "UNKNOWN"}),
     }
+
+    # Composite liquidity driver score
+    try:
+        output["liquidity_driver"] = compute_liquidity_driver(output)
+        logging.info(
+            "Liquidity driver — score: %s | signal: %s | dual_confirmed: %s",
+            output["liquidity_driver"].get("score"),
+            output["liquidity_driver"].get("signal"),
+            output["liquidity_driver"].get("dual_liquidity_confirmed"),
+        )
+    except Exception as e:
+        logging.error("compute_liquidity_driver failed: %s", e)
+        output["liquidity_driver"] = {"score": None, "signal": "UNKNOWN"}
 
     # Dashboard fields for NowcastIQ-pattern frontend (always compute)
     try:
