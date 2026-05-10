@@ -1,15 +1,21 @@
 """
-Finnhub technical indicator client for Capital Protocol.
+Finnhub data client for Capital Protocol.
 
-Fetches OHLCV data via the free-tier /stock/candle endpoint, then computes
-RSI(14), MACD(12,26,9), and Bollinger Band %B in Python using pandas.
+All functions use free-tier Finnhub endpoints only:
+  /stock/candle  — OHLCV history (breadth 200DMA + technical indicators)
+  /stock/metric  — financial ratios (TTM P/E, annual P/B per ticker)
 
-The /indicator endpoint (which wraps these calculations server-side) requires
-a Finnhub premium plan. /stock/candle is available on the free tier and
-returns the same underlying price data — we just do the math locally.
+The /indicator endpoint (server-side TA) requires a premium plan; we fetch
+raw candles and compute RSI/MACD/Bollinger locally with pandas instead.
 
-API calls per run: 1 (SOXX candles) + 5 (top-constituent candles) = 6 total.
-Rate limit: 30 calls/second / 60 calls/minute (free tier) — well within budget.
+Free-tier rate limit: 60 calls/minute, 30 calls/second.
+
+Approximate call budget per full run:
+  collect_breadth_finnhub()    — 25 candle calls (one per SOXX ticker)
+  collect_technicals()         —  6 candle calls (SOXX + top 5)
+  collect_valuation_finnhub()  — 25 metric calls (one per SOXX ticker)
+  collect_alternatives_finnhub() — ~13 metric calls (basket tickers)
+  Total ≈ 69 calls spread across the run — within free-tier limits.
 
 Requires: FINNHUB_API_KEY secret (GitHub Actions) or local env var.
 Requires: pandas (already in requirements.txt)
@@ -132,14 +138,23 @@ def _isnan(v) -> bool:
 # Low-level candle fetch (free-tier endpoint)
 # ---------------------------------------------------------------------------
 
-def _fetch_candles(session: requests.Session, symbol: str) -> list[float]:
+def _fetch_candles(
+    session: requests.Session,
+    symbol: str,
+    lookback_days: int = _LOOKBACK_DAYS,
+) -> list[float]:
     """Fetch daily closing prices for `symbol` via Finnhub /stock/candle.
+
+    Args:
+        lookback_days: Calendar days of history to request. Use the module
+            default (120) for technical indicators. Use 360 for 200DMA breadth
+            (need ~250 trading days = ~350 calendar days of history).
 
     Returns a list of close prices oldest-first, or [] on any error.
     The token is already set on the session headers.
     """
     now   = int(datetime.now(timezone.utc).timestamp())
-    start = int((datetime.now(timezone.utc) - timedelta(days=_LOOKBACK_DAYS)).timestamp())
+    start = int((datetime.now(timezone.utc) - timedelta(days=lookback_days)).timestamp())
     try:
         resp = session.get(
             f"{_BASE}/stock/candle",
@@ -298,3 +313,265 @@ def collect_technicals(api_key: str) -> dict:
             "Indicators computed locally with pandas."
         ),
     }
+
+
+# ---------------------------------------------------------------------------
+# Breadth — 200-day MA via Finnhub candles
+# ---------------------------------------------------------------------------
+
+def collect_breadth_finnhub(
+    api_key: str,
+    soxx_tickers: list[str],
+    soxx_weight: dict[str, float],
+) -> dict:
+    """Replaces collect_breadth_massive() / collect_breadth().
+
+    Fetches 360 calendar days of daily closes per SOXX ticker via Finnhub
+    /stock/candle (free tier) and computes the 200-day simple moving average
+    in Python. Makes one API call per ticker (≤25 calls for SOXX).
+
+    Returns the same schema as collect_breadth() so callers are unaffected.
+    """
+    _empty = {
+        "soxx_breadth_above_200ma_pct":          None,
+        "soxx_breadth_above_200ma_weighted_pct": None,
+        "soxx_breadth_sample_size":              None,
+        "soxx_breadth_note":                     None,
+        "soxx_breadth_detail":                   [],
+    }
+    if not api_key:
+        return _empty
+
+    session = requests.Session()
+    session.headers.update({"X-Finnhub-Token": api_key})
+
+    above_tickers: list[str] = []
+    valid_tickers: list[str] = []
+    detail_list:   list[dict] = []
+
+    for ticker in soxx_tickers:
+        closes = _fetch_candles(session, ticker, lookback_days=360)
+        time.sleep(_SLEEP_BETWEEN)
+
+        if len(closes) < 200:
+            logger.debug("collect_breadth_finnhub: %s only %d closes — skipping", ticker, len(closes))
+            continue
+
+        ma200 = sum(closes[-200:]) / 200
+        last  = closes[-1]
+        above = last > ma200
+
+        valid_tickers.append(ticker)
+        if above:
+            above_tickers.append(ticker)
+        detail_list.append({
+            "ticker":      ticker,
+            "above_200ma": above,
+            "close":       round(last, 4),
+            "ma200":       round(ma200, 4),
+        })
+
+    if len(valid_tickers) < 20:
+        logger.warning(
+            "collect_breadth_finnhub: only %d valid tickers (need ≥20)", len(valid_tickers)
+        )
+        return _empty
+
+    unweighted_pct = len(above_tickers) / len(valid_tickers) * 100
+    w_above = sum(soxx_weight.get(t, 0.0) for t in above_tickers)
+    w_total = sum(soxx_weight.get(t, 0.0) for t in valid_tickers)
+    weighted_pct   = (w_above / w_total * 100) if w_total > 0 else None
+
+    detail_list.sort(key=lambda x: x["ticker"])
+
+    logger.info(
+        "collect_breadth_finnhub: %d/%d above 200MA (%.0f%% unweighted, %.0f%% weighted)",
+        len(above_tickers), len(valid_tickers), unweighted_pct, weighted_pct or 0,
+    )
+    return {
+        "soxx_breadth_above_200ma_pct":          round(unweighted_pct, 4),
+        "soxx_breadth_above_200ma_weighted_pct": round(weighted_pct, 4) if weighted_pct is not None else None,
+        "soxx_breadth_sample_size":              len(valid_tickers),
+        "soxx_breadth_note": (
+            "Below 40%: narrow/fragile rally. "
+            "40–70%: mixed participation. "
+            "Above 70%: broad participation."
+        ),
+        "soxx_breadth_detail":  detail_list,
+        "soxx_breadth_source":  "Finnhub /stock/candle — 200-day SMA computed locally",
+    }
+
+
+# ---------------------------------------------------------------------------
+# Valuation — P/E and P/B via Finnhub /stock/metric
+# ---------------------------------------------------------------------------
+
+def _fetch_metric(session: requests.Session, symbol: str) -> dict:
+    """Fetch Finnhub /stock/metric?metric=all for one symbol.
+
+    Returns the inner `metric` dict, or {} on failure.
+    Relevant free-tier fields: peTTM (trailing P/E), pbAnnual (annual P/B).
+    """
+    try:
+        resp = session.get(
+            f"{_BASE}/stock/metric",
+            params={"symbol": symbol, "metric": "all"},
+            timeout=10,
+        )
+        resp.raise_for_status()
+        return resp.json().get("metric", {})
+    except Exception as exc:
+        logger.warning("Finnhub metric fetch failed (%s): %s", symbol, exc)
+        return {}
+
+
+def collect_valuation_finnhub(
+    api_key: str,
+    soxx_tickers: list[str],
+    soxx_weight: dict[str, float],
+) -> dict:
+    """Replaces collect_valuation_massive() / collect_soxx_valuation().
+
+    Fetches TTM P/E (peTTM) and annual P/B (pbAnnual) per SOXX ticker via
+    Finnhub /stock/metric (free tier). Computes a weight-normalised average
+    across tickers that return valid values.
+
+    Returns the same schema as collect_soxx_valuation() so callers are unaffected.
+    """
+    _empty = {
+        "soxx_forward_pe":     None,
+        "soxx_price_to_book":  None,
+        "soxx_pe_sample_size": 0,
+        "soxx_pb_sample_size": 0,
+        "soxx_pe_source_note": "Finnhub unavailable",
+    }
+    if not api_key:
+        return _empty
+
+    session = requests.Session()
+    session.headers.update({"X-Finnhub-Token": api_key})
+
+    pe_vals: dict[str, tuple[float, float]] = {}   # {ticker: (pe, weight)}
+    pb_vals: dict[str, tuple[float, float]] = {}
+
+    for ticker in soxx_tickers:
+        m = _fetch_metric(session, ticker)
+        time.sleep(_SLEEP_BETWEEN)
+
+        weight = soxx_weight.get(ticker, 0.0)
+
+        pe = m.get("peTTM")
+        if pe is not None:
+            try:
+                pe = float(pe)
+                if 0 < pe < 500:
+                    pe_vals[ticker] = (pe, weight)
+            except (TypeError, ValueError):
+                pass
+
+        pb = m.get("pbAnnual")
+        if pb is None:
+            pb = m.get("pbQuarterly")
+        if pb is not None:
+            try:
+                pb = float(pb)
+                if 0 < pb < 200:
+                    pb_vals[ticker] = (pb, weight)
+            except (TypeError, ValueError):
+                pass
+
+    def _wavg(vals: dict) -> Optional[float]:
+        total_w = sum(w for _, w in vals.values())
+        if total_w == 0:
+            return None
+        return sum(v * w for v, w in vals.values()) / total_w
+
+    weighted_pe = _wavg(pe_vals)
+    weighted_pb = _wavg(pb_vals)
+
+    logger.info(
+        "collect_valuation_finnhub: TTM P/E %.2f (n=%d), P/B %.2f (n=%d)",
+        weighted_pe or 0, len(pe_vals), weighted_pb or 0, len(pb_vals),
+    )
+    return {
+        "soxx_forward_pe":     round(weighted_pe, 4) if weighted_pe is not None else None,
+        "soxx_price_to_book":  round(weighted_pb, 4) if weighted_pb is not None else None,
+        "soxx_pe_sample_size": len(pe_vals),
+        "soxx_pb_sample_size": len(pb_vals),
+        "soxx_pe_source_note": (
+            "Finnhub /stock/metric — TTM P/E (peTTM) and annual P/B (pbAnnual). "
+            "Trailing 12-month P/E — directionally comparable to forward P/E but not equivalent."
+        ),
+    }
+
+
+# ---------------------------------------------------------------------------
+# Alternatives — P/E and P/B for alternative baskets via Finnhub
+# ---------------------------------------------------------------------------
+
+def collect_alternatives_finnhub(
+    api_key: str,
+    alternative_baskets: dict,
+) -> dict:
+    """Replaces collect_alternatives_massive() / collect_alternatives().
+
+    Fetches TTM P/E and P/B for all basket tickers via Finnhub /stock/metric
+    (free tier). Returns the same schema as collect_alternatives().
+    """
+    if not api_key:
+        return {"alternatives": {}}
+
+    # Deduplicate tickers across all baskets into a single fetch loop
+    all_tickers = list({
+        t
+        for basket in alternative_baskets.values()
+        for t in basket.get("tickers", [])
+    })
+
+    session = requests.Session()
+    session.headers.update({"X-Finnhub-Token": api_key})
+
+    metrics: dict[str, dict] = {}
+    for ticker in all_tickers:
+        metrics[ticker] = _fetch_metric(session, ticker)
+        time.sleep(_SLEEP_BETWEEN)
+
+    result: dict[str, dict] = {}
+    for basket_key, basket in alternative_baskets.items():
+        pe_vals: list[float] = []
+        pb_vals: list[float] = []
+
+        for ticker in basket.get("tickers", []):
+            m = metrics.get(ticker, {})
+            pe = m.get("peTTM")
+            if pe is not None:
+                try:
+                    pe = float(pe)
+                    if 0 < pe < 500:
+                        pe_vals.append(pe)
+                except (TypeError, ValueError):
+                    pass
+            pb = m.get("pbAnnual") or m.get("pbQuarterly")
+            if pb is not None:
+                try:
+                    pb = float(pb)
+                    if 0 < pb < 200:
+                        pb_vals.append(pb)
+                except (TypeError, ValueError):
+                    pass
+
+        result[basket_key] = {
+            "label":          basket.get("label", basket_key),
+            "forward_pe":     round(sum(pe_vals) / len(pe_vals), 4) if pe_vals else None,
+            "price_to_book":  round(sum(pb_vals) / len(pb_vals), 4) if pb_vals else None,
+            "sample_size_pe": len(pe_vals),
+            "sample_size_pb": len(pb_vals),
+        }
+        logger.info(
+            "collect_alternatives_finnhub: %-26s  TTM P/E %s  P/B %s",
+            basket_key,
+            result[basket_key]["forward_pe"],
+            result[basket_key]["price_to_book"],
+        )
+
+    return {"alternatives": result}

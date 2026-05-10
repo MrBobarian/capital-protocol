@@ -16,7 +16,12 @@ from pathlib import Path  # noqa: E402
 from cycle_metrics import collect_cycle_metrics  # noqa: E402
 from fred_client import fetch_all_fred_series  # noqa: E402
 from holdings import ALTERNATIVE_BASKETS, SOXX_TICKERS, SOXX_WEIGHT  # noqa: E402
-from finnhub_client import collect_technicals  # noqa: E402
+from finnhub_client import (  # noqa: E402
+    collect_technicals,
+    collect_breadth_finnhub,
+    collect_valuation_finnhub,
+    collect_alternatives_finnhub,
+)
 from massive_client import (  # noqa: E402
     collect_breadth_massive,
     collect_valuation_massive,
@@ -1378,7 +1383,8 @@ def run(mode: str) -> None:
 
     bofams = load_bofams()
 
-    massive_api_key = os.environ.get("MASSIVE_API_KEY")
+    massive_api_key  = os.environ.get("MASSIVE_API_KEY")
+    finnhub_api_key  = os.environ.get("FINNHUB_API_KEY")
 
     # Sentiment + breadth: daily, weekly, full
     if mode in {"daily", "weekly", "full"}:
@@ -1404,7 +1410,6 @@ def run(mode: str) -> None:
         existing["sentiment"].update(bofams)
         logging.info("BofA FMS loaded — survey_month: %s", bofams.get("bofams_survey_month"))
 
-        finnhub_api_key = os.environ.get("FINNHUB_API_KEY")
         if finnhub_api_key:
             logging.info("--- Collecting Finnhub technical indicators ---")
             try:
@@ -1424,11 +1429,16 @@ def run(mode: str) -> None:
             logging.info("FINNHUB_API_KEY not set — skipping technical indicators")
 
         logging.info("--- Collecting breadth ---")
-        if massive_api_key:
-            logging.info("Breadth: using Massive API (daily bars → 200MA)")
+        if finnhub_api_key:
+            # Finnhub /stock/candle: 60 calls/min free tier — handles all 25 SOXX tickers
+            logging.info("Breadth: using Finnhub (candle → 200DMA)")
+            breadth = collect_breadth_finnhub(finnhub_api_key, SOXX_TICKERS, SOXX_WEIGHT)
+        elif massive_api_key:
+            # Massive /v2/aggs: free tier limited to ~10 calls/min — partial results likely
+            logging.info("Breadth: Finnhub not set — falling back to Massive API")
             breadth = collect_breadth_massive(massive_api_key, SOXX_TICKERS, SOXX_WEIGHT)
         else:
-            logging.info("Breadth: MASSIVE_API_KEY not set — falling back to yfinance")
+            logging.info("Breadth: no authenticated API — falling back to yfinance")
             breadth = collect_breadth()
         existing["breadth"].update(breadth)
         logging.info(
@@ -1440,11 +1450,16 @@ def run(mode: str) -> None:
     # Valuation + alternatives: weekly, full
     if mode in {"weekly", "full"}:
         logging.info("--- Collecting valuation ---")
-        if massive_api_key:
-            logging.info("Valuation: using Massive API (ratios endpoint)")
+        if finnhub_api_key:
+            # Finnhub /stock/metric: TTM P/E + annual P/B per ticker (free tier)
+            logging.info("Valuation: using Finnhub (/stock/metric — peTTM, pbAnnual)")
+            val = collect_valuation_finnhub(finnhub_api_key, SOXX_TICKERS, SOXX_WEIGHT)
+        elif massive_api_key:
+            # Massive ratios endpoint requires a premium key; may return "Unknown API Key"
+            logging.info("Valuation: Finnhub not set — falling back to Massive API ratios")
             val = collect_valuation_massive(massive_api_key, SOXX_TICKERS, SOXX_WEIGHT)
         else:
-            logging.info("Valuation: MASSIVE_API_KEY not set — falling back to yfinance")
+            logging.info("Valuation: no authenticated API — falling back to yfinance")
             val = collect_soxx_valuation()
         existing["valuation"].update(val)
         logging.info(
@@ -1465,11 +1480,15 @@ def run(mode: str) -> None:
         )
 
         logging.info("--- Collecting alternatives ---")
-        if massive_api_key:
-            logging.info("Alternatives: using Massive API (ratios endpoint)")
+        if finnhub_api_key:
+            # Finnhub /stock/metric for basket tickers (~13 calls, free tier)
+            logging.info("Alternatives: using Finnhub (/stock/metric)")
+            alt = collect_alternatives_finnhub(finnhub_api_key, ALTERNATIVE_BASKETS)
+        elif massive_api_key:
+            logging.info("Alternatives: Finnhub not set — falling back to Massive API ratios")
             alt = collect_alternatives_massive(massive_api_key, ALTERNATIVE_BASKETS)
         else:
-            logging.info("Alternatives: MASSIVE_API_KEY not set — falling back to yfinance")
+            logging.info("Alternatives: no authenticated API — falling back to yfinance")
             alt = collect_alternatives()
         existing["alternatives"] = alt.get("alternatives", {})
         for k, v in existing["alternatives"].items():
