@@ -561,6 +561,8 @@ FRED_SERIES_WEEKLY = [
     # Private-sector liquidity (weekly)
     "overnight_repo_volume",
     "fed_treasury_holdings",
+    # MOVE index via FRED (daily bond volatility — proxy when Yahoo ^MOVE is unavailable)
+    "move_index",
 ]
 
 
@@ -731,15 +733,19 @@ def collect_fred_macro(
     else:
         nfci_signal = None
 
+    move_index = _val("move_index")
+
     credit_block: dict = {
         "hy_credit_spread_bps":         hy_spread,
         "hy_credit_spread_date":        _date("hy_credit_spread"),
         "ig_credit_spread_bps":         ig_spread,
         "financial_conditions_idx":     nfci,
         "hy_spread_mom_chg":            _mom_chg("hy_credit_spread"),
+        "move_index":                   move_index,
+        "move_index_date":              _date("move_index"),
         "credit_signal":                credit_signal,
         "financial_conditions_signal":  nfci_signal,
-        "source":   "FRED — ICE BofA indices (BAMLH0A0HYM2 / BAMLC0A0CM), Chicago Fed NFCI",
+        "source":   "FRED — ICE BofA indices (BAMLH0A0HYM2 / BAMLC0A0CM), Chicago Fed NFCI, MOVE Index (BAMLMOVE)",
     }
 
     # ------------------------------------------------------------------
@@ -1361,6 +1367,155 @@ def compute_dashboard_fields(existing_metrics: dict) -> dict:
 
 
 # ---------------------------------------------------------------------------
+# Yahoo Finance price fetcher (pipeline-side backup for browser plane)
+# Fetches current prices + 1d change for the key dashboard tickers.
+# Uses a plain requests.Session with retries + spoofed User-Agent.
+# Writes to metrics.json["yahoo_prices"] so the Claude export has fresh
+# price context even when the browser plane hasn't been opened.
+# ---------------------------------------------------------------------------
+
+def _make_yf_session() -> "requests.Session":
+    """Build a requests.Session with retry adapter and browser-like headers."""
+    import requests as _req
+    from requests.adapters import HTTPAdapter
+    from urllib3.util.retry import Retry
+
+    session = _req.Session()
+    retry = Retry(
+        total=3,
+        backoff_factor=1.5,
+        status_forcelist=[429, 500, 502, 503, 504],
+    )
+    session.mount("https://", HTTPAdapter(max_retries=retry))
+    session.headers.update({
+        "User-Agent": (
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+            "AppleWebKit/537.36 (KHTML, like Gecko) "
+            "Chrome/124.0.0.0 Safari/537.36"
+        ),
+        "Accept": "application/json,*/*",
+    })
+    return session
+
+
+def _safe_pct(new: float | None, old: float | None) -> float | None:
+    """Return percentage change rounded to 2dp, or None if inputs are invalid."""
+    if new is None or old is None or old == 0:
+        return None
+    try:
+        return round((new - old) / abs(old) * 100, 2)
+    except Exception:
+        return None
+
+
+def fetch_yahoo_prices() -> dict:
+    """Fetch current prices for key dashboard tickers via Yahoo Finance chart API.
+
+    Tickers: ^DXY, BTC-USD, NVDA, MSTR, ^VIX, ETH-USD
+    (^MOVE is skipped — FRED BAMLMOVE is used as fallback for MOVE index.)
+
+    Returns dict mapping ticker → {price, prev_close, pct_change_1d, currency}.
+    Returns {} on complete failure; individual ticker failures return None price.
+    """
+    TICKERS = [
+        ("^DXY",    "DXY"),
+        ("BTC-USD", "BTC"),
+        ("NVDA",    "NVDA"),
+        ("MSTR",    "MSTR"),
+        ("^VIX",    "VIX"),
+        ("ETH-USD", "ETH"),
+    ]
+
+    if os.environ.get("YFINANCE_ENABLED", "false").lower() != "true":
+        # On CI (GitHub Actions) Yahoo Finance blocks the runner IPs.
+        # Skip silently — the browser plane handles Yahoo prices.
+        logging.info("fetch_yahoo_prices: YFINANCE_ENABLED=false — skipping (CI mode)")
+        return {}
+
+    session = _make_yf_session()
+    results: dict = {}
+    fetched_at = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+    for symbol, key in TICKERS:
+        url = (
+            f"https://query1.finance.yahoo.com/v8/finance/chart/{symbol}"
+            "?interval=1d&range=5d"
+        )
+        try:
+            resp = session.get(url, timeout=10)
+            resp.raise_for_status()
+            data = resp.json()
+            result = data.get("chart", {}).get("result", [None])[0]
+            if not result:
+                raise ValueError("empty result")
+            meta = result.get("meta", {})
+            price     = safe_float(meta.get("regularMarketPrice"))
+            prev      = safe_float(meta.get("previousClose"))
+            currency  = meta.get("currency")
+            results[key] = {
+                "price":          price,
+                "prev_close":     prev,
+                "pct_change_1d":  _safe_pct(price, prev),
+                "currency":       currency,
+                "fetched_at":     fetched_at,
+            }
+            logging.info("  %s (Yahoo): price=%s  1d=%s%%",
+                         key, price,
+                         results[key]["pct_change_1d"])
+        except Exception as exc:
+            logging.warning("fetch_yahoo_prices failed for %s: %s", symbol, exc)
+            results[key] = {
+                "price": None, "prev_close": None,
+                "pct_change_1d": None, "currency": None,
+                "error": str(exc), "fetched_at": fetched_at,
+            }
+        time.sleep(0.5)
+
+    return results
+
+
+# ---------------------------------------------------------------------------
+# Fear & Greed index (alternative.me — free, no API key required)
+# Returns current score (0–100) + label + 7d average.
+# Used to auto-fill the 'sentiment' manual input for the Cowen framework.
+# ---------------------------------------------------------------------------
+
+def fetch_fear_greed() -> dict:
+    """Fetch Bitcoin Fear & Greed index from alternative.me.
+
+    Returns:
+        Dict with keys: score (int), label (str), score_7d_avg (float),
+                        fetched_at (ISO timestamp).
+        Returns {"available": False} on any failure.
+    """
+    url = "https://api.alternative.me/fng/?limit=7"
+    try:
+        import requests as _req
+        resp = _req.get(url, timeout=10)
+        resp.raise_for_status()
+        entries = resp.json().get("data", [])
+        if not entries:
+            return {"available": False, "error": "no data"}
+
+        latest   = entries[0]
+        score    = int(latest["value"])
+        label    = latest["value_classification"]
+        avg_7d   = round(sum(int(e["value"]) for e in entries) / len(entries), 1)
+
+        logging.info("Fear & Greed: %s (%s)  7d avg: %s", score, label, avg_7d)
+        return {
+            "available":    True,
+            "score":        score,
+            "label":        label,
+            "score_7d_avg": avg_7d,
+            "fetched_at":   datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+        }
+    except Exception as exc:
+        logging.warning("fetch_fear_greed failed: %s", exc)
+        return {"available": False, "error": str(exc)}
+
+
+# ---------------------------------------------------------------------------
 # Main orchestration
 # ---------------------------------------------------------------------------
 def run(mode: str) -> None:
@@ -1579,10 +1734,37 @@ def run(mode: str) -> None:
                 "ticker_count": 0,
             }
 
+    # Yahoo prices — key dashboard tickers (local only; CI skipped via YFINANCE_ENABLED=false)
+    logging.info("--- Collecting Yahoo Finance prices ---")
+    try:
+        yahoo_prices = fetch_yahoo_prices()
+        existing["yahoo_prices"] = yahoo_prices
+    except Exception as e:
+        logging.error("fetch_yahoo_prices failed: %s", e)
+        existing["yahoo_prices"] = {}
+
+    # Fear & Greed index (alternative.me — free API, no key, runs on CI too)
+    logging.info("--- Collecting Fear & Greed index ---")
+    try:
+        fng = fetch_fear_greed()
+        existing.setdefault("sentiment", {})["fear_greed"] = fng
+        if fng.get("available"):
+            logging.info("Fear & Greed: %s (%s)  7d avg: %s",
+                         fng.get("score"), fng.get("label"), fng.get("score_7d_avg"))
+    except Exception as e:
+        logging.error("fetch_fear_greed failed: %s", e)
+
     # Final assembly
     output = {
         "generated_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
         "data_date": date.today().isoformat(),
+        # Pipeline metadata — browser reads this to confirm the pipeline ran
+        "pipeline": {
+            "available":     True,
+            "run_mode":      mode,
+            "last_run_at":   datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+            "data_date":     date.today().isoformat(),
+        },
         "sentiment": existing.get("sentiment", {}),
         "valuation": existing.get("valuation", {}),
         "breadth": existing.get("breadth", {}),
@@ -1607,6 +1789,8 @@ def run(mode: str) -> None:
         "liquidity_driver": existing.get("liquidity_driver", {"score": None, "signal": "UNKNOWN"}),
         # Equity Market Monitor (populated on weekly/full runs)
         "equity_monitor": existing.get("equity_monitor", {"ticker_count": 0}),
+        # Yahoo prices (local runs only — CI skips; available when YFINANCE_ENABLED=true)
+        "yahoo_prices": existing.get("yahoo_prices", {}),
     }
 
     # Composite liquidity driver score

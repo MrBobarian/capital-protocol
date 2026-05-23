@@ -60,6 +60,8 @@ FRED_SERIES: dict[str, str] = {
     # Private-Sector Liquidity — eSLR repo market + Fed balance-sheet signals
     "overnight_repo_volume":         "RPONTSYD",          # Fed overnight repo ops outstanding ($B)
     "fed_treasury_holdings":         "WSHOTSL",           # Fed outright Treasury holdings ($B, weekly)
+    # Bond market volatility — ICE BofAML MOVE Index (proxy for ^MOVE when Yahoo unavailable)
+    "move_index":                    "BAMLMOVE",          # MOVE Index (implied Treasury vol, daily)
 }
 
 
