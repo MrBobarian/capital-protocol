@@ -222,27 +222,27 @@ def _get_ohlc(
     *, massive_sleep: float = 0.0
 ) -> list[dict]:
     """
-    Primary OHLC fetcher — three-tier fallback chain:
-      1. Finnhub /stock/candle  (free, works for stocks + ETFs, primary on CI)
-      2. Massive /v2/aggs       (free ETFs only; massive_sleep inserted before call)
-      3. yfinance               (no key, local dev only)
+    OHLC fetcher — two-source chain:
+      1. Massive /v2/aggs  (strict sleep before every call to respect 5/min free limit)
+      2. yfinance          (local dev only; disabled on CI via YFINANCE_ENABLED=false)
 
-    massive_sleep: extra sleep injected before any Massive call to avoid 429.
-    Set to RATE_LIMIT_SLEEP - 1.0 so the per-ticker sleep + this = full rate limit gap.
+    Finnhub /stock/candle is NOT attempted: it requires a paid plan and always
+    returns 403 on the free key, wasting ~1s per ticker before falling through.
+    fh_session is still created (for /stock/metric PE data) but never used here.
+
+    massive_sleep: seconds to sleep strictly before the Massive call.
     """
-    if fh_session is not None:
-        bars = _get_ohlc_finnhub(fh_session, ticker, days)
-        if bars:
-            return bars
-        logger.debug("%s — Finnhub no bars, trying Massive", ticker)
     if poly_session is not None:
         if massive_sleep > 0:
             time.sleep(massive_sleep)
         bars = _get_ohlc_massive(poly_session, ticker, days)
         if bars:
             return bars
-        logger.debug("%s — Massive no bars, trying yfinance", ticker)
-    return _get_ohlc_yfinance(ticker, days)
+        logger.debug("%s — Massive no bars", ticker)
+    # yfinance: local dev only — disabled on CI (GitHub Actions IPs are rate-limited)
+    if os.environ.get("YFINANCE_ENABLED", "false").lower() == "true":
+        return _get_ohlc_yfinance(ticker, days)
+    return []
 
 
 def _get_ohlc_weekly(ohlc: list[dict]) -> list[dict]:
@@ -423,13 +423,10 @@ def _process_ticker(
     }
 
     # ── Fetch OHLC ──────────────────────────────────────────────────────────
-    # Sleep: 1s when using Finnhub (60/min free), RATE_LIMIT_SLEEP when Massive-only
-    if not skip_sleep:
-        sleep_s = 1.0 if fh_session is not None else RATE_LIMIT_SLEEP
-        time.sleep(sleep_s)
-
+    # Always sleep RATE_LIMIT_SLEEP before the Massive call (no Finnhub OHLC tier).
+    # massive_sleep IS the full sleep — no additional per-ticker sleep needed.
     ohlc = _get_ohlc(fh_session, poly_session, ticker, days=365,
-                     massive_sleep=max(0.0, RATE_LIMIT_SLEEP - 1.0))
+                     massive_sleep=0.0 if skip_sleep else RATE_LIMIT_SLEEP)
     if not ohlc:
         result["error"] = "no_ohlc_data"
         logger.warning("  %s — no OHLC data returned", ticker)
@@ -574,9 +571,9 @@ def collect_equity_monitor(
     benchmark_data: dict[str, dict] = {}
     for bm in BENCHMARK_TICKERS:
         logger.info("  Benchmark %s …", bm)
-        time.sleep(1.0)   # between benchmark fetches (Finnhub pacing)
+        # Sleep is injected inside _get_ohlc via massive_sleep — no extra sleep here
         ohlc = _get_ohlc(fh_session, poly_session, bm, days=365,
-                         massive_sleep=max(0.0, RATE_LIMIT_SLEEP - 1.0))
+                         massive_sleep=RATE_LIMIT_SLEEP)
         if ohlc:
             closes = [bar["c"] for bar in ohlc if bar.get("c") is not None]
             from technical_signals import compute_ticker_technicals
