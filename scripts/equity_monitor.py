@@ -335,8 +335,8 @@ def _compute_macd(
             "macd_signal":       sg,
             "macd_histogram":    h,
             "macd_above_signal": bool(m > sg),
-            "macd_crossover_bullish": crossover_bullish,
-            "macd_crossover_bearish": crossover_bearish,
+            "macd_crossover_bullish": bool(crossover_bullish),
+            "macd_crossover_bearish": bool(crossover_bearish),
         }
     except Exception:
         return {}

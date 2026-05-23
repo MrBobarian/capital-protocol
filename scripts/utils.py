@@ -77,16 +77,42 @@ def load_json(path: str | Path) -> dict:
         return {}
 
 
+class _SafeEncoder(json.JSONEncoder):
+    """JSON encoder that handles numpy scalars and other non-standard types.
+    Falls back gracefully so a stray numpy.bool_ or numpy.float32 never
+    crashes the whole pipeline.
+    """
+
+    def default(self, obj: Any) -> Any:
+        # numpy scalar types (bool_, int_, float32, float64, …)
+        try:
+            import numpy as np  # optional dep — only import when needed
+
+            if isinstance(obj, np.bool_):
+                return bool(obj)
+            if isinstance(obj, np.integer):
+                return int(obj)
+            if isinstance(obj, np.floating):
+                f = float(obj)
+                return None if (math.isnan(f) or math.isinf(f)) else f
+            if isinstance(obj, np.ndarray):
+                return obj.tolist()
+        except ImportError:
+            pass
+        return super().default(obj)
+
+
 def write_json(path: str | Path, data: dict) -> None:
     """Writes data to path as formatted JSON (indent=2).
     Creates parent directories as needed.
     Writes atomically: writes to a .tmp file first, then renames.
+    Uses _SafeEncoder to handle numpy scalar types without crashing.
     """
     p = Path(path)
     p.parent.mkdir(parents=True, exist_ok=True)
     tmp = p.with_suffix(p.suffix + ".tmp")
     with tmp.open("w", encoding="utf-8") as fh:
-        json.dump(data, fh, indent=2)
+        json.dump(data, fh, indent=2, cls=_SafeEncoder)
     os.replace(tmp, p)
 
 
