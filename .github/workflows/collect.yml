@@ -67,6 +67,7 @@ jobs:
           FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
           MASSIVE_API_KEY: ${{ secrets.MASSIVE_API_KEY }}
           FINNHUB_API_KEY: ${{ secrets.FINNHUB_API_KEY }}
+          MASSIVE_RATE_SLEEP: "12"
         run: |
           cd scripts
           python collect.py --mode ${{ steps.mode.outputs.mode }}

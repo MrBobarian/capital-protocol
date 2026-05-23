@@ -1,0 +1,43 @@
+{
+  "_comment": "Manual forward PE overrides. Update when you have fresher sell-side consensus than Finnhub TTM. All PE values are NTM (next twelve months) unless noted.",
+  "ETN": {
+    "forward_pe": 30.8,
+    "forward_pe_5yr_avg": 31.5,
+    "note": "RSI 41.8 oversold — best entry in collection. Grid-to-chip power; $14.5B backlog +44%; NVIDIA partner."
+  },
+  "PWR": {
+    "forward_pe": 46.0,
+    "forward_pe_5yr_avg": 56.0,
+    "note": "20/20 thematic score; PE at 18% discount to 5yr avg. Grid transmission contractor; $48.5B backlog."
+  },
+  "CEG": {
+    "forward_pe": 28.0,
+    "forward_pe_5yr_avg": 46.0,
+    "note": "fwd PE ~40% discount to history; watch Jun 30 lockup expiry. Largest US nuclear fleet; AWS/Microsoft PPAs."
+  },
+  "GEV": {
+    "forward_pe": 69.0,
+    "forward_pe_5yr_avg": null,
+    "note": "PE 69x flag — elevated but only 3 turbine vane casters globally; backlogged to 2030."
+  },
+  "VST": {
+    "forward_pe": 22.0,
+    "forward_pe_5yr_avg": 33.8,
+    "note": "PE 35% discount to 5yr avg. Merchant nuclear; AWS/Meta PPAs; Jordi buying signal."
+  },
+  "FIX": {
+    "forward_pe": 52.0,
+    "forward_pe_5yr_avg": null,
+    "note": "PE 52x flag. Modular HVAC; 56% of rev is AI DC; speed-to-power competitive advantage."
+  },
+  "STRL": {
+    "forward_pe": null,
+    "forward_pe_5yr_avg": null,
+    "note": "PE currently 3-4x historical avg — elevated but DC civil construction backlog supports. Jordi must-read."
+  },
+  "VRT": {
+    "forward_pe": null,
+    "forward_pe_5yr_avg": null,
+    "note": "Liquid cooling leader; $15B backlog +109%; VH=1 cap at 12% portfolio weight."
+  }
+}

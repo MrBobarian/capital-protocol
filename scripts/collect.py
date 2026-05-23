@@ -22,6 +22,7 @@ from finnhub_client import (  # noqa: E402
     collect_valuation_finnhub,
     collect_alternatives_finnhub,
 )
+from equity_monitor import collect_equity_monitor  # noqa: E402
 from massive_client import (  # noqa: E402
     collect_breadth_massive,
     collect_valuation_massive,
@@ -1556,6 +1557,28 @@ def run(mode: str) -> None:
         if fred_data.get("fred_available") and "private_liquidity" in fred_data:
             existing.setdefault("macro_regime", {}).update(fred_data["private_liquidity"])
 
+        # Equity Market Monitor — 57-ticker watchlist with T-Score + RS + theme momentum
+        logging.info("--- Collecting equity monitor data ---")
+        try:
+            equity_data = collect_equity_monitor(
+                massive_api_key=massive_api_key,
+                finnhub_api_key=finnhub_api_key,
+            )
+            existing["equity_monitor"] = equity_data
+            logging.info(
+                "Equity monitor: %d tickers scored | %d exhaustion | %d opportunity",
+                equity_data.get("ticker_count", 0),
+                len(equity_data.get("exhaustion_watch", [])),
+                len(equity_data.get("opportunity_watch", [])),
+            )
+        except Exception as e:
+            logging.error("collect_equity_monitor failed: %s", e)
+            existing["equity_monitor"] = {
+                "fetched_at":   datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+                "error":        str(e),
+                "ticker_count": 0,
+            }
+
     # Final assembly
     output = {
         "generated_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
@@ -1582,6 +1605,8 @@ def run(mode: str) -> None:
         "market_overview": existing.get("market_overview", {}),
         # Private-sector liquidity driver composite (populated after FRED on weekly/full runs)
         "liquidity_driver": existing.get("liquidity_driver", {"score": None, "signal": "UNKNOWN"}),
+        # Equity Market Monitor (populated on weekly/full runs)
+        "equity_monitor": existing.get("equity_monitor", {"ticker_count": 0}),
     }
 
     # Composite liquidity driver score

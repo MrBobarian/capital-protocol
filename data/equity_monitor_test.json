@@ -1,0 +1,355 @@
+{
+  "fetched_at": "2026-05-23T11:27:55Z",
+  "ticker_count": 3,
+  "tickers": {
+    "ETN": {
+      "name": "Eaton Corp",
+      "theme": "AI_INFRA",
+      "layer": "L2",
+      "priority": 1,
+      "notes": "Grid-to-chip power; $14.5B backlog +44%; NVIDIA partner; RSI 41.8 oversold",
+      "price": 391.35,
+      "sma20": 404.79,
+      "sma50": 390.11,
+      "sma200": 364.17,
+      "sma50_slope_pct": 1.859,
+      "sma200_slope_pct": 0.173,
+      "vs_sma20_pct": -3.32,
+      "vs_sma50_pct": 0.32,
+      "vs_sma200_pct": 7.46,
+      "pct_1w": -2.03,
+      "pct_1m": -7.81,
+      "pct_3m": 3.72,
+      "pct_1yr": 41.97,
+      "high_52w": 435.43,
+      "low_52w": 311.9,
+      "dist_52w_high_pct": -10.12,
+      "dist_52w_low_pct": 25.47,
+      "atr_pct": 4.191,
+      "vol_ratio": 0.795,
+      "rsi_14d": null,
+      "rsi_14w": null,
+      "t1_trend": 4,
+      "t2_momentum": 4,
+      "t3_exhaustion": 4,
+      "t_score": 20.0,
+      "band": "STRONG",
+      "exhaustion_flag": false,
+      "rs_spy": 95.2,
+      "rs_qqq": 87.2,
+      "rs_smh": 73.8,
+      "rs_xli": 106.5,
+      "rs_xle": 96.2,
+      "rs_igv": 90.2,
+      "rs_robo": 92.4,
+      "pe_ttm": 38.2569,
+      "pb_annual": 6.3686,
+      "beta": 1.2184732,
+      "fh_52w_high": 435.43,
+      "fh_52w_low": 311.9,
+      "revenue_growth_3y": 9.77,
+      "eps_growth_3y": 19.38,
+      "forward_pe": 30.8,
+      "forward_pe_5yr_avg": 31.5,
+      "override_note": "RSI 41.8 oversold \u2014 best entry in collection. Grid-to-chip power; $14.5B backlog +44%; NVIDIA partner."
+    },
+    "PWR": {
+      "name": "Quanta Services",
+      "theme": "AI_INFRA",
+      "layer": "L2",
+      "priority": 1,
+      "notes": "Grid transmission contractor; $48.5B backlog; 20/20 thematic score",
+      "price": 723.44,
+      "sma20": 731.76,
+      "sma50": 639.43,
+      "sma200": 494.18,
+      "sma50_slope_pct": 6.079,
+      "sma200_slope_pct": 3.589,
+      "vs_sma20_pct": -1.14,
+      "vs_sma50_pct": 13.14,
+      "vs_sma200_pct": 46.39,
+      "pct_1w": -6.05,
+      "pct_1m": 14.21,
+      "pct_3m": 30.58,
+      "pct_1yr": 163.73,
+      "high_52w": 788.75,
+      "low_52w": 320.56,
+      "dist_52w_high_pct": -8.28,
+      "dist_52w_low_pct": 125.68,
+      "atr_pct": 4.047,
+      "vol_ratio": 0.583,
+      "rsi_14d": null,
+      "rsi_14w": null,
+      "t1_trend": 4,
+      "t2_momentum": 4,
+      "t3_exhaustion": 4,
+      "t_score": 20.0,
+      "band": "STRONG",
+      "exhaustion_flag": false,
+      "rs_spy": 119.9,
+      "rs_qqq": 109.8,
+      "rs_smh": 92.9,
+      "rs_xli": 134.1,
+      "rs_xle": 121.1,
+      "rs_igv": 113.6,
+      "rs_robo": 116.3,
+      "pe_ttm": 98.543,
+      "pb_annual": 6.3753,
+      "beta": 1.240982,
+      "fh_52w_high": 788.75,
+      "fh_52w_low": 320.56,
+      "revenue_growth_3y": 18.6,
+      "eps_growth_3y": 26.99,
+      "forward_pe": 46.0,
+      "forward_pe_5yr_avg": 56.0,
+      "override_note": "20/20 thematic score; PE at 18% discount to 5yr avg. Grid transmission contractor; $48.5B backlog."
+    },
+    "CEG": {
+      "name": "Constellation Energy",
+      "theme": "ENERGY",
+      "layer": "L2\u2192P3",
+      "priority": 1,
+      "notes": "Largest US nuclear fleet; fwd PE 40% discount to history; watch Jun 30 lockup",
+      "price": 294.07,
+      "sma20": 295.62,
+      "sma50": 293.87,
+      "sma200": 324.11,
+      "sma50_slope_pct": -2.674,
+      "sma200_slope_pct": -0.894,
+      "vs_sma20_pct": -0.52,
+      "vs_sma50_pct": 0.07,
+      "vs_sma200_pct": -9.27,
+      "pct_1w": 10.06,
+      "pct_1m": 0.44,
+      "pct_3m": 0.83,
+      "pct_1yr": 40.17,
+      "high_52w": 412.7,
+      "low_52w": 243.3,
+      "dist_52w_high_pct": -28.74,
+      "dist_52w_low_pct": 20.87,
+      "atr_pct": 4.543,
+      "vol_ratio": 0.85,
+      "rsi_14d": null,
+      "rsi_14w": null,
+      "t1_trend": 0,
+      "t2_momentum": 4,
+      "t3_exhaustion": 0,
+      "t_score": 6.7,
+      "band": "RISKY",
+      "exhaustion_flag": true,
+      "rs_spy": 92.6,
+      "rs_qqq": 84.8,
+      "rs_smh": 71.8,
+      "rs_xli": 103.5,
+      "rs_xle": 93.5,
+      "rs_igv": 87.7,
+      "rs_robo": 89.8,
+      "pe_ttm": 28.0177,
+      "pb_annual": 7.5996,
+      "beta": 1.1321865,
+      "fh_52w_high": 412.7,
+      "fh_52w_low": 243.3,
+      "revenue_growth_3y": 1.47,
+      "eps_growth_3y": null,
+      "forward_pe": 28.0,
+      "forward_pe_5yr_avg": 46.0,
+      "override_note": "fwd PE ~40% discount to history; watch Jun 30 lockup expiry. Largest US nuclear fleet; AWS/Microsoft PPAs."
+    }
+  },
+  "benchmarks": {
+    "SPY": {
+      "price": 745.65,
+      "pct_1m": 5.25,
+      "pct_3m": 8.94,
+      "vs_sma200_pct": 9.84
+    },
+    "QQQ": {
+      "price": 717.55,
+      "pct_1m": 10.15,
+      "pct_3m": 18.9,
+      "vs_sma200_pct": 16.74
+    },
+    "SMH": {
+      "price": 576.32,
+      "pct_1m": 19.61,
+      "pct_3m": 40.5,
+      "vs_sma200_pct": 50.61
+    },
+    "XLI": {
+      "price": 171.77,
+      "pct_1m": -1.32,
+      "pct_3m": -2.59,
+      "vs_sma200_pct": 6.69
+    },
+    "XLE": {
+      "price": 59.49,
+      "pct_1m": 4.41,
+      "pct_3m": 7.81,
+      "vs_sma200_pct": 19.74
+    },
+    "IGV": {
+      "price": 94.01,
+      "pct_1m": 12.49,
+      "pct_3m": 14.95,
+      "vs_sma200_pct": -5.14
+    },
+    "ROBO": {
+      "price": 87.31,
+      "pct_1m": 10.77,
+      "pct_3m": 12.3,
+      "vs_sma200_pct": 22.45
+    }
+  },
+  "theme_momentum": {
+    "AI_INFRA": {
+      "tickers": [
+        "ETN",
+        "PWR",
+        "VRT",
+        "EME",
+        "ON",
+        "TSM",
+        "MU",
+        "ENTG",
+        "HUBB",
+        "NVT",
+        "GFS",
+        "FIX",
+        "STRL"
+      ],
+      "avg_1w_pct": -4.04,
+      "avg_1m_pct": 3.2,
+      "avg_3m_pct": 17.15,
+      "pct_above_sma50": 1.0,
+      "pct_above_sma200": 1.0,
+      "avg_rs_spy": 107.6,
+      "avg_rs_qqq": 98.5,
+      "breakout_count": 0,
+      "breakdown_count": 0,
+      "avg_t_score": 20.0,
+      "band": "STRONG",
+      "comment": "Strong momentum \u2014 all systems go"
+    },
+    "ENERGY": {
+      "tickers": [
+        "CEG",
+        "GEV",
+        "VST",
+        "BE",
+        "TLN",
+        "FLNC",
+        "BLDP"
+      ],
+      "avg_1w_pct": 10.06,
+      "avg_1m_pct": 0.44,
+      "avg_3m_pct": 0.83,
+      "pct_above_sma50": 1.0,
+      "pct_above_sma200": 0.0,
+      "avg_rs_spy": 92.6,
+      "avg_rs_qqq": 84.8,
+      "breakout_count": 0,
+      "breakdown_count": 1,
+      "avg_t_score": 6.7,
+      "band": "RISKY",
+      "comment": "Risky \u2014 trend deteriorating, hold only"
+    },
+    "OPTICAL": {
+      "tickers": [
+        "APH",
+        "ANET",
+        "LITE",
+        "COHR",
+        "MRVL"
+      ],
+      "comment": "No data available"
+    },
+    "CRYPTO_RAILS": {
+      "tickers": [
+        "COIN",
+        "HOOD",
+        "MSTR",
+        "MARA",
+        "CLSK"
+      ],
+      "comment": "No data available"
+    },
+    "SPACE": {
+      "tickers": [
+        "RKLB",
+        "ASTS",
+        "LUNR",
+        "SPCE",
+        "MNTS"
+      ],
+      "comment": "No data available"
+    },
+    "QUANTUM": {
+      "tickers": [
+        "IONQ",
+        "RGTI",
+        "QBTS",
+        "QUBT"
+      ],
+      "comment": "No data available"
+    },
+    "DEFENSE_TECH": {
+      "tickers": [
+        "ARQQ",
+        "PLTR",
+        "AXON",
+        "KTOS",
+        "LDOS"
+      ],
+      "comment": "No data available"
+    },
+    "ROBOTICS": {
+      "tickers": [
+        "ISRG",
+        "FANUY",
+        "ABB"
+      ],
+      "comment": "No data available"
+    },
+    "SOVEREIGN": {
+      "tickers": [
+        "TSM",
+        "ASML",
+        "BABA"
+      ],
+      "comment": "No data available"
+    }
+  },
+  "exhaustion_watch": [],
+  "opportunity_watch": [],
+  "priority_summary": {
+    "P1": [
+      {
+        "ticker": "ETN",
+        "band": "STRONG",
+        "t_score": 20.0,
+        "rsi_14d": null,
+        "pct_3m": 3.72,
+        "rs_spy": 95.2
+      },
+      {
+        "ticker": "PWR",
+        "band": "STRONG",
+        "t_score": 20.0,
+        "rsi_14d": null,
+        "pct_3m": 30.58,
+        "rs_spy": 119.9
+      },
+      {
+        "ticker": "CEG",
+        "band": "RISKY",
+        "t_score": 6.7,
+        "rsi_14d": null,
+        "pct_3m": 0.83,
+        "rs_spy": 92.6
+      }
+    ],
+    "P2": [],
+    "P3": []
+  },
+  "rate_sleep_used": 13.0
+}
