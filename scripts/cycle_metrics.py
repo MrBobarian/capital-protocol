@@ -107,86 +107,80 @@ LAYER5_APPLICATION_PROXIES: dict[str, Any] = {
 def _fetch_close_batched(
     tickers: list[str], period: str = "2y"
 ) -> "dict[str, Any]":
-    """Fetch adjusted close prices for a list of tickers using yfinance.
+    """Fetch adjusted close prices via Massive Markets (Polygon) with yfinance fallback.
 
-    Batches into groups of 5 to avoid rate limits. Returns a dict mapping
-    ticker symbol to a pandas Series of Close prices (DatetimeIndex).
-    Tickers with fewer than 20 rows are skipped.
+    Massive is the primary source — no rate limit issues on GitHub Actions.
+    European/OTC tickers not in Polygon (NKT.CO, PRYMF, NEXNF etc.) are silently
+    skipped when Yahoo fallback is disabled (ALLOW_YAHOO_FALLBACK=false, the default).
+
+    Returns dict mapping ticker → pandas Series of close prices (DatetimeIndex).
+    Tickers with fewer than 20 rows are excluded.
     """
+    import os
     import pandas as pd
-    import yfinance as yf
+    import requests as _req
+    from datetime import datetime as _dt, timezone as _tz, timedelta as _td
 
-    # Deduplicate while preserving order
     unique_tickers: list[str] = list(dict.fromkeys(tickers))
     result: dict[str, pd.Series] = {}
 
-    batch_size = 5
-    batches = [
-        unique_tickers[i : i + batch_size]
-        for i in range(0, len(unique_tickers), batch_size)
-    ]
+    massive_api_key = os.environ.get("MASSIVE_API_KEY", "")
+    massive_sleep   = float(os.environ.get("MASSIVE_RATE_SLEEP", "0.5"))
+    allow_yahoo     = os.environ.get("ALLOW_YAHOO_FALLBACK", "false").lower() == "true"
 
-    for batch_idx, batch in enumerate(batches):
-        try:
-            raw = yf.download(
-                " ".join(batch),
-                period=period,
-                auto_adjust=True,
-                progress=False,
+    # Map period string → calendar days
+    _period_days = {"6mo": 195, "1y": 380, "2y": 760, "3y": 1100}
+    days      = _period_days.get(period, 760)
+    now       = _dt.now(_tz.utc)
+    start_str = (now - _td(days=days)).strftime("%Y-%m-%d")
+    today_str = now.strftime("%Y-%m-%d")
+    bar_limit = min(800, days + 50)   # 800 safely covers a 2-year window
+
+    for ticker in unique_tickers:
+        series = None
+
+        # ── Tier 1: Massive Markets (Polygon backend) ────────────────────────
+        if massive_api_key:
+            try:
+                r = _req.get(
+                    f"https://api.polygon.io/v2/aggs/ticker/{ticker}/range/1/day/{start_str}/{today_str}",
+                    headers={"Authorization": f"Bearer {massive_api_key}"},
+                    params={"adjusted": "true", "limit": bar_limit, "sort": "asc"},
+                    timeout=15,
+                )
+                r.raise_for_status()
+                bars = r.json().get("results", [])
+                if len(bars) >= 20:
+                    idx    = pd.DatetimeIndex([
+                        _dt.fromtimestamp(b["t"] / 1000, tz=_tz.utc) for b in bars
+                    ])
+                    closes = [float(b["c"]) for b in bars]
+                    series = pd.Series(closes, index=idx, dtype=float)
+            except Exception as exc:
+                logging.debug("_fetch_close_batched Massive(%s): %s", ticker, exc)
+            time.sleep(massive_sleep)
+
+        if series is not None and len(series) >= 20:
+            result[ticker] = series
+            continue
+
+        # ── Tier 2: yfinance last resort (disabled on CI) ────────────────────
+        if allow_yahoo:
+            import random
+            sleep_s = random.uniform(30, 60)
+            logging.info("_fetch_close_batched: Yahoo fallback for %s (sleeping %.0fs)", ticker, sleep_s)
+            time.sleep(sleep_s)
+            try:
+                import yfinance as yf
+                raw = yf.Ticker(ticker).history(period=period, auto_adjust=True)
+                if not raw.empty and len(raw) >= 20:
+                    result[ticker] = raw["Close"].dropna()
+            except Exception as exc:
+                logging.warning("_fetch_close_batched Yahoo(%s): %s", ticker, exc)
+        else:
+            logging.debug(
+                "_fetch_close_batched: %s skipped — Massive returned no data, Yahoo disabled", ticker
             )
-            if raw is None or raw.empty:
-                logging.warning("Empty data returned for batch %s", batch)
-                if batch_idx < len(batches) - 1:
-                    time.sleep(1.0)
-                continue
-
-            if isinstance(raw.columns, pd.MultiIndex):
-                # Multi-ticker: columns are (field, ticker)
-                if "Close" in raw.columns.get_level_values(0):
-                    close_df = raw["Close"]
-                else:
-                    logging.warning(
-                        "No 'Close' level in MultiIndex columns for batch %s", batch
-                    )
-                    if batch_idx < len(batches) - 1:
-                        time.sleep(1.0)
-                    continue
-                for ticker in batch:
-                    if ticker in close_df.columns:
-                        series = close_df[ticker].dropna()
-                        if len(series) >= 20:
-                            result[ticker] = series
-                        else:
-                            logging.warning(
-                                "Ticker %s has fewer than 20 rows — skipping", ticker
-                            )
-                    else:
-                        logging.warning(
-                            "Ticker %s not found in download result", ticker
-                        )
-            else:
-                # Single ticker: flat columns
-                if "Close" in raw.columns:
-                    series = raw["Close"].dropna()
-                    ticker = batch[0]
-                    if len(series) >= 20:
-                        result[ticker] = series
-                    else:
-                        logging.warning(
-                            "Ticker %s has fewer than 20 rows — skipping", ticker
-                        )
-                else:
-                    logging.warning(
-                        "No 'Close' column in flat download for batch %s", batch
-                    )
-
-        except Exception as exc:
-            logging.warning(
-                "Failed to download batch %s: %s", batch, exc
-            )
-
-        if batch_idx < len(batches) - 1:
-            time.sleep(1.0)
 
     return result
 

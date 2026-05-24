@@ -26,12 +26,7 @@ FRED_BASE_URL = "https://api.stlouisfed.org/fred/series/observations"
 # Full catalogue: fred.stlouisfed.org/categories
 # ---------------------------------------------------------------------------
 FRED_SERIES: dict[str, str] = {
-    # ISM Manufacturing (monthly, released first business day of following month)
-    "ism_manufacturing_pmi":        "NAPM",         # ISM Manufacturing PMI (composite)
-    "ism_new_orders":               "NAPMNOI",       # ISM New Orders Index
-    "ism_employment":               "NAPMEI",        # ISM Employment Index
-    "ism_prices_paid":              "NAPMPI",        # ISM Prices Paid
-    "ism_supplier_deliveries":      "NAPMSDI",       # ISM Supplier Deliveries (inverted)
+    # ISM Manufacturing sourced from ism_override.json (manual file) — not FRED
     # Capital Goods — Census Bureau Advance Durable Goods (~25th of each month)
     "capital_goods_new_orders_mom": "ACOGNO",        # Capital Goods New Orders excl. Aircraft ($M)
     "capital_goods_shipments_mom":  "ACDGNO",        # Capital Goods Shipments excl. Aircraft ($M)
@@ -60,8 +55,7 @@ FRED_SERIES: dict[str, str] = {
     # Private-Sector Liquidity — eSLR repo market + Fed balance-sheet signals
     "overnight_repo_volume":         "RPONTSYD",          # Fed overnight repo ops outstanding ($B)
     "fed_treasury_holdings":         "WSHOTSL",           # Fed outright Treasury holdings ($B, weekly)
-    # Bond market volatility — ICE BofAML MOVE Index (proxy for ^MOVE when Yahoo unavailable)
-    "move_index":                    "BAMLMOVE",          # MOVE Index (implied Treasury vol, daily)
+    # MOVE Index (BAMLMOVE) does not exist as a FRED series — removed
     # Trade-weighted USD index (replaces ^DXY which Yahoo/Polygon don't carry reliably)
     "dxy_broad":                    "DTWEXBGS",      # Fed Trade-Weighted USD Index (Broad)
     # Gold price (London PM Fix) — backup when GLD ETF fetch fails

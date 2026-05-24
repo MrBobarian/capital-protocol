@@ -528,12 +528,7 @@ def collect_alternatives() -> dict:
 # ---------------------------------------------------------------------------
 
 FRED_SERIES_WEEKLY = [
-    # ISM Manufacturing (monthly, but we pull on every weekly run — FRED is idempotent)
-    "ism_manufacturing_pmi",
-    "ism_new_orders",
-    "ism_employment",
-    "ism_prices_paid",
-    "ism_supplier_deliveries",
+    # ISM Manufacturing sourced from ism_override.json (manual) — not FRED
     # Capital Goods — Census Advance Durable Goods (~25th of month)
     "capital_goods_new_orders_mom",
     "capital_goods_shipments_mom",
@@ -561,8 +556,7 @@ FRED_SERIES_WEEKLY = [
     # Private-sector liquidity (weekly)
     "overnight_repo_volume",
     "fed_treasury_holdings",
-    # MOVE index via FRED (daily bond volatility — proxy when Yahoo ^MOVE is unavailable)
-    "move_index",
+    # MOVE Index (BAMLMOVE) does not exist as a FRED series — removed; move_index returns None
     # Trade-weighted USD (replaces ^DXY — FRED is authoritative)
     "dxy_broad",
     # Gold price (London PM Fix — FRED backup for GLD ETF)
