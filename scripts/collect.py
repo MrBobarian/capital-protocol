@@ -1399,27 +1399,30 @@ ALLOW_YAHOO_FALLBACK = os.environ.get("ALLOW_YAHOO_FALLBACK", "false").lower() =
 
 
 def _massive_daily_bars(ticker: str, api_key: str) -> list[dict]:
-    """Fetch 252 days of daily OHLC from Massive Markets (Polygon backend).
+    """Fetch ~13 months of daily OHLC from Massive Markets (Polygon backend).
     Returns list of {d: 'YYYY-MM-DD', o, h, l, c, v} dicts, oldest-first.
+
+    Uses limit=400 to handle crypto tickers (365 bars/yr incl. weekends) vs
+    equities (~252 bars/yr). 400 covers a 380-day window for both asset classes.
     """
-    from datetime import datetime as _dt, timedelta as _td
-    today    = _dt.utcnow().strftime("%Y-%m-%d")
-    year_ago = (_dt.utcnow() - _td(days=380)).strftime("%Y-%m-%d")
+    from datetime import datetime as _dt, timezone as _tz, timedelta as _td
+    _now     = _dt.now(_tz.utc)
+    today    = _now.strftime("%Y-%m-%d")
+    year_ago = (_now - _td(days=380)).strftime("%Y-%m-%d")
     url = f"https://api.polygon.io/v2/aggs/ticker/{ticker}/range/1/day/{year_ago}/{today}"
     try:
         import requests as _req
         r = _req.get(
             url,
             headers={"Authorization": f"Bearer {api_key}"},
-            params={"adjusted": "true", "limit": 300, "sort": "asc"},
+            params={"adjusted": "true", "limit": 400, "sort": "asc"},
             timeout=15,
         )
         r.raise_for_status()
         bars = r.json().get("results", [])
-        from datetime import datetime as _dt2
         return [
             {
-                "d": _dt2.utcfromtimestamp(b["t"] / 1000).strftime("%Y-%m-%d"),
+                "d": _dt.fromtimestamp(b["t"] / 1000, tz=_tz.utc).strftime("%Y-%m-%d"),
                 "o": b.get("o"), "h": b.get("h"), "l": b.get("l"),
                 "c": b.get("c"), "v": b.get("v"),
             }
