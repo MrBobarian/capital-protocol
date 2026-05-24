@@ -76,7 +76,8 @@ jobs:
       - name: Check for changes
         id: diff
         run: |
-          git diff --quiet data/metrics.json data/archive/ || echo "changed=true" >> "$GITHUB_OUTPUT"
+          # git diff only tracks modified files — also catch new/untracked files
+          git status --porcelain data/metrics.json data/archive/ | grep -q . && echo "changed=true" >> "$GITHUB_OUTPUT" || true
 
       - name: Commit and push updated metrics
         if: steps.diff.outputs.changed == 'true'

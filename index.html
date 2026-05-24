@@ -486,12 +486,6 @@
       </div>
     </div>
 
-    <div style="margin-top:14px">
-      <div class="card">
-        <div class="card-h"><span class="t">Harvest Window</span></div>
-        <div id="harvest-summary" class="row between"><span class="muted">—</span></div>
-      </div>
-    </div>
   </section>
 
   <!-- ======== REGIME ======== -->
@@ -717,11 +711,6 @@
         <div class="kpi" id="ev-semi">—</div>
         <div class="muted small">Expected DKK from 60,000 base</div>
       </div>
-      <div class="card">
-        <div class="card-h"><span class="t">Harvest Countdown</span></div>
-        <div class="kpi" id="ev-harvest">—</div>
-        <div class="muted small">Days until Oct 1, 2026</div>
-      </div>
     </div>
   </section>
 
@@ -756,23 +745,6 @@
       </div>
     </div>
 
-    <div class="section-head"><h2>Profile Reference</h2><div class="line"></div></div>
-    <div class="card">
-      <div class="grid grid-2">
-        <div>
-          <div class="metric-row"><span class="lbl">Investor</span><span class="val">Emil Skriver, 27, Copenhagen</span></div>
-          <div class="metric-row"><span class="lbl">Role</span><span class="val">Senior Game Artist</span></div>
-          <div class="metric-row"><span class="lbl">Vehicle</span><span class="val">Enkeltmandsvirksomhed (CVR)</span></div>
-          <div class="metric-row"><span class="lbl">Monthly Investable</span><span class="val">20,000 DKK</span></div>
-        </div>
-        <div>
-          <div class="metric-row"><span class="lbl">NW Target</span><span class="val">1,000,000 DKK by 2030</span></div>
-          <div class="metric-row"><span class="lbl">Apartment</span><span class="val">2027 — 200,000 DKK locked</span></div>
-          <div class="metric-row"><span class="lbl">BTC Cap</span><span class="val">40% investable NW</span></div>
-          <div class="metric-row"><span class="lbl">Harvest Window</span><span class="val">Q4 2026 (non-negotiable)</span></div>
-        </div>
-      </div>
-    </div>
   </section>
 
   <!-- ======== SETTINGS ======== -->
@@ -1435,7 +1407,6 @@ function buildFullExport(){
 
   // ── Final package ──────────────────────────────────────────────────────────
   const pkg = {
-    _claudePrompt: CLAUDE_PROMPT_HEADER,
     meta: {
       schema:           'capital-protocol/2.0',
       exportedAt:       new Date().toISOString(),
@@ -1444,22 +1415,6 @@ function buildFullExport(){
       depth,
       includeKey,
       timezone:         Intl.DateTimeFormat().resolvedOptions().timeZone,
-    },
-    profile: {
-      name:'Emil Skriver', age:27, city:'Copenhagen', role:'Senior game artist',
-      vehicle:'Enkeltmandsvirksomhed (CVR registered)',
-      monthlyInvestableDKK: 20000,
-      netWorthTargetDKK: 1000000, netWorthTargetYear: 2030,
-      apartmentPurchaseYear: 2027, liquidSavingsLockedDKK: 200000,
-      btcHardCapPctOfInvestableNW: 40,
-      harvestWindowStart:'2026-10-01', harvestWindowEnd:'2026-12-31',
-      harvestWindowReason:'Apartment timing — non-negotiable',
-      taxStructure: {
-        ASK:       '17% lagerbeskatning, lifetime deposit cap 174,200 DKK, internal reallocation unlimited',
-        Pension:   '15.3% PAL on Nordnet ratepension',
-        AldersOps: '8,900 DKK/yr cap — MSTR satellite vehicle',
-        Taxable:   'Realisationsprincip for individual equities, avoid ETFs',
-      },
     },
     frameworkContext: {
       regimeEngine:  'Eight composite scores (0-100) → TLS. TLS direction (3m ROC) separates Pal "stock" level from Howell "flow" change.',
@@ -2218,6 +2173,7 @@ function classifySeason(growth, infl, tls, tlsRoc){
 /* ---------- 9. RECOMMENDATION ENGINE ---------- */
 function buildRecommendations(season, tls, tlsRoc, guard){
   const recs = {
+    _season: season,
     ASK:'', Pension:'', BTC:''
   };
   if(season==='spring'){
@@ -2421,9 +2377,52 @@ function renderTopSignals(scores, growth, infl){
 
 function renderAllocSummary(recs){
   const el = document.getElementById('alloc-summary');
+
+  // Regime-aware equity type guidance derived from the current season signal
+  const equityBias = {
+    spring: {
+      label: 'Risk-On Equities',
+      color: 'green',
+      types: ['Growth & momentum', 'Small-caps & cyclicals', 'Semis / AI infrastructure'],
+      note: 'Liquidity expanding + growth accelerating — favour high-beta, rate-sensitive growth.'
+    },
+    summer: {
+      label: 'Late-Cycle Quality',
+      color: 'gold',
+      types: ['Quality growth (pricing power)', 'Commodities & energy', 'Infrastructure / capex'],
+      note: 'Growth still positive but inflation rising — shift toward companies with margin protection.'
+    },
+    fall: {
+      label: 'Defensive / Value',
+      color: 'amber',
+      types: ['Defensives (utilities, healthcare)', 'Value over growth', 'Real assets / commodities'],
+      note: 'Stagflation regime — avoid high-multiple growth; prefer inflation hedges and low leverage.'
+    },
+    winter: {
+      label: 'Low-Vol / Quality',
+      color: 'ice',
+      types: ['Low-volatility factor', 'High-quality / profitable', 'Monetary architecture (BTC accumulation window)'],
+      note: 'Risk-off with falling inflation — accumulate quality at compressed multiples. Best DCA window historically.'
+    },
+    unknown: {
+      label: 'Regime Unclear',
+      color: 'muted',
+      types: ['Reduce conviction sizing', 'Diversify across factors'],
+      note: 'Insufficient data to classify regime — hold current allocation, await signal clarity.'
+    },
+  };
+
+  const season = (recs._season || 'unknown');
+  const bias = equityBias[season] || equityBias.unknown;
+
   el.innerHTML = `
-    <div><span class="tiny upper muted">ASK</span><div class="small">${recs.ASK}</div></div>
-    <div><span class="tiny upper muted">Pension</span><div class="small">${recs.Pension}</div></div>
+    <div>
+      <span class="tiny upper muted">Regime Bias — ${bias.label}</span>
+      <div class="col" style="gap:3px;margin-top:4px">
+        ${bias.types.map(t=>`<div class="small check">${t}</div>`).join('')}
+      </div>
+    </div>
+    <div class="note" style="margin-top:2px">${bias.note}</div>
     <div><span class="tiny upper muted">BTC</span><div class="small">${recs.BTC}</div></div>
     ${recs.GUARD?`<div class="note danger">${recs.GUARD}</div>`:''}
   `;
@@ -2454,15 +2453,6 @@ function renderCBFull(cbs){
 }
 
 
-function renderHarvest(){
-  const target = new Date('2026-10-01').getTime();
-  const days = Math.floor((target - Date.now())/86400000);
-  document.getElementById('harvest-summary').innerHTML = `
-    <span>Q4 2026 — Apartment timing</span>
-    <span class="mono ${days<60?'red':days<180?'amber':'green'}">${days}d</span>
-  `;
-  document.getElementById('ev-harvest').textContent = days + 'd';
-}
 
 function renderHormuz(state, fred){
   const ah = state.ah||{};
@@ -3165,7 +3155,6 @@ function rerender(){
   renderTopSignals(scores, growth, infl);
   renderAllocSummary(recs);
   renderCBSummary(cbs);
-  renderHarvest();
 
   // REGIME
   renderScoresGrid(scores);
