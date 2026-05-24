@@ -1691,12 +1691,17 @@ def run(mode: str) -> None:
         logging.info("--- Collecting sentiment ---")
 
         if massive_api_key:
-            logging.info("PCR: using Massive API (ETF Global analytics)")
+            logging.info("PCR: trying Massive API (ETF Global analytics)")
             pcr = collect_pcr_massive(massive_api_key)
             # ETF analytics block goes into sentiment; keep soxx_etf_analytics separate
             etf_analytics = pcr.pop("soxx_etf_analytics", None)
             if etf_analytics:
                 existing["sentiment"]["soxx_etf_analytics"] = etf_analytics
+            # ETF Global analytics requires a paid Massive tier — fall back to
+            # yfinance options chain if PCR came back null (403 on free tier)
+            if pcr.get("soxx_put_call_ratio") is None:
+                logging.info("PCR: Massive ETF analytics unavailable (paid tier) — falling back to yfinance options chain")
+                pcr = collect_put_call_ratio()
         else:
             logging.info("PCR: MASSIVE_API_KEY not set — falling back to yfinance")
             pcr = collect_put_call_ratio()
