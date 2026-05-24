@@ -69,6 +69,7 @@ jobs:
           FINNHUB_API_KEY: ${{ secrets.FINNHUB_API_KEY }}
           MASSIVE_RATE_SLEEP: "15"
           YFINANCE_ENABLED: "false"
+          ALLOW_YAHOO_FALLBACK: "false"
         run: |
           cd scripts
           python collect.py --mode ${{ steps.mode.outputs.mode }}

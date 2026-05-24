@@ -563,6 +563,10 @@ FRED_SERIES_WEEKLY = [
     "fed_treasury_holdings",
     # MOVE index via FRED (daily bond volatility — proxy when Yahoo ^MOVE is unavailable)
     "move_index",
+    # Trade-weighted USD (replaces ^DXY — FRED is authoritative)
+    "dxy_broad",
+    # Gold price (London PM Fix — FRED backup for GLD ETF)
+    "gold_price_usd",
 ]
 
 
@@ -876,6 +880,26 @@ def collect_fred_macro(
         dual_liquidity_confirmed,
     )
 
+    # ------------------------------------------------------------------
+    # Dollar valve (FRED trade-weighted USD — replaces ^DXY)
+    # ------------------------------------------------------------------
+    dxy_val = _val("dxy_broad")
+    dxy_block: dict = {
+        "dxy_broad_index":      dxy_val,
+        "dxy_broad_date":       _date("dxy_broad"),
+        "dxy_broad_mom_chg":    _mom_chg("dxy_broad"),
+        "gold_price_usd":       _val("gold_price_usd"),
+        "gold_price_date":      _date("gold_price_usd"),
+        "source": "FRED — DTWEXBGS (Trade-Weighted USD Broad) + GOLDAMGBD228NLBM",
+    }
+    if dxy_val is not None:
+        if dxy_val > 105:
+            dxy_block["dxy_signal"] = f"USD {dxy_val:.1f} — tightening financial conditions globally"
+        elif dxy_val > 100:
+            dxy_block["dxy_signal"] = f"USD {dxy_val:.1f} — neutral, watch for breakout"
+        else:
+            dxy_block["dxy_signal"] = f"USD {dxy_val:.1f} — easing, supportive for risk assets and EM"
+
     return {
         "fred_available":    True,
         "ism_and_capex":     ism_block,
@@ -884,6 +908,7 @@ def collect_fred_macro(
         "labour_market":     labour_block,
         "korea_trade":       korea_block,
         "private_liquidity": private_liquidity_block,
+        "dollar_gold":       dxy_block,
     }
 
 
@@ -1367,6 +1392,116 @@ def compute_dashboard_fields(existing_metrics: dict) -> dict:
 
 
 # ---------------------------------------------------------------------------
+# Tiered price fetch — Massive (primary) → FRED (indices) → Yahoo (last resort)
+# ---------------------------------------------------------------------------
+
+ALLOW_YAHOO_FALLBACK = os.environ.get("ALLOW_YAHOO_FALLBACK", "false").lower() == "true"
+
+
+def _massive_daily_bars(ticker: str, api_key: str) -> list[dict]:
+    """Fetch 252 days of daily OHLC from Massive Markets (Polygon backend).
+    Returns list of {d: 'YYYY-MM-DD', o, h, l, c, v} dicts, oldest-first.
+    """
+    from datetime import datetime as _dt, timedelta as _td
+    today    = _dt.utcnow().strftime("%Y-%m-%d")
+    year_ago = (_dt.utcnow() - _td(days=380)).strftime("%Y-%m-%d")
+    url = f"https://api.polygon.io/v2/aggs/ticker/{ticker}/range/1/day/{year_ago}/{today}"
+    try:
+        import requests as _req
+        r = _req.get(
+            url,
+            headers={"Authorization": f"Bearer {api_key}"},
+            params={"adjusted": "true", "limit": 300, "sort": "asc"},
+            timeout=15,
+        )
+        r.raise_for_status()
+        bars = r.json().get("results", [])
+        from datetime import datetime as _dt2
+        return [
+            {
+                "d": _dt2.utcfromtimestamp(b["t"] / 1000).strftime("%Y-%m-%d"),
+                "o": b.get("o"), "h": b.get("h"), "l": b.get("l"),
+                "c": b.get("c"), "v": b.get("v"),
+            }
+            for b in bars if b.get("c") is not None
+        ]
+    except Exception as exc:
+        logging.warning("_massive_daily_bars(%s): %s", ticker, exc)
+        return []
+
+
+def fetch_price_massive(ticker_key: str, api_key: str) -> dict | None:
+    """Fetch latest price + history for a ticker via Massive Markets.
+
+    ticker_key: key from PRICE_UNIVERSE (e.g. 'NVDA', 'BTC', 'SOXX')
+    Returns dict with price, changePct, latest_date, observations or None on failure.
+    """
+    from price_sources import PRICE_UNIVERSE
+    cfg = PRICE_UNIVERSE.get(ticker_key, {})
+    massive_ticker = cfg.get("massive_ticker")
+    if not massive_ticker or not api_key:
+        return None
+
+    bars = _massive_daily_bars(massive_ticker, api_key)
+    if len(bars) < 2:
+        logging.warning("fetch_price_massive(%s): only %d bars", ticker_key, len(bars))
+        return None
+
+    latest     = bars[-1]
+    prev       = bars[-2]
+    price      = round(float(latest["c"]), 4)
+    change_pct = round((float(latest["c"]) / float(prev["c"]) - 1) * 100, 4) if prev["c"] else None
+    observations = [{"d": b["d"], "v": round(float(b["c"]), 4)} for b in bars]
+
+    return {
+        "price":        price,
+        "changePct":    change_pct,
+        "currency":     "USD",
+        "latest_date":  latest["d"],
+        "observations": observations,
+        "source":       "Massive/Polygon",
+        "fetched_at":   datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+    }
+
+
+def fetch_price_yahoo_safe(ticker: str) -> dict | None:
+    """Yahoo Finance last-resort fetch — single ticker, long sleep, never loop.
+
+    Disabled by default (ALLOW_YAHOO_FALLBACK=false). Only use for debugging.
+    Never call in a batch loop without 30-60s sleep between calls.
+    """
+    if not ALLOW_YAHOO_FALLBACK:
+        logging.debug("fetch_price_yahoo_safe: ALLOW_YAHOO_FALLBACK=false — skipping %s", ticker)
+        return None
+    import random
+    sleep_s = random.uniform(30, 60)
+    logging.info("Yahoo last-resort for %s — sleeping %.0fs first", ticker, sleep_s)
+    time.sleep(sleep_s)
+    try:
+        import yfinance as yf
+        hist = yf.Ticker(ticker).history(period="1y", auto_adjust=True)
+        if hist.empty:
+            return None
+        price = float(hist["Close"].iloc[-1])
+        prev  = float(hist["Close"].iloc[-2]) if len(hist) >= 2 else price
+        return {
+            "price":        round(price, 4),
+            "changePct":    round((price / prev - 1) * 100, 4),
+            "currency":     "USD",
+            "latest_date":  hist.index[-1].strftime("%Y-%m-%d"),
+            "observations": [
+                {"d": idx.strftime("%Y-%m-%d"), "v": round(float(c), 4)}
+                for idx, c in hist["Close"].items()
+            ],
+            "source":   "Yahoo Finance (last resort)",
+            "fetched_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+        }
+    except Exception as exc:
+        logging.warning("fetch_price_yahoo_safe(%s) also failed: %s", ticker, exc)
+        return None
+
+
+# ---------------------------------------------------------------------------
 # Yahoo Finance price fetcher (pipeline-side backup for browser plane)
 # Fetches current prices + 1d change for the key dashboard tickers.
 # Uses a plain requests.Session with retries + spoofed User-Agent.
@@ -1409,67 +1544,73 @@ def _safe_pct(new: float | None, old: float | None) -> float | None:
 
 
 def fetch_yahoo_prices() -> dict:
-    """Fetch current prices for key dashboard tickers via Yahoo Finance chart API.
+    """Fetch current prices for key dashboard tickers via tiered strategy.
 
-    Tickers: ^DXY, BTC-USD, NVDA, MSTR, ^VIX, ETH-USD
-    (^MOVE is skipped — FRED BAMLMOVE is used as fallback for MOVE index.)
+    Priority: Massive Markets → Yahoo Finance (last resort, disabled on CI).
+    Tickers: DXY (FRED), BTC, ETH, NVDA, MSTR, SOXX, SPY, QQQ, GLD.
 
-    Returns dict mapping ticker → {price, prev_close, pct_change_1d, currency}.
-    Returns {} on complete failure; individual ticker failures return None price.
+    Returns dict mapping ticker_key → price dict (or {} on complete failure).
+    On CI (YFINANCE_ENABLED=false, ALLOW_YAHOO_FALLBACK=false) this still runs
+    via Massive for equity/crypto tickers.
     """
-    TICKERS = [
-        ("^DXY",    "DXY"),
-        ("BTC-USD", "BTC"),
-        ("NVDA",    "NVDA"),
-        ("MSTR",    "MSTR"),
-        ("^VIX",    "VIX"),
-        ("ETH-USD", "ETH"),
-    ]
+    from price_sources import PRICE_UNIVERSE
 
-    if os.environ.get("YFINANCE_ENABLED", "false").lower() != "true":
-        # On CI (GitHub Actions) Yahoo Finance blocks the runner IPs.
-        # Skip silently — the browser plane handles Yahoo prices.
-        logging.info("fetch_yahoo_prices: YFINANCE_ENABLED=false — skipping (CI mode)")
-        return {}
+    DASHBOARD_TICKERS = ["DXY", "BTC", "ETH", "NVDA", "MSTR", "SOXX", "SPY", "QQQ", "GLD"]
 
-    session = _make_yf_session()
-    results: dict = {}
-    fetched_at = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    massive_api_key = os.environ.get("MASSIVE_API_KEY", "")
+    massive_sleep   = float(os.environ.get("MASSIVE_RATE_SLEEP", "0.5"))
+    results: dict   = {}
+    fetched_at      = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 
-    for symbol, key in TICKERS:
-        url = (
-            f"https://query1.finance.yahoo.com/v8/finance/chart/{symbol}"
-            "?interval=1d&range=5d"
-        )
-        try:
-            resp = session.get(url, timeout=10)
-            resp.raise_for_status()
-            data = resp.json()
-            result = data.get("chart", {}).get("result", [None])[0]
-            if not result:
-                raise ValueError("empty result")
-            meta = result.get("meta", {})
-            price     = safe_float(meta.get("regularMarketPrice"))
-            prev      = safe_float(meta.get("previousClose"))
-            currency  = meta.get("currency")
+    for key in DASHBOARD_TICKERS:
+        cfg      = PRICE_UNIVERSE.get(key, {})
+        priority = cfg.get("priority", "massive_first")
+
+        if priority == "skip":
+            logging.info("fetch_yahoo_prices: skipping %s (configured as skip)", key)
+            results[key] = {"price": None, "source": "skip", "fetched_at": fetched_at}
+            continue
+
+        if priority == "fred_first":
+            # FRED data is fetched separately in collect_fred_macro — mark as deferred
+            logging.info("fetch_yahoo_prices: %s uses FRED (%s) — deferred", key, cfg.get("fred_series"))
             results[key] = {
-                "price":          price,
-                "prev_close":     prev,
-                "pct_change_1d":  _safe_pct(price, prev),
-                "currency":       currency,
-                "fetched_at":     fetched_at,
+                "price":        None,
+                "source":       f"FRED:{cfg.get('fred_series')}",
+                "note":         "populated from fred_macro.dollar_gold",
+                "fetched_at":   fetched_at,
             }
-            logging.info("  %s (Yahoo): price=%s  1d=%s%%",
-                         key, price,
-                         results[key]["pct_change_1d"])
-        except Exception as exc:
-            logging.warning("fetch_yahoo_prices failed for %s: %s", symbol, exc)
-            results[key] = {
-                "price": None, "prev_close": None,
-                "pct_change_1d": None, "currency": None,
-                "error": str(exc), "fetched_at": fetched_at,
-            }
-        time.sleep(0.5)
+            continue
+
+        # Tier 1: Massive Markets
+        result = None
+        if massive_api_key and cfg.get("massive_ticker"):
+            result = fetch_price_massive(key, massive_api_key)
+            if result:
+                logging.info("  %s (Massive): price=%s  1d=%.2f%%",
+                             key, result["price"], result.get("changePct") or 0)
+                results[key] = result
+                time.sleep(massive_sleep)
+                continue
+            else:
+                logging.warning("  %s: Massive failed — trying Yahoo fallback", key)
+            time.sleep(massive_sleep)
+
+        # Tier 2: Yahoo Finance last resort (disabled on CI)
+        yahoo_ticker = cfg.get("yahoo_ticker")
+        if yahoo_ticker:
+            result = fetch_price_yahoo_safe(yahoo_ticker)
+            if result:
+                logging.info("  %s (Yahoo fallback): price=%s", key, result["price"])
+                results[key] = result
+                continue
+
+        # All sources failed
+        logging.warning("  %s: all sources failed", key)
+        results[key] = {
+            "price": None, "changePct": None, "currency": None,
+            "error": "all sources failed", "fetched_at": fetched_at,
+        }
 
     return results
 

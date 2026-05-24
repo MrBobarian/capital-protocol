@@ -62,6 +62,10 @@ FRED_SERIES: dict[str, str] = {
     "fed_treasury_holdings":         "WSHOTSL",           # Fed outright Treasury holdings ($B, weekly)
     # Bond market volatility — ICE BofAML MOVE Index (proxy for ^MOVE when Yahoo unavailable)
     "move_index":                    "BAMLMOVE",          # MOVE Index (implied Treasury vol, daily)
+    # Trade-weighted USD index (replaces ^DXY which Yahoo/Polygon don't carry reliably)
+    "dxy_broad":                    "DTWEXBGS",      # Fed Trade-Weighted USD Index (Broad)
+    # Gold price (London PM Fix) — backup when GLD ETF fetch fails
+    "gold_price_usd":               "GOLDAMGBD228NLBM",  # Gold price, USD/troy oz
 }
 
 
