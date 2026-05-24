@@ -1585,16 +1585,13 @@ def run(mode: str) -> None:
             logging.info("FINNHUB_API_KEY not set — skipping technical indicators")
 
         logging.info("--- Collecting breadth ---")
-        if finnhub_api_key:
-            # Finnhub /stock/candle: 60 calls/min free tier — handles all 25 SOXX tickers
-            logging.info("Breadth: using Finnhub (candle → 200DMA)")
-            breadth = collect_breadth_finnhub(finnhub_api_key, SOXX_TICKERS, SOXX_WEIGHT)
-        elif massive_api_key:
-            # Massive /v2/aggs: free tier limited to ~10 calls/min — partial results likely
-            logging.info("Breadth: Finnhub not set — falling back to Massive API")
+        # Note: Finnhub /stock/candle returns 403 on the free tier — skip it for breadth.
+        # Massive /v2/aggs is the preferred source; yfinance is the local fallback.
+        if massive_api_key:
+            logging.info("Breadth: using Massive API (aggregates → 200DMA)")
             breadth = collect_breadth_massive(massive_api_key, SOXX_TICKERS, SOXX_WEIGHT)
         else:
-            logging.info("Breadth: no authenticated API — falling back to yfinance")
+            logging.info("Breadth: MASSIVE_API_KEY not set — falling back to yfinance")
             breadth = collect_breadth()
         existing["breadth"].update(breadth)
         logging.info(

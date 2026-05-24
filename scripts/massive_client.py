@@ -25,6 +25,7 @@ collect_market_overview()       new — yield curve + indices + movers
 
 import datetime
 import logging
+import os
 import time
 from datetime import date, timedelta
 from typing import Optional
@@ -430,7 +431,9 @@ def collect_breadth_massive(
         logger.warning("collect_breadth_massive: no MASSIVE_API_KEY")
         return _empty
 
-    client = MassiveClient(api_key)
+    # Respect the same MASSIVE_RATE_SLEEP env var used by equity_monitor.py
+    sleep_s = float(os.environ.get("MASSIVE_RATE_SLEEP", "0.5"))
+    client = MassiveClient(api_key, sleep_between=sleep_s)
     above_tickers: list[str] = []
     valid_tickers: list[str] = []
     detail_list:   list[dict] = []
