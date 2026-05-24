@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-05-24T12:39:53Z",
+  "generated_at": "2026-05-24T20:03:22Z",
   "data_date": "2026-05-24",
   "pipeline": {
     "available": true,
-    "run_mode": "full",
-    "last_run_at": "2026-05-24T12:39:53Z",
+    "run_mode": "weekly",
+    "last_run_at": "2026-05-24T20:03:22Z",
     "data_date": "2026-05-24"
   },
   "sentiment": {
@@ -47,7 +47,7 @@
       "score": 25,
       "label": "Extreme Fear",
       "score_7d_avg": 27.1,
-      "fetched_at": "2026-05-24T12:39:53Z"
+      "fetched_at": "2026-05-24T20:03:22Z"
     }
   },
   "valuation": {
@@ -58,7 +58,7 @@
     "soxx_pe_source_note": "Finnhub /stock/metric \u2014 TTM P/E (peTTM) and annual P/B (pbAnnual). Trailing 12-month P/E \u2014 directionally comparable to forward P/E but not equivalent.",
     "soxx_forward_pe_3yr_avg": null,
     "soxx_price_to_book_3yr_avg": null,
-    "soxx_valuation_baseline_weeks_available": 0
+    "soxx_valuation_baseline_weeks_available": 1
   },
   "breadth": {
     "soxx_breadth_above_200ma_pct": 96.5517,
@@ -536,7 +536,7 @@
     "software_deterioration_score": null,
     "concentration_risk_score": null,
     "rotation_narrative": "Layer 1 crowding score 90/100 \u2014 elevated. Layer 2 opportunity score 100/100 \u2014 rotation thesis active. Layer 3 score 10/100 \u2014 early. Layer 4 readiness 62/100 \u2014 early institutional. Macro regime n/a/100 \u2014 n/a. Software deterioration n/a/100 \u2014 n/a. Concentration risk n/a/100 \u2014 n/a.",
-    "signal_computed_at": "2026-05-24T12:22:37Z"
+    "signal_computed_at": "2026-05-24T19:46:02Z"
   },
   "fred_macro": {
     "fred_available": true,
@@ -622,7 +622,7 @@
     }
   },
   "market_overview": {
-    "collected_at": "2026-05-24T11:55:05.296444+00:00",
+    "collected_at": "2026-05-24T19:18:05.819423+00:00",
     "yield_curve": {
       "date": "2026-05-21",
       "yield_1m": 3.72,
@@ -740,7 +740,7 @@
     "dual_liquidity_confirmed": null
   },
   "equity_monitor": {
-    "fetched_at": "2026-05-24T12:37:50Z",
+    "fetched_at": "2026-05-24T20:01:19Z",
     "ticker_count": 48,
     "tickers": {
       "ETN": {
@@ -4287,7 +4287,7 @@
       "price": null,
       "source": "FRED:DTWEXBGS",
       "note": "populated from fred_macro.dollar_gold",
-      "fetched_at": "2026-05-24T12:37:50Z"
+      "fetched_at": "2026-05-24T20:01:19Z"
     },
     "BTC": {
       "price": 76667.32,
@@ -5817,7 +5817,7 @@
         }
       ],
       "source": "Massive/Polygon",
-      "fetched_at": "2026-05-24T12:37:52Z"
+      "fetched_at": "2026-05-24T20:01:20Z"
     },
     "ETH": {
       "price": 2115.37,
@@ -7347,7 +7347,7 @@
         }
       ],
       "source": "Massive/Polygon",
-      "fetched_at": "2026-05-24T12:38:07Z"
+      "fetched_at": "2026-05-24T20:01:35Z"
     },
     "NVDA": {
       "price": 215.33,
@@ -8401,7 +8401,7 @@
         }
       ],
       "source": "Massive/Polygon",
-      "fetched_at": "2026-05-24T12:38:22Z"
+      "fetched_at": "2026-05-24T20:01:50Z"
     },
     "MSTR": {
       "price": 159.89,
@@ -9455,7 +9455,7 @@
         }
       ],
       "source": "Massive/Polygon",
-      "fetched_at": "2026-05-24T12:38:37Z"
+      "fetched_at": "2026-05-24T20:02:05Z"
     },
     "SOXX": {
       "price": 537.33,
@@ -10509,7 +10509,7 @@
         }
       ],
       "source": "Massive/Polygon",
-      "fetched_at": "2026-05-24T12:38:52Z"
+      "fetched_at": "2026-05-24T20:02:21Z"
     },
     "SPY": {
       "price": 745.64,
@@ -11563,7 +11563,7 @@
         }
       ],
       "source": "Massive/Polygon",
-      "fetched_at": "2026-05-24T12:39:07Z"
+      "fetched_at": "2026-05-24T20:02:36Z"
     },
     "QQQ": {
       "price": 717.54,
@@ -12617,7 +12617,7 @@
         }
       ],
       "source": "Massive/Polygon",
-      "fetched_at": "2026-05-24T12:39:22Z"
+      "fetched_at": "2026-05-24T20:02:51Z"
     },
     "GLD": {
       "price": 413.82,
@@ -13671,7 +13671,7 @@
         }
       ],
       "source": "Massive/Polygon",
-      "fetched_at": "2026-05-24T12:39:38Z"
+      "fetched_at": "2026-05-24T20:03:06Z"
     }
   },
   "dashboard": {
@@ -13857,6 +13857,6 @@
         ]
       }
     },
-    "computed_at": "2026-05-24T12:39:53Z"
+    "computed_at": "2026-05-24T20:03:22Z"
   }
 }
