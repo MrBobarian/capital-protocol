@@ -1,23 +1,25 @@
 """
 Finnhub data client for Capital Protocol.
 
-All functions use free-tier Finnhub endpoints only:
-  /stock/candle  — OHLCV history (breadth 200DMA + technical indicators)
+Free-tier endpoints used:
   /stock/metric  — financial ratios (TTM P/E, annual P/B per ticker)
 
-The /indicator endpoint (server-side TA) requires a premium plan; we fetch
-raw candles and compute RSI/MACD/Bollinger locally with pandas instead.
+NOTE: /stock/candle returns 403 on the free tier for all equity symbols.
+  collect_technicals() now fetches raw closes via Massive Markets (Polygon)
+  and computes RSI/MACD/Bollinger locally with pandas.
+  collect_breadth_finnhub() is retained for compatibility but is superseded
+  by collect_breadth_massive() in massive_client.py.
 
 Free-tier rate limit: 60 calls/minute, 30 calls/second.
 
 Approximate call budget per full run:
-  collect_breadth_finnhub()    — 25 candle calls (one per SOXX ticker)
-  collect_technicals()         —  6 candle calls (SOXX + top 5)
-  collect_valuation_finnhub()  — 25 metric calls (one per SOXX ticker)
-  collect_alternatives_finnhub() — ~13 metric calls (basket tickers)
-  Total ≈ 69 calls spread across the run — within free-tier limits.
+  collect_technicals()           —  6 Massive agg calls (SOXX + top 5)
+  collect_valuation_finnhub()    — 25 Finnhub metric calls
+  collect_alternatives_finnhub() — ~13 Finnhub metric calls
+  Total Finnhub ≈ 38 metric calls — within free-tier limits.
 
 Requires: FINNHUB_API_KEY secret (GitHub Actions) or local env var.
+Requires: MASSIVE_API_KEY for collect_technicals() candle data.
 Requires: pandas (already in requirements.txt)
 """
 
@@ -135,23 +137,46 @@ def _isnan(v) -> bool:
 
 
 # ---------------------------------------------------------------------------
-# Low-level candle fetch (free-tier endpoint)
+# Close price fetchers
 # ---------------------------------------------------------------------------
+
+def _fetch_closes_massive(symbol: str, massive_api_key: str, lookback_days: int = 150) -> list[float]:
+    """Fetch daily closing prices via Massive Markets (Polygon backend).
+
+    Replaces _fetch_candles() for technical indicator computation.
+    Finnhub /stock/candle returns 403 on the free tier; Massive does not.
+
+    Returns a list of close prices oldest-first, or [] on any error.
+    """
+    now      = datetime.now(timezone.utc)
+    today    = now.strftime("%Y-%m-%d")
+    start    = (now - timedelta(days=lookback_days)).strftime("%Y-%m-%d")
+    url      = f"https://api.polygon.io/v2/aggs/ticker/{symbol}/range/1/day/{start}/{today}"
+    try:
+        resp = requests.get(
+            url,
+            headers={"Authorization": f"Bearer {massive_api_key}"},
+            params={"adjusted": "true", "limit": 200, "sort": "asc"},
+            timeout=15,
+        )
+        resp.raise_for_status()
+        bars = resp.json().get("results", [])
+        return [float(b["c"]) for b in bars if b.get("c") is not None]
+    except Exception as exc:
+        logger.warning("Massive candle fetch failed (%s): %s", symbol, exc)
+        return []
+
 
 def _fetch_candles(
     session: requests.Session,
     symbol: str,
     lookback_days: int = _LOOKBACK_DAYS,
 ) -> list[float]:
-    """Fetch daily closing prices for `symbol` via Finnhub /stock/candle.
+    """Fetch daily closing prices via Finnhub /stock/candle (DEPRECATED).
 
-    Args:
-        lookback_days: Calendar days of history to request. Use the module
-            default (120) for technical indicators. Use 360 for 200DMA breadth
-            (need ~250 trading days = ~350 calendar days of history).
-
-    Returns a list of close prices oldest-first, or [] on any error.
-    The token is already set on the session headers.
+    NOTE: Returns 403 on the free tier for all equity symbols.
+    This function is kept for compatibility with collect_breadth_finnhub()
+    but should not be used — use _fetch_closes_massive() instead.
     """
     now   = int(datetime.now(timezone.utc).timestamp())
     start = int((datetime.now(timezone.utc) - timedelta(days=lookback_days)).timestamp())
@@ -184,22 +209,33 @@ def _fetch_candles(
 TOP_CONSTITUENTS = ["NVDA", "AVGO", "AMD", "QCOM", "INTC"]   # top 5 by SOXX weight
 
 
-def collect_technicals(api_key: str) -> dict:
+def collect_technicals(api_key: str, massive_api_key: str | None = None) -> dict:
     """Collect technical indicators for SOXX and top 5 weighted constituents.
 
-    Makes 6 Finnhub /stock/candle calls (free tier), then computes:
+    Fetches daily closes via Massive Markets (Polygon) — Finnhub /stock/candle
+    returns 403 on the free tier. Computes locally with pandas:
       SOXX:         RSI(14), MACD(12,26,9), Bollinger Bands(20,2)
       Constituents: RSI(14) for NVDA, AVGO, AMD, QCOM, INTC
+
+    Args:
+        api_key:        Finnhub API key (kept for signature compatibility; not
+                        used for candles — only metric calls use it)
+        massive_api_key: Massive/Polygon API key for OHLC data. Required.
 
     Returns a nested dict for storage at sentiment["technicals"].
     Never raises — returns {"available": False} on total failure.
     """
-    session = requests.Session()
-    session.headers.update({"X-Finnhub-Token": api_key})
+    import os as _os
+    _massive_key = massive_api_key or _os.environ.get("MASSIVE_API_KEY", "")
+    if not _massive_key:
+        logger.warning("collect_technicals: MASSIVE_API_KEY not set — skipping")
+        return {"available": False, "reason": "MASSIVE_API_KEY not set"}
 
-    # ── SOXX candles → RSI + MACD + Bollinger ────────────────────────────────
-    soxx_closes = _fetch_candles(session, "SOXX")
-    time.sleep(_SLEEP_BETWEEN)
+    massive_sleep = float(_os.environ.get("MASSIVE_RATE_SLEEP", "0.5"))
+
+    # ── SOXX closes → RSI + MACD + Bollinger ─────────────────────────────────
+    soxx_closes = _fetch_closes_massive("SOXX", _massive_key)
+    time.sleep(massive_sleep)
 
     soxx_rsi = _compute_rsi(soxx_closes)
     soxx_macd, soxx_macd_signal_line, soxx_macd_hist = _compute_macd(soxx_closes)
@@ -222,13 +258,13 @@ def collect_technicals(api_key: str) -> dict:
     else:
         macd_crossover = None
 
-    # ── Constituent candles → RSI ─────────────────────────────────────────────
+    # ── Constituent closes → RSI ──────────────────────────────────────────────
     constituent_rsi: dict[str, float | None] = {}
     for ticker in TOP_CONSTITUENTS:
-        closes = _fetch_candles(session, ticker)
+        closes = _fetch_closes_massive(ticker, _massive_key)
         constituent_rsi[ticker] = _compute_rsi(closes)
-        time.sleep(_SLEEP_BETWEEN)
-        logger.debug("Finnhub RSI %s: %s", ticker, constituent_rsi[ticker])
+        time.sleep(massive_sleep)
+        logger.debug("Massive RSI %s: %s", ticker, constituent_rsi[ticker])
 
     valid_rsis = [v for v in constituent_rsi.values() if v is not None]
     constituent_rsi_avg = round(sum(valid_rsis) / len(valid_rsis), 2) if valid_rsis else None
@@ -308,7 +344,7 @@ def collect_technicals(api_key: str) -> dict:
         "momentum_composite":           momentum_composite,
         "technicals_date":              technicals_date,
         "source": (
-            "Finnhub /stock/candle (free tier) — SOXX: RSI(14), MACD(12,26,9), "
+            "Massive/Polygon daily bars — SOXX: RSI(14), MACD(12,26,9), "
             f"Bollinger Bands(20,2); constituents RSI(14): {', '.join(TOP_CONSTITUENTS)}. "
             "Indicators computed locally with pandas."
         ),

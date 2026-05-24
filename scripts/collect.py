@@ -1710,13 +1710,13 @@ def run(mode: str) -> None:
         existing["sentiment"].update(bofams)
         logging.info("BofA FMS loaded — survey_month: %s", bofams.get("bofams_survey_month"))
 
-        if finnhub_api_key:
-            logging.info("--- Collecting Finnhub technical indicators ---")
+        if finnhub_api_key or massive_api_key:
+            logging.info("--- Collecting technical indicators (Massive/Polygon candles) ---")
             try:
-                technicals = collect_technicals(finnhub_api_key)
+                technicals = collect_technicals(finnhub_api_key or "", massive_api_key=massive_api_key)
                 existing["sentiment"]["technicals"] = technicals
                 logging.info(
-                    "Finnhub technicals — RSI: %s (%s) | MACD: %s | momentum: %s",
+                    "Technicals — RSI: %s (%s) | MACD: %s | momentum: %s",
                     technicals.get("soxx_rsi_14"),
                     technicals.get("soxx_rsi_signal"),
                     technicals.get("soxx_macd_crossover"),
