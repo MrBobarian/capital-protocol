@@ -773,7 +773,7 @@ def collect_fred_macro(
             "This is the supply-side demand confirmation for the AI trade. "
             "Sustained double-digit growth = hyperscaler CapEx cycle intact."
         ) if korea_electronics_yoy is not None else "Korea export data unavailable from FRED.",
-        "source": "FRED — OECD Korea trade statistics (XTEXVA01KRM667S), updated monthly",
+        "source": "FRED — OECD Korea trade statistics (XTEXVA01KRM659S YoY%), updated monthly",
     }
 
     # ── Private-sector liquidity block ──────────────────────────────────────

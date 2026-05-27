@@ -1086,8 +1086,9 @@ def collect_macro_regime() -> dict:
     # Load override files
     cpi_ov = load_json(CPI_PATH)
     # korea_exports_override.json is now a fallback only.
-    # FRED series XTEXVA01KRM667S auto-populates korea_electronics_exports_yoy_pct
+    # FRED series XTEXVA01KRM659S (YoY% growth rate) auto-populates korea_electronics_exports_yoy_pct
     # via collect_fred_macro() → fred_macro.korea_trade in metrics.json.
+    # NB: 667S suffix = absolute level (wrong); 659S suffix = YoY % change (correct).
     # Only update the override file if FRED data is lagging more than 6 weeks.
     korea_ov = load_json(KOREA_PATH)
 
