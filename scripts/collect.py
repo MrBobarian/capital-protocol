@@ -536,6 +536,13 @@ FRED_SERIES_WEEKLY = [
     # Real economy
     "industrial_production_idx",
     "capacity_utilization_pct",
+    # Treasury yield curve (daily) — nominal CMT yields for yield-curve regime
+    "treasury_2yr",
+    "treasury_5yr",
+    "treasury_10yr",
+    "treasury_30yr",
+    # Sovereign / defense spending (quarterly) — L9 demand floor
+    "federal_defense_spending",
     # Inflation / real yields (daily — always fresh)
     "pce_yoy",
     "ppi_final_demand_yoy",
@@ -894,6 +901,38 @@ def collect_fred_macro(
         else:
             dxy_block["dxy_signal"] = f"USD {dxy_val:.1f} — easing, supportive for risk assets and EM"
 
+    # ------------------------------------------------------------------
+    # Treasury yield curve block (nominal CMT yields)
+    # Raw data feed — the browser computes the bull/bear × steepen/flatten
+    # regime classification from these values (Gap 7).
+    # ------------------------------------------------------------------
+    y2  = _val("treasury_2yr")
+    y5  = _val("treasury_5yr")
+    y10 = _val("treasury_10yr")
+    y30 = _val("treasury_30yr")
+    yield_curve_block: dict = {
+        "treasury_2yr":        y2,
+        "treasury_5yr":        y5,
+        "treasury_10yr":       y10,
+        "treasury_30yr":       y30,
+        "treasury_30yr_date":  _date("treasury_30yr"),
+        "spread_2s10s_bps":    round((y10 - y2) * 100, 1) if (y2 is not None and y10 is not None) else None,
+        "spread_10s30s_bps":   round((y30 - y10) * 100, 1) if (y10 is not None and y30 is not None) else None,
+        # Tipper late-cycle trigger: long end >5% = bond-market stress
+        "tipper_30yr_over_5pct": (y30 > 5.0) if y30 is not None else None,
+        "source": "FRED — DGS2/DGS5/DGS10/DGS30 (nominal constant-maturity Treasury yields, daily)",
+    }
+
+    # ------------------------------------------------------------------
+    # Federal defense spending block (L9 sovereign demand floor)
+    # ------------------------------------------------------------------
+    defense_block: dict = {
+        "federal_defense_spending_bn": _val("federal_defense_spending"),
+        "defense_spending_date":       _date("federal_defense_spending"),
+        "defense_spending_qoq_chg":    _mom_chg("federal_defense_spending"),
+        "source": "FRED — FDEFX (Federal Defense Consumption Expenditures & Gross Investment, SAAR $B, quarterly)",
+    }
+
     return {
         "fred_available":    True,
         "ism_and_capex":     ism_block,
@@ -903,6 +942,8 @@ def collect_fred_macro(
         "korea_trade":       korea_block,
         "private_liquidity": private_liquidity_block,
         "dollar_gold":       dxy_block,
+        "yield_curve_fred":  yield_curve_block,
+        "defense":           defense_block,
     }
 
 
@@ -1554,12 +1595,24 @@ def fetch_yahoo_prices() -> dict:
 
     DASHBOARD_TICKERS = ["DXY", "BTC", "ETH", "NVDA", "MSTR", "SOXX", "SPY", "QQQ", "GLD"]
 
+    # Multi-frontier layer benchmarks (L2/L3/L4/L7/L8/L9) — fetched so metrics.json
+    # carries the same price universe the browser uses for layer-rotation signals.
+    LAYER_BENCHMARK_TICKERS = [
+        "ETN", "VRT", "GEV", "CEG",          # L2 power/grid
+        "ROBO",                               # L3 robotics
+        "COIN",                               # L4 monetary
+        "IONQ", "QBTS", "RGTI", "QTUM",       # L7 quantum
+        "RKLB", "ASTS", "UFO",                # L8 space
+        "KTOS", "AXON", "ITA", "XAR",         # L9 defense
+    ]
+    fetch_tickers = DASHBOARD_TICKERS + LAYER_BENCHMARK_TICKERS
+
     massive_api_key = os.environ.get("MASSIVE_API_KEY", "")
     massive_sleep   = float(os.environ.get("MASSIVE_RATE_SLEEP", "0.5"))
     results: dict   = {}
     fetched_at      = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 
-    for key in DASHBOARD_TICKERS:
+    for key in fetch_tickers:
         cfg      = PRICE_UNIVERSE.get(key, {})
         priority = cfg.get("priority", "massive_first")
 

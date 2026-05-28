@@ -98,4 +98,20 @@ PRICE_UNIVERSE: dict[str, dict] = {
     "COIN":  {"massive_ticker": "COIN",  "yahoo_ticker": "COIN",  "priority": "massive_first", "label": "Coinbase"},
     "HOOD":  {"massive_ticker": "HOOD",  "yahoo_ticker": "HOOD",  "priority": "massive_first", "label": "Robinhood"},
     "RKLB":  {"massive_ticker": "RKLB",  "yahoo_ticker": "RKLB",  "priority": "massive_first", "label": "Rocket Lab"},
+    # ── MULTI-FRONTIER LAYER BENCHMARKS (L3 / L7 / L8 / L9) ─────────────────
+    # L3 Robotics & Embodied AI
+    "ROBO":  {"massive_ticker": "ROBO",  "yahoo_ticker": "ROBO",  "priority": "massive_first", "label": "ROBO Global Robotics ETF"},
+    # L7 Quantum Technology
+    "IONQ":  {"massive_ticker": "IONQ",  "yahoo_ticker": "IONQ",  "priority": "massive_first", "label": "IonQ"},
+    "QBTS":  {"massive_ticker": "QBTS",  "yahoo_ticker": "QBTS",  "priority": "massive_first", "label": "D-Wave Quantum"},
+    "RGTI":  {"massive_ticker": "RGTI",  "yahoo_ticker": "RGTI",  "priority": "massive_first", "label": "Rigetti Computing"},
+    "QTUM":  {"massive_ticker": "QTUM",  "yahoo_ticker": "QTUM",  "priority": "massive_first", "label": "Defiance Quantum ETF"},
+    # L8 Space & Satellite
+    "ASTS":  {"massive_ticker": "ASTS",  "yahoo_ticker": "ASTS",  "priority": "massive_first", "label": "AST SpaceMobile"},
+    "UFO":   {"massive_ticker": "UFO",   "yahoo_ticker": "UFO",   "priority": "massive_first", "label": "Procure Space ETF"},
+    # L9 Defense & Industrial Hard Tech
+    "KTOS":  {"massive_ticker": "KTOS",  "yahoo_ticker": "KTOS",  "priority": "massive_first", "label": "Kratos Defense"},
+    "AXON":  {"massive_ticker": "AXON",  "yahoo_ticker": "AXON",  "priority": "massive_first", "label": "Axon Enterprise"},
+    "ITA":   {"massive_ticker": "ITA",   "yahoo_ticker": "ITA",   "priority": "massive_first", "label": "iShares US Aerospace & Defense ETF"},
+    "XAR":   {"massive_ticker": "XAR",   "yahoo_ticker": "XAR",   "priority": "massive_first", "label": "SPDR Aerospace & Defense ETF"},
 }

@@ -650,6 +650,31 @@
   <!-- ======== RISK GATES ======== -->
   <section class="panel" id="p-portfolio">
 
+    <div class="section-head"><h2>Harvest Window</h2><div class="line"></div></div>
+    <div class="card">
+      <div id="harvest-alert"></div>
+      <div class="grid grid-3" style="margin-top:10px">
+        <div>
+          <div class="tiny upper muted">Window Opens</div>
+          <div class="mono" id="harvest-start">—</div>
+        </div>
+        <div>
+          <div class="tiny upper muted">Days To Start</div>
+          <div class="mono" id="harvest-days">—</div>
+        </div>
+        <div>
+          <div class="tiny upper muted">Status</div>
+          <div class="mono" id="harvest-status">—</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-head"><h2>Multi-Frontier Layer Rotation</h2><div class="line"></div></div>
+    <div class="card">
+      <div class="muted small" style="margin-bottom:8px">1M / 3M average return per thesis layer (L1–L9). Leading &gt;+5% 1M · Lagging &lt;−5% 1M.</div>
+      <div id="rotation-heatmap"></div>
+    </div>
+
     <div class="section-head"><h2>Hormuz Status</h2><div class="line"></div></div>
     <div class="card">
       <div class="grid grid-3">
@@ -959,8 +984,11 @@ const FRED_SERIES = {
   FEDFUNDS: {label:'Fed Funds Rate',            freq:'m', units:'%',   ttl:24*60*60e3},
   SOFR:     {label:'SOFR',                      freq:'d', units:'%',   ttl: 6*60*60e3},
   DGS2:     {label:'2Y Treasury',               freq:'d', units:'%',   ttl: 6*60*60e3},
+  DGS5:     {label:'5Y Treasury (belly)',        freq:'d', units:'%',   ttl: 6*60*60e3},
   DGS10:    {label:'10Y Treasury',              freq:'d', units:'%',   ttl: 6*60*60e3},
+  DGS30:    {label:'30Y Treasury',              freq:'d', units:'%',   ttl: 6*60*60e3},
   T10Y2Y:   {label:'2s10s Curve',               freq:'d', units:'%',   ttl: 6*60*60e3},
+  FDEFX:    {label:'Federal Defense Spending',   freq:'q', units:'$B',  ttl:24*60*60e3},
   CPIAUCSL: {label:'CPI Headline',              freq:'m', units:'idx', ttl:24*60*60e3},
   CPILFESL: {label:'Core CPI',                  freq:'m', units:'idx', ttl:24*60*60e3},
   M2SL:     {label:'M2',                        freq:'m', units:'$B',  ttl:24*60*60e3},
@@ -978,17 +1006,40 @@ const FRED_SERIES = {
 
 const YAHOO_SYMBOLS = {
   '%5EDXY':  {key:'DXY',   label:'Dollar Index'},
-  'QQQ':     {key:'QQQ',   label:'NASDAQ-100'},
+  'QQQ':     {key:'QQQ',   label:'NASDAQ-100',   layer:'L1'},
   'SPY':     {key:'SPY',   label:'S&P 500'},
-  'SOXX':    {key:'SOXX',  label:'SOX Semis'},
+  'SOXX':    {key:'SOXX',  label:'SOX Semis',    layer:'L1'},
   'GLD':     {key:'GLD',   label:'Gold'},
-  'BTC-USD': {key:'BTC',   label:'Bitcoin'},
-  'NVDA':    {key:'NVDA',  label:'NVIDIA'},
-  'MSTR':    {key:'MSTR',  label:'MicroStrategy'},
+  'BTC-USD': {key:'BTC',   label:'Bitcoin',      layer:'L4'},
+  'NVDA':    {key:'NVDA',  label:'NVIDIA',       layer:'L1'},
+  'MSTR':    {key:'MSTR',  label:'MicroStrategy',layer:'L4'},
   '%5EVIX':  {key:'VIX',   label:'VIX (MOVE proxy)'},
-  'ETH-USD': {key:'ETH',   label:'Ethereum'},
+  'ETH-USD': {key:'ETH',   label:'Ethereum',     layer:'L4'},
   '%5EMOVE': {key:'MOVE',  label:'MOVE Index (bond vol)'},
+  // ── Multi-frontier layer benchmarks (L2/L3/L4/L7/L8/L9) ──────────────────
+  'ETN':     {key:'ETN',   label:'Eaton Corp',          layer:'L2'},
+  'VRT':     {key:'VRT',   label:'Vertiv',              layer:'L2'},
+  'GEV':     {key:'GEV',   label:'GE Vernova',          layer:'L2'},
+  'CEG':     {key:'CEG',   label:'Constellation Energy',layer:'L2'},
+  'COIN':    {key:'COIN',  label:'Coinbase',            layer:'L4'},
+  'ROBO':    {key:'ROBO',  label:'ROBO Robotics ETF',   layer:'L3'},
+  'IONQ':    {key:'IONQ',  label:'IonQ',                layer:'L7'},
+  'QBTS':    {key:'QBTS',  label:'D-Wave Quantum',      layer:'L7'},
+  'RGTI':    {key:'RGTI',  label:'Rigetti Computing',   layer:'L7'},
+  'QTUM':    {key:'QTUM',  label:'Defiance Quantum ETF',layer:'L7'},
+  'RKLB':    {key:'RKLB',  label:'Rocket Lab',          layer:'L8'},
+  'ASTS':    {key:'ASTS',  label:'AST SpaceMobile',     layer:'L8'},
+  'UFO':     {key:'UFO',   label:'Procure Space ETF',   layer:'L8'},
+  'KTOS':    {key:'KTOS',  label:'Kratos Defense',      layer:'L9'},
+  'AXON':    {key:'AXON',  label:'Axon Enterprise',     layer:'L9'},
+  'ITA':     {key:'ITA',   label:'US Aero & Defense ETF',layer:'L9'},
+  'XAR':     {key:'XAR',   label:'SPDR Aero & Defense ETF',layer:'L9'},
 };
+
+// Harvest window (non-negotiable apartment-purchase constraint — Gap 11)
+const HARVEST_WINDOW_START = '2026-10-01';
+const HARVEST_WINDOW_END   = '2026-12-31';
+const HARVEST_WINDOW_REASON = 'Apartment purchase — capital must be liquid in Q4 2026';
 
 const PAIN_THRESHOLD = 5_900_000; // $M ≈ $5.9T
 
@@ -1200,6 +1251,17 @@ function buildFullExport(){
   const recs   = buildRecommendations(cls.season, tls, tlsRoc, guard);
   const cbs    = computeCircuitBreakers(STATE, scores, fred);
 
+  // ── Multi-frontier signals (Gaps 2–11) ────────────────────────────────────
+  const layerRotation    = computeLayerRotation(yahoo);
+  const yieldCurveRegime = computeYieldCurveRegime(fred);
+  const dxyRegime        = computeDxyRegime(yahoo);
+  const harvestCountdown = computeHarvestCountdown();
+  const defenseRS        = computeDefenseRS(yahoo);
+  const quantumSignal    = computeQuantumSignal(yahoo);
+  const spaceSignal      = computeSpaceSignal(yahoo);
+  const btcFrontier      = btcFrontierNote(layerRotation);
+  const layerSentiment   = generateLayerSentiment(fred, layerRotation, tls);
+
   // ── Trim FRED/Yahoo time-series per depth setting ──────────────────────────
   const trimSeries = (arr)=>{
     if(!arr || !arr.length) return null;
@@ -1389,11 +1451,20 @@ function buildFullExport(){
     rotation_narrative:   pm?.cycle_rotation_signal?.rotation_narrative || null,
     // WYNTK bullets
     what_you_need_to_know: pm?.dashboard?.what_you_need_to_know || [],
-    // Layer sentiment summary
+    // Layer sentiment summary (pipeline L1–L6 if present; browser-generated L1/L7/L8/L9 always)
     layer_sentiment_summary: pm?.dashboard?.layer_sentiment
       ? Object.fromEntries(Object.entries(pm.dashboard.layer_sentiment)
           .map(([k,L])=>[k, {name:L.name, signal:L.signal, key_metric:L.key_metric}]))
       : null,
+    layer_sentiment_generated: layerSentiment,
+    // Multi-frontier rotation + per-layer satellite signals
+    layer_rotation:    layerRotation,
+    defense_rs:        defenseRS,
+    quantum_signal:    quantumSignal,
+    space_signal:      spaceSignal,
+    btc_frontier_note: btcFrontier,
+    yield_curve_regime: yieldCurveRegime,
+    dxy_regime:        dxyRegime,
     // SOXX position checklist (four gates)
     soxx_gates: {
       breadth_above_70pct:     (pmBrd.soxx_breadth_above_200ma_pct??0) > 70,
@@ -1424,8 +1495,8 @@ function buildFullExport(){
       painThreshold: '$5.9T Fed Net Liquidity = WALCL - TGA - RRP',
       frameworks:    { pal:'G5 stock level', howell:'Flow ROC', steno:'SOFR-EFFR + FNL vs pain', cowen:'MVRV-Z + on-chain cycle' },
       jordiThesis:   { MR1:'CPI trigger (>4% core)', MR2:'Energy regime', MR3:'Gold/DXY divergence', MR4:'BTC sequencing', MR5:'Korea EWY lead' },
-      layers:        { L1:'Semis & AI Silicon', L2:'Power & Grid Infra', L3:'Robotics & Automation', L4:'Monetary Architecture', L5:'Sovereign Debt Cycle', L6:'Longevity & Healthcare' },
-      hormuzRules:   { oilOver100:'SEMI hard-cap', oilOver110:'Emergency reduce', day35:'Helium concern', day45:'Critical threshold' },
+      layers:        { L1:'Compute & Intelligence Infrastructure', L2:'Power, Grid & Physical AI Stack', L3:'Robotics & Embodied AI', L4:'Monetary Architecture', L5:'Sovereign & Geopolitical AI Buildout', L6:'Longevity & Biology', L7:'Quantum Technology & Post-Quantum Security', L8:'Space & Satellite Infrastructure', L9:'Industrial Hard Tech Revival & Defense Tech' },
+      hormuzRules:   { oilOver100:'SEMI hard-cap', oilOver110:'Emergency reduce', day14:'European LNG re-routing', day21:'Specialty gas (neon/krypton/xenon for EUV) risk', day35:'Helium concern (ENTG fab-cooling watch)', day45:'Critical threshold' },
       threeQFilter:  ['Tax-efficient vehicle? (ASK→Pension→Taxable)', 'Sizing vs probability target?', 'Compounds vs duplicates?'],
     },
     inputs: {
@@ -1467,6 +1538,11 @@ function buildFullExport(){
         ? pctChange(lastVal(STATE.fred.M2SL.data), valNMonthsAgo(STATE.fred.M2SL.data,12)) : null,
       wti3mPct: STATE.fred.DCOILWTICO?.data
         ? pctChange(lastVal(STATE.fred.DCOILWTICO.data), valNDaysAgo(STATE.fred.DCOILWTICO.data,90)) : null,
+      // Multi-frontier expansion
+      layerRotation,
+      yieldCurveRegime,
+      dxyRegime,
+      harvestCountdown,
     },
     analysis: {
       scores: {
@@ -1506,6 +1582,7 @@ function buildFullExport(){
         ceasefire: STATE.ah?.horFire||'No deal', ceasefireStart: STATE.ah?.horStart,
         daysSinceCeasefire: STATE.ah?.horStart ? fmt.daysAgo(STATE.ah.horStart) : null,
         oilUSD: wti, flowPctOfNormal: STATE.ah?.horFlow, semiOverride,
+        secondary: computeHormuzSecondary(wti, STATE.ah?.horStart ? fmt.daysAgo(STATE.ah.horStart) : null),
       },
     },
     pipeline:        pipelineOut,
@@ -1517,6 +1594,11 @@ function buildFullExport(){
       'Given the current TLS level and 3m ROC sign, which framework (Pal/Howell/Steno/Cowen) deserves the highest weight, and why? Does the Korea export signal (4-8 week ISM lead) confirm or contradict?',
       'Which single data point, if it deteriorated by one category in the next 30 days, would most change the Q4 2026 harvest plan? Rank by impact on the harvest window outcome.',
       'Is there any contradiction between analysis.scores and pipeline.cycle_rotation_signal scores? Cite the specific sub-score that diverges and explain which source is more reliable.',
+      'Review derived.layerRotation: which layers (L3/L7/L8/L9) show >5% 1M momentum? Does this confirm active multi-frontier competition or is capital still concentrating in L1/L2?',
+      'Check combined_signals.btc_frontier_note: how many non-L4 frontier layers are currently absorbing speculative liquidity? Does this change MSTR sizing vs direct BTC sizing?',
+      'Check derived.yieldCurveRegime: is the bear-flattening signature (Tipper framework, 30Y>5%) confirmed? Does combined_signals.defense_rs show defense outperforming SPY? If yes, flag L9 as activating.',
+      'Is derived.harvestCountdown.alerts non-empty? If the harvest window is within 90 days, which Pluto positions have the largest unrealised gains and should be evaluated first?',
+      'Check combined_signals.quantum_signal and space_signal: is either layer showing a technical entry setup (basket momentum + individual name improving)? Flag as SATELLITE ENTRY WATCH if yes.',
     ],
   };
   return pkg;
@@ -1841,6 +1923,193 @@ function valNDaysAgo(series, days){
   return best?.v ?? null;
 }
 function valNMonthsAgo(series, months){ return valNDaysAgo(series, Math.round(months*30.44)); }
+
+/* ---------- 6b. MULTI-FRONTIER SIGNALS (L3/L7/L8/L9 + regimes) ---------- */
+// Trading-day return over `n` bars (obs oldest-first array of {d,v}).
+function _retOverBars(obs, n){
+  if(!obs || obs.length < n+1) return null;
+  const now = obs[obs.length-1].v;
+  const past = obs[obs.length-1-n].v;
+  if(now==null || past==null || past===0) return null;
+  return +((now/past - 1) * 100).toFixed(2);
+}
+
+// Gap 2 — layer rotation heatmap. Averages 1M (~21 bars) and 3M (~63 bars)
+// returns of each layer's representative instruments grouped by YAHOO_SYMBOLS.layer.
+function computeLayerRotation(yahoo){
+  const byLayer = {};
+  for(const [sym, cfg] of Object.entries(YAHOO_SYMBOLS)){
+    if(!cfg.layer) continue;
+    const obs = yahoo[sym]?.data;
+    if(!obs || obs.length < 63) continue;
+    const r1 = _retOverBars(obs, 21);
+    const r3 = _retOverBars(obs, 63);
+    if(r1==null || r3==null) continue;
+    (byLayer[cfg.layer] = byLayer[cfg.layer] || []).push({ticker: cfg.key||sym, ret_1m:r1, ret_3m:r3});
+  }
+  const table = {};
+  for(const [layer, arr] of Object.entries(byLayer)){
+    const avg1 = +(arr.reduce((s,r)=>s+r.ret_1m,0)/arr.length).toFixed(2);
+    const avg3 = +(arr.reduce((s,r)=>s+r.ret_3m,0)/arr.length).toFixed(2);
+    table[layer] = {avg_1m_pct:avg1, avg_3m_pct:avg3, leading:avg1>5, lagging:avg1<-5, detail:arr};
+  }
+  return table;
+}
+
+// Gap 7 — yield-curve regime (bull/bear × steepen/flatten) from nominal CMT yields.
+function computeYieldCurveRegime(fred){
+  const y2=lastVal(fred.DGS2), y5=lastVal(fred.DGS5), y10=lastVal(fred.DGS10), y30=lastVal(fred.DGS30);
+  if(y2==null || y10==null) return {regime:null, note:'insufficient yield data'};
+  const s210  = +((y10 - y2) * 100).toFixed(1);
+  const s1030 = (y30!=null) ? +((y30 - y10) * 100).toFixed(1) : null;
+  let regime, implication;
+  if(y10 > 5.0 && y2 < 4.5){
+    regime = 'bear_flattening';
+    implication = 'Late-cycle signature. Fed behind the curve. L4 BTC trigger more likely.';
+  } else if(y10 > y2 && s210 > 50){
+    regime = 'bear_steepening';
+    implication = 'Reflationary — growth expectations rising. L1/L2 constructive.';
+  } else if(y10 < y2){
+    regime = 'inverted';
+    implication = 'Recession risk. Reduce risk, build cash, watch for uninversion.';
+  } else {
+    regime = 'normalising';
+    implication = 'Transition. Monitor direction.';
+  }
+  return {regime, spread_2s10s_bps:s210, spread_10s30s_bps:s1030, y30, y10, y5, y2,
+          implication, tipper_flag: (y30!=null && y30 > 5.0)};
+}
+
+// Gap 8 — DXY structural-level regime (Joe Bland framework). Uses Yahoo ^DXY spot.
+function computeDxyRegime(yahoo){
+  const obs = yahoo['%5EDXY']?.data;
+  const dxy = yahoo['%5EDXY']?.price ?? (obs?.length ? obs[obs.length-1].v : null);
+  if(dxy==null) return {level:null, regime:'data_missing'};
+  let sma200=null, above=null;
+  if(obs && obs.length >= 200){
+    const last200 = obs.slice(-200).map(o=>o.v).filter(v=>v!=null);
+    if(last200.length >= 150){
+      sma200 = +(last200.reduce((s,v)=>s+v,0)/last200.length).toFixed(2);
+      above = dxy > sma200;
+    }
+  }
+  return {
+    level: +dxy.toFixed(2),
+    sma200, above_200dma: above,
+    below_100: dxy < 100,
+    liquidity_headwind: (sma200!=null) ? (above && dxy > sma200*1.03) : null,
+    bland_note: 'Below 100 + below 200DMA = cyclically weak, not a liquidity headwind per Bland framework.',
+  };
+}
+
+// Gap 3 — defense-sector relative strength vs SPY over 3 months (ITA basket).
+function computeDefenseRS(yahoo){
+  const ita = yahoo['ITA']?.data, spy = yahoo['SPY']?.data;
+  if(!ita || ita.length < 64 || !spy || spy.length < 64) return {rs_3m_vs_spy:null, signal:'insufficient data'};
+  const itaRet = ita[ita.length-1].v / ita[ita.length-64].v - 1;
+  const spyRet = spy[spy.length-1].v / spy[spy.length-64].v - 1;
+  const rs = +((itaRet - spyRet) * 100).toFixed(2);
+  return {
+    rs_3m_vs_spy: rs,
+    signal: rs > 3 ? 'outperforming' : (rs > -3 ? 'inline' : 'underperforming'),
+    thesis_implication: rs > 5 ? 'L9 defense thesis activating' : 'monitor',
+  };
+}
+
+// Gap 4 — quantum-sector momentum composite (QTUM basket + IONQ confirmation).
+function computeQuantumSignal(yahoo){
+  const qtum = yahoo['QTUM']?.data, ionq = yahoo['IONQ']?.data;
+  const sig = {basket_1m:null, basket_3m:null, ionq_1m:null, status:'monitoring'};
+  sig.basket_1m = _retOverBars(qtum, 21);
+  sig.basket_3m = _retOverBars(qtum, 63);
+  sig.ionq_1m   = _retOverBars(ionq, 21);
+  if(sig.basket_3m!=null && sig.basket_3m > 20) sig.status = 'building — basket momentum positive';
+  if(sig.basket_1m!=null && sig.basket_1m < -15) sig.status = 'pullback — potential entry';
+  sig.note = 'Satellite-only. Entry = basket 3M positive + individual name (IONQ) improving weekly RSI.';
+  return sig;
+}
+
+// Gap 5 — space-sector momentum composite (RKLB primary + UFO basket).
+function computeSpaceSignal(yahoo){
+  const rklb = yahoo['RKLB']?.data, ufo = yahoo['UFO']?.data;
+  const sig = {rklb_1m:null, rklb_3m:null, basket_3m:null, status:'monitoring'};
+  sig.rklb_1m   = _retOverBars(rklb, 21);
+  sig.rklb_3m   = _retOverBars(rklb, 63);
+  sig.basket_3m = _retOverBars(ufo, 63);
+  if(sig.rklb_3m!=null && sig.rklb_3m > 15) sig.status = 'building — RKLB momentum positive';
+  if(sig.rklb_1m!=null && sig.rklb_1m < -20) sig.status = 'pullback — watch for entry';
+  return sig;
+}
+
+// Gap 6B — multi-frontier liquidity-competition note for BTC sizing (Joe Bland).
+function btcFrontierNote(layerRotation){
+  const active = Object.entries(layerRotation||{})
+    .filter(([layer,d]) => (d.avg_1m_pct||0) > 5 && !['L1','L2','L4'].includes(layer))
+    .map(([layer]) => layer);
+  const n = active.length;
+  if(n >= 3){
+    return `Multi-frontier liquidity active: ${active.join(', ')} all >5% 1M momentum. `
+      + `BTC beta structurally reduced vs 2020–2021 — ${n} competing frontier themes. `
+      + `DCA posture correct; do not size MSTR as if crypto absorbs all speculative liquidity.`;
+  } else if(n >= 1){
+    return `Partial frontier competition: ${active.join(', ')} absorbing some speculative capital. Monitor.`;
+  }
+  return 'Low frontier competition: speculative capital may be concentrating into L4 again. Watch BTC beta.';
+}
+
+// Gap 11 — harvest-window countdown + proximity alerts (apartment constraint).
+function computeHarvestCountdown(){
+  const today = new Date();
+  const start = new Date(HARVEST_WINDOW_START), end = new Date(HARVEST_WINDOW_END);
+  const dStart = Math.floor((start - today)/86400000);
+  const dEnd   = Math.floor((end - today)/86400000);
+  const inWindow = today >= start && today <= end;
+  const alerts = [];
+  if(dStart <= 90 && !inWindow) alerts.push(`HARVEST WINDOW IN ${dStart} DAYS — begin evaluating exit candidates`);
+  if(dStart <= 60 && !inWindow) alerts.push('CRITICAL — 60 days: decide which Pluto positions to harvest for apartment capital');
+  if(inWindow) alerts.push(`HARVEST WINDOW ACTIVE — ${dEnd} days remaining to execute`);
+  return {
+    window_start: HARVEST_WINDOW_START, window_end: HARVEST_WINDOW_END,
+    days_to_start: Math.max(0, dStart), days_to_end: Math.max(0, dEnd),
+    in_window: inWindow, alerts, reason: HARVEST_WINDOW_REASON,
+  };
+}
+
+// Gap 9 — Hormuz secondary supply-chain effects (helium / specialty gas / LNG).
+function computeHormuzSecondary(oilUSD, daysSinceCeasefire){
+  const days = (daysSinceCeasefire==null) ? 999 : daysSinceCeasefire;  // null ceasefire = ongoing
+  return {
+    days_active:        days < 999 ? days : null,
+    lng_rerouting:      days >= 14,
+    specialty_gas_risk: days >= 21,
+    helium_concern:     days >= 35,
+    entg_watch:         days >= 35,
+    helium_critical:    days >= 45,
+    note: days >= 35
+      ? 'Helium + specialty-gas secondary effects active — monitor ENTG supply guidance.'
+      : 'Primary oil-price impact only — secondary supply-chain effects not yet active.',
+  };
+}
+
+// Gap 10 — per-layer one-line sentiment from FRED + rotation + TLS (not pipeline-dependent).
+function generateLayerSentiment(fred, layerRotation, tls){
+  const korea = lastVal(fred.XTEXVA01KRM659S) ?? 0;
+  const hyPct = lastVal(fred.BAMLH0A0HYM2);
+  const hyBps = hyPct!=null ? hyPct*100 : null;
+  const oil   = lastVal(fred.DCOILWTICO) ?? 80;
+  const rot   = (L)=> layerRotation?.[L]?.avg_1m_pct;
+  const r = (L,thr)=> { const v=rot(L); return (v!=null && v>thr); };
+  return {
+    L1_semis: `Korea exports ${korea>=0?'+':''}${korea.toFixed(1)}% YoY — Phase 1 cycle ${korea>20?'intact':'cooling'}.${korea>30?' Crowding monitor active.':''}`,
+    L2_power_grid: `Primary trade. HY OAS ${hyBps!=null?hyBps.toFixed(0)+'bps = credit '+(hyBps<350?'benign':'stressed'):'n/a'}. Oil $${oil.toFixed(0)} ${oil>90?'adds energy-inflation tailwind':'= neutral energy cost'}.`,
+    L3_robotics: `Pre-position phase. 2028+ payoff. DCA accumulation only.${r('L3',10)?' Momentum building.':''}`,
+    L4_crypto: `TLS ${tls!=null?tls.toFixed(1):'—'} — check BTC trigger (CPI vs 3M T-bill) each session.`,
+    L7_quantum: `Satellite only. ${r('L7',10)?'Building momentum.':'Monitoring for entry signal.'}`,
+    L8_space: `Satellite only. RKLB = primary liquid expression. ${r('L8',10)?'Positive momentum.':'Watching.'}`,
+    L9_defense: `Sovereign spending floor. Defense layer 1M momentum: ${r('L9',5)?'positive':'monitor'}.`,
+    generated_at: new Date().toISOString(),
+  };
+}
 
 function fedNetLiquidity(walcl, tga, rrp){
   // align to weekly WALCL
@@ -2452,7 +2721,66 @@ function renderCBFull(cbs){
   </table>`;
 }
 
+const LAYER_LABELS = {
+  L1:'L1 Compute & AI Silicon', L2:'L2 Power & Grid', L3:'L3 Robotics',
+  L4:'L4 Monetary', L5:'L5 Sovereign', L6:'L6 Longevity',
+  L7:'L7 Quantum', L8:'L8 Space', L9:'L9 Defense',
+};
 
+function renderHarvest(hc){
+  const startEl  = document.getElementById('harvest-start');
+  const daysEl   = document.getElementById('harvest-days');
+  const statusEl = document.getElementById('harvest-status');
+  const alertEl  = document.getElementById('harvest-alert');
+  if(!hc){ if(alertEl) alertEl.innerHTML=''; return; }
+  if(startEl)  startEl.textContent  = fmt.date(hc.window_start);
+  if(daysEl)   daysEl.textContent   = hc.in_window ? 'OPEN' : hc.days_to_start+'d';
+  if(statusEl) statusEl.textContent = hc.in_window ? 'ACTIVE'
+                  : (hc.days_to_start<=60 ? 'CRITICAL' : (hc.days_to_start<=90 ? 'APPROACHING' : 'monitoring'));
+  if(alertEl){
+    if(hc.alerts && hc.alerts.length){
+      const cls = (hc.in_window || hc.days_to_start<=60) ? 'danger' : '';
+      alertEl.innerHTML = hc.alerts.map(a=>`<div class="note ${cls}">${a}</div>`).join('');
+    } else {
+      alertEl.innerHTML = `<div class="badge muted">Harvest window ${hc.days_to_start}d out — no action required yet</div>`;
+    }
+  }
+}
+
+function renderRotation(rot){
+  const el = document.getElementById('rotation-heatmap');
+  if(!el) return;
+  const layers = Object.keys(rot||{});
+  if(!layers.length){
+    el.innerHTML = '<div class="muted small">No layer price history yet — refresh data (Yahoo prices required).</div>';
+    return;
+  }
+  const badge = (v)=>{
+    if(v==null) return '<span class="badge muted">—</span>';
+    const c = v>5 ? 'green' : (v<-5 ? 'red' : 'gold');
+    return `<span class="badge ${c}">${v>=0?'+':''}${v.toFixed(1)}%</span>`;
+  };
+  const order = ['L1','L2','L3','L4','L5','L6','L7','L8','L9'];
+  const sorted = layers.sort((a,b)=>order.indexOf(a)-order.indexOf(b));
+  el.innerHTML = `<table>
+    <thead><tr><th>Layer</th><th>1M</th><th>3M</th><th>State</th><th class="muted">Members</th></tr></thead>
+    <tbody>
+    ${sorted.map(L=>{
+      const d = rot[L];
+      const state = d.leading ? '<span class="dot g"></span>leading'
+                  : (d.lagging ? '<span class="dot r"></span>lagging' : '<span class="dot m"></span>neutral');
+      const members = (d.detail||[]).map(m=>m.ticker).join(', ');
+      return `<tr>
+        <td>${LAYER_LABELS[L]||L}</td>
+        <td class="num">${badge(d.avg_1m_pct)}</td>
+        <td class="num">${badge(d.avg_3m_pct)}</td>
+        <td>${state}</td>
+        <td class="muted small">${members}</td>
+      </tr>`;
+    }).join('')}
+    </tbody>
+  </table>`;
+}
 
 function renderHormuz(state, fred){
   const ah = state.ah||{};
@@ -3171,6 +3499,8 @@ function rerender(){
   renderSOXXIntelligence();
 
   // RISK GATES
+  renderHarvest(computeHarvestCountdown());
+  renderRotation(computeLayerRotation(yahoo));
   renderHormuz(STATE, fred);
   renderCBFull(cbs);
 
