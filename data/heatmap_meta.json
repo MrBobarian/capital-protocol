@@ -1,0 +1,1351 @@
+{
+  "updated_date": "2026-05-29",
+  "source": "Seeded from thesis_heatmap_dashboard.html prototype (v5, three-bucket).",
+  "notes": "Editorial fields (layer/bucket/type/maxLossPct) are authoritative and persist. Keyed by (ticker, layer) \u2014 duplicates intentional (e.g. MU/SNDK under L1 and L1b). seed.* numerics render only when no live pipeline data exists (src=EST).",
+  "rows": [
+    {
+      "ticker": "NVDA",
+      "layer": "L1",
+      "bucket": "core",
+      "type": "trend",
+      "maxLossPct": null,
+      "seed": {
+        "price": 211.14,
+        "sma50": 199.35,
+        "sma200": 187.65,
+        "sma200_prev": 187.51,
+        "rsiD": 56,
+        "rsiW": 58,
+        "rangePos": 0.76
+      }
+    },
+    {
+      "ticker": "TSM",
+      "layer": "L1",
+      "bucket": "core",
+      "type": "trend",
+      "maxLossPct": null,
+      "seed": {
+        "price": 205,
+        "sma50": 198,
+        "sma200": 190,
+        "sma200_prev": 188,
+        "rsiD": 56,
+        "rsiW": 58,
+        "rangePos": 0.78
+      }
+    },
+    {
+      "ticker": "MRVL",
+      "layer": "L1",
+      "bucket": "core",
+      "type": "trend",
+      "maxLossPct": null,
+      "seed": {
+        "price": 92,
+        "sma50": 86,
+        "sma200": 80,
+        "sma200_prev": 78,
+        "rsiD": 62,
+        "rsiW": 61,
+        "rangePos": 0.7
+      }
+    },
+    {
+      "ticker": "AVGO",
+      "layer": "L1",
+      "bucket": "core",
+      "type": "trend",
+      "maxLossPct": null,
+      "seed": {
+        "price": 446.77,
+        "sma50": 385.7,
+        "sma200": 352.3,
+        "sma200_prev": 351.63,
+        "rsiD": 60,
+        "rsiW": 62,
+        "rangePos": 1.0
+      }
+    },
+    {
+      "ticker": "AMD",
+      "layer": "L1",
+      "bucket": "core",
+      "type": "trend",
+      "maxLossPct": null,
+      "seed": {
+        "price": 516.1,
+        "sma50": 328.15,
+        "sma200": 237.58,
+        "sma200_prev": 235.88,
+        "rsiD": 72,
+        "rsiW": 74,
+        "rangePos": 1.0
+      }
+    },
+    {
+      "ticker": "MU",
+      "layer": "L1",
+      "bucket": "core",
+      "type": "trend",
+      "maxLossPct": null,
+      "seed": {
+        "price": 971,
+        "sma50": 557.56,
+        "sma200": 338.74,
+        "sma200_prev": 334.52,
+        "rsiD": 78,
+        "rsiW": 76,
+        "rangePos": 1.0
+      }
+    },
+    {
+      "ticker": "ARM",
+      "layer": "L1",
+      "bucket": "core",
+      "type": "trend",
+      "maxLossPct": null,
+      "seed": {
+        "price": 353.29,
+        "sma50": 198.44,
+        "sma200": 150.84,
+        "sma200_prev": 149.79,
+        "rsiD": 75,
+        "rsiW": 72,
+        "rangePos": 1.0
+      }
+    },
+    {
+      "ticker": "SNDK",
+      "layer": "L1",
+      "bucket": "core",
+      "type": "trend",
+      "maxLossPct": null,
+      "seed": {
+        "price": 1694.98,
+        "sma50": 1078.61,
+        "sma200": 488.24,
+        "sma200_prev": 480.0,
+        "rsiD": 77,
+        "rsiW": 75,
+        "rangePos": 1.0
+      }
+    },
+    {
+      "ticker": "ETN",
+      "layer": "L2",
+      "bucket": "core",
+      "type": "trend",
+      "maxLossPct": null,
+      "seed": {
+        "price": 400.6,
+        "sma50": 393.53,
+        "sma200": 365.0,
+        "sma200_prev": 364.81,
+        "rsiD": 55,
+        "rsiW": 58,
+        "rangePos": 0.72
+      }
+    },
+    {
+      "ticker": "CEG",
+      "layer": "L2",
+      "bucket": "core",
+      "type": "trend",
+      "maxLossPct": null,
+      "seed": {
+        "price": 287.75,
+        "sma50": 283,
+        "sma200": 300,
+        "sma200_prev": 303,
+        "rsiD": 48,
+        "rsiW": 52,
+        "rangePos": 0.3
+      }
+    },
+    {
+      "ticker": "VRT",
+      "layer": "L2",
+      "bucket": "core",
+      "type": "trend",
+      "maxLossPct": null,
+      "seed": {
+        "price": 315.71,
+        "sma50": 300,
+        "sma200": 252,
+        "sma200_prev": 246,
+        "rsiD": 62,
+        "rsiW": 66,
+        "rangePos": 0.84
+      }
+    },
+    {
+      "ticker": "GEV",
+      "layer": "L2",
+      "bucket": "core",
+      "type": "trend",
+      "maxLossPct": null,
+      "seed": {
+        "price": 968.32,
+        "sma50": 1001,
+        "sma200": 749,
+        "sma200_prev": 735,
+        "rsiD": 51,
+        "rsiW": 63,
+        "rangePos": 0.66
+      }
+    },
+    {
+      "ticker": "HUBB",
+      "layer": "L2",
+      "bucket": "core",
+      "type": "trend",
+      "maxLossPct": null,
+      "seed": {
+        "price": 430,
+        "sma50": 418,
+        "sma200": 405,
+        "sma200_prev": 402,
+        "rsiD": 55,
+        "rsiW": 57,
+        "rangePos": 0.75
+      }
+    },
+    {
+      "ticker": "NVT",
+      "layer": "L2",
+      "bucket": "core",
+      "type": "trend",
+      "maxLossPct": null,
+      "seed": {
+        "price": 166.99,
+        "sma50": 144.01,
+        "sma200": 114.32,
+        "sma200_prev": 112,
+        "rsiD": 64,
+        "rsiW": 68,
+        "rangePos": 0.96
+      }
+    },
+    {
+      "ticker": "VST",
+      "layer": "L2",
+      "bucket": "core",
+      "type": "trend",
+      "maxLossPct": null,
+      "seed": {
+        "price": 195,
+        "sma50": 185,
+        "sma200": 150,
+        "sma200_prev": 147,
+        "rsiD": 58,
+        "rsiW": 60,
+        "rangePos": 0.8
+      }
+    },
+    {
+      "ticker": "POWL",
+      "layer": "L2",
+      "bucket": "core",
+      "type": "trend",
+      "maxLossPct": null,
+      "seed": {
+        "price": 285,
+        "sma50": 270,
+        "sma200": 230,
+        "sma200_prev": 226,
+        "rsiD": 57,
+        "rsiW": 59,
+        "rangePos": 0.78
+      }
+    },
+    {
+      "ticker": "FLR",
+      "layer": "L2",
+      "bucket": "core",
+      "type": "trend",
+      "maxLossPct": null,
+      "seed": {
+        "price": 45.76,
+        "sma50": 47.63,
+        "sma200": 45.3,
+        "sma200_prev": 45.1,
+        "rsiD": 49,
+        "rsiW": 50,
+        "rangePos": 0.42
+      }
+    },
+    {
+      "ticker": "BE",
+      "layer": "L2",
+      "bucket": "core",
+      "type": "contrarian",
+      "maxLossPct": 35,
+      "seed": {
+        "price": 62,
+        "sma50": 54,
+        "sma200": 45,
+        "sma200_prev": 43,
+        "rsiD": 60,
+        "rsiW": 62,
+        "rangePos": 0.85
+      }
+    },
+    {
+      "ticker": "ABB",
+      "layer": "L3",
+      "bucket": "core",
+      "type": "trend",
+      "maxLossPct": null,
+      "seed": {
+        "price": 62,
+        "sma50": 58,
+        "sma200": 52,
+        "sma200_prev": 51,
+        "rsiD": 56,
+        "rsiW": 58,
+        "rangePos": 0.82
+      }
+    },
+    {
+      "ticker": "ROK",
+      "layer": "L3",
+      "bucket": "core",
+      "type": "trend",
+      "maxLossPct": null,
+      "seed": {
+        "price": 360,
+        "sma50": 345,
+        "sma200": 310,
+        "sma200_prev": 306,
+        "rsiD": 55,
+        "rsiW": 57,
+        "rangePos": 0.8
+      }
+    },
+    {
+      "ticker": "TER",
+      "layer": "L3",
+      "bucket": "core",
+      "type": "trend",
+      "maxLossPct": null,
+      "seed": {
+        "price": 135,
+        "sma50": 120,
+        "sma200": 105,
+        "sma200_prev": 103,
+        "rsiD": 60,
+        "rsiW": 62,
+        "rangePos": 0.88
+      }
+    },
+    {
+      "ticker": "SYM",
+      "layer": "L3",
+      "bucket": "satellite",
+      "type": "contrarian",
+      "maxLossPct": 35,
+      "seed": {
+        "price": 48,
+        "sma50": 40,
+        "sma200": 32,
+        "sma200_prev": 31,
+        "rsiD": 62,
+        "rsiW": 60,
+        "rangePos": 0.78
+      }
+    },
+    {
+      "ticker": "TSLA",
+      "layer": "L3",
+      "bucket": "core",
+      "type": "trend",
+      "maxLossPct": null,
+      "seed": {
+        "price": 340,
+        "sma50": 320,
+        "sma200": 300,
+        "sma200_prev": 298,
+        "rsiD": 55,
+        "rsiW": 53,
+        "rangePos": 0.62
+      }
+    },
+    {
+      "ticker": "IONQ",
+      "layer": "L7",
+      "bucket": "satellite",
+      "type": "contrarian",
+      "maxLossPct": 40,
+      "seed": {
+        "price": 72.07,
+        "sma50": 43.74,
+        "sma200": 47.84,
+        "sma200_prev": 46,
+        "rsiD": 76,
+        "rsiW": 71,
+        "rangePos": 0.85
+      }
+    },
+    {
+      "ticker": "QBTS",
+      "layer": "L7",
+      "bucket": "satellite",
+      "type": "contrarian",
+      "maxLossPct": 40,
+      "seed": {
+        "price": 30.14,
+        "sma50": 19.5,
+        "sma200": 23.2,
+        "sma200_prev": 22.8,
+        "rsiD": 68,
+        "rsiW": 64,
+        "rangePos": 0.67
+      }
+    },
+    {
+      "ticker": "RGTI",
+      "layer": "L7",
+      "bucket": "satellite",
+      "type": "contrarian",
+      "maxLossPct": 40,
+      "seed": {
+        "price": 25.54,
+        "sma50": 17.68,
+        "sma200": 23.31,
+        "sma200_prev": 23.5,
+        "rsiD": 64,
+        "rsiW": 60,
+        "rangePos": 0.44
+      }
+    },
+    {
+      "ticker": "LAES",
+      "layer": "L7",
+      "bucket": "satellite",
+      "type": "contrarian",
+      "maxLossPct": 45,
+      "seed": {
+        "price": 3.48,
+        "sma50": 2.83,
+        "sma200": 3.93,
+        "sma200_prev": 4.0,
+        "rsiD": 55,
+        "rsiW": 50,
+        "rangePos": 0.4
+      }
+    },
+    {
+      "ticker": "ARQQ",
+      "layer": "L7",
+      "bucket": "satellite",
+      "type": "contrarian",
+      "maxLossPct": 45,
+      "seed": {
+        "price": 16.51,
+        "sma50": 14.31,
+        "sma200": 25.37,
+        "sma200_prev": 26,
+        "rsiD": 52,
+        "rsiW": 48,
+        "rangePos": 0.27
+      }
+    },
+    {
+      "ticker": "RKLB",
+      "layer": "L8",
+      "bucket": "satellite",
+      "type": "contrarian",
+      "maxLossPct": 40,
+      "seed": {
+        "price": 143.48,
+        "sma50": 91.27,
+        "sma200": 69,
+        "sma200_prev": 67,
+        "rsiD": 66,
+        "rsiW": 68,
+        "rangePos": 0.96
+      }
+    },
+    {
+      "ticker": "ASTS",
+      "layer": "L8",
+      "bucket": "satellite",
+      "type": "contrarian",
+      "maxLossPct": 45,
+      "seed": {
+        "price": 113.41,
+        "sma50": 86.9,
+        "sma200": 77.2,
+        "sma200_prev": 75,
+        "rsiD": 58,
+        "rsiW": 60,
+        "rangePos": 0.85
+      }
+    },
+    {
+      "ticker": "LUNR",
+      "layer": "L8",
+      "bucket": "satellite",
+      "type": "contrarian",
+      "maxLossPct": 45,
+      "seed": {
+        "price": 12,
+        "sma50": 10,
+        "sma200": 14,
+        "sma200_prev": 14.3,
+        "rsiD": 48,
+        "rsiW": 45,
+        "rangePos": 0.3
+      }
+    },
+    {
+      "ticker": "RDW",
+      "layer": "L8",
+      "bucket": "satellite",
+      "type": "contrarian",
+      "maxLossPct": 45,
+      "seed": {
+        "price": 18,
+        "sma50": 16,
+        "sma200": 15,
+        "sma200_prev": 14.8,
+        "rsiD": 55,
+        "rsiW": 52,
+        "rangePos": 0.55
+      }
+    },
+    {
+      "ticker": "PLTR",
+      "layer": "L9",
+      "bucket": "core",
+      "type": "trend",
+      "maxLossPct": null,
+      "seed": {
+        "price": 135,
+        "sma50": 124,
+        "sma200": 90,
+        "sma200_prev": 88,
+        "rsiD": 60,
+        "rsiW": 62,
+        "rangePos": 0.92
+      }
+    },
+    {
+      "ticker": "KTOS",
+      "layer": "L9",
+      "bucket": "core",
+      "type": "contrarian",
+      "maxLossPct": 35,
+      "seed": {
+        "price": 64.13,
+        "sma50": 66,
+        "sma200": 80,
+        "sma200_prev": 82,
+        "rsiD": 47,
+        "rsiW": 44,
+        "rangePos": 0.18
+      }
+    },
+    {
+      "ticker": "AXON",
+      "layer": "L9",
+      "bucket": "core",
+      "type": "trend",
+      "maxLossPct": null,
+      "seed": {
+        "price": 448.72,
+        "sma50": 408,
+        "sma200": 470,
+        "sma200_prev": 475,
+        "rsiD": 52,
+        "rsiW": 50,
+        "rangePos": 0.51
+      }
+    },
+    {
+      "ticker": "MP",
+      "layer": "L9",
+      "bucket": "core",
+      "type": "contrarian",
+      "maxLossPct": 35,
+      "seed": {
+        "price": 64.7,
+        "sma50": 59.73,
+        "sma200": 62.91,
+        "sma200_prev": 63.2,
+        "rsiD": 59,
+        "rsiW": 58,
+        "rangePos": 0.45
+      }
+    },
+    {
+      "ticker": "LDOS",
+      "layer": "L9",
+      "bucket": "core",
+      "type": "trend",
+      "maxLossPct": null,
+      "seed": {
+        "price": 165,
+        "sma50": 156,
+        "sma200": 145,
+        "sma200_prev": 143,
+        "rsiD": 55,
+        "rsiW": 57,
+        "rangePos": 0.72
+      }
+    },
+    {
+      "ticker": "LLY",
+      "layer": "L10",
+      "bucket": "core",
+      "type": "trend",
+      "maxLossPct": null,
+      "seed": {
+        "price": 1080,
+        "sma50": 951,
+        "sma200": 935,
+        "sma200_prev": 922,
+        "rsiD": 70,
+        "rsiW": 71,
+        "rangePos": 0.96
+      }
+    },
+    {
+      "ticker": "TEM",
+      "layer": "L10",
+      "bucket": "satellite",
+      "type": "contrarian",
+      "maxLossPct": 40,
+      "seed": {
+        "price": 62,
+        "sma50": 54,
+        "sma200": 48,
+        "sma200_prev": 47,
+        "rsiD": 58,
+        "rsiW": 56,
+        "rangePos": 0.7
+      }
+    },
+    {
+      "ticker": "ISRG",
+      "layer": "L10",
+      "bucket": "core",
+      "type": "trend",
+      "maxLossPct": null,
+      "seed": {
+        "price": 560,
+        "sma50": 540,
+        "sma200": 520,
+        "sma200_prev": 517,
+        "rsiD": 54,
+        "rsiW": 56,
+        "rangePos": 0.74
+      }
+    },
+    {
+      "ticker": "RXRX",
+      "layer": "L10",
+      "bucket": "satellite",
+      "type": "contrarian",
+      "maxLossPct": 45,
+      "seed": {
+        "price": 6.5,
+        "sma50": 6.0,
+        "sma200": 7.5,
+        "sma200_prev": 7.7,
+        "rsiD": 48,
+        "rsiW": 44,
+        "rangePos": 0.28
+      }
+    },
+    {
+      "ticker": "COIN",
+      "layer": "L4",
+      "bucket": "core",
+      "type": "contrarian",
+      "maxLossPct": 35,
+      "seed": {
+        "price": 189.03,
+        "sma50": 189.35,
+        "sma200": 248.43,
+        "sma200_prev": 249.1,
+        "rsiD": 49,
+        "rsiW": 45,
+        "rangePos": 0.17
+      }
+    },
+    {
+      "ticker": "HOOD",
+      "layer": "L4",
+      "bucket": "core",
+      "type": "contrarian",
+      "maxLossPct": 40,
+      "seed": {
+        "price": 94.3,
+        "sma50": 76.78,
+        "sma200": 103.91,
+        "sma200_prev": 104.01,
+        "rsiD": 58,
+        "rsiW": 54,
+        "rangePos": 0.34
+      }
+    },
+    {
+      "ticker": "CRCL",
+      "layer": "L4",
+      "bucket": "core",
+      "type": "contrarian",
+      "maxLossPct": 40,
+      "seed": {
+        "price": 113.0,
+        "sma50": 105.92,
+        "sma200": 102.81,
+        "sma200_prev": 103.06,
+        "rsiD": 55,
+        "rsiW": 53,
+        "rangePos": 0.29
+      }
+    },
+    {
+      "ticker": "CIFR",
+      "layer": "L4",
+      "bucket": "satellite",
+      "type": "contrarian",
+      "maxLossPct": 45,
+      "seed": {
+        "price": 23.65,
+        "sma50": 18.1,
+        "sma200": 15.92,
+        "sma200_prev": 15.82,
+        "rsiD": 64,
+        "rsiW": 60,
+        "rangePos": 0.93
+      }
+    },
+    {
+      "ticker": "MSTR",
+      "layer": "L4",
+      "bucket": "bitcoin",
+      "type": "contrarian",
+      "maxLossPct": 40,
+      "seed": {
+        "price": 159.09,
+        "sma50": 162,
+        "sma200": 210,
+        "sma200_prev": 214,
+        "rsiD": 48,
+        "rsiW": 45,
+        "rangePos": 0.35
+      }
+    },
+    {
+      "ticker": "CRWD",
+      "layer": "L11",
+      "bucket": "core",
+      "type": "trend",
+      "maxLossPct": null,
+      "seed": {
+        "price": 429,
+        "sma50": 400,
+        "sma200": 360,
+        "sma200_prev": 355,
+        "rsiD": 68,
+        "rsiW": 66,
+        "rangePos": 0.92
+      }
+    },
+    {
+      "ticker": "PANW",
+      "layer": "L11",
+      "bucket": "core",
+      "type": "trend",
+      "maxLossPct": null,
+      "seed": {
+        "price": 283,
+        "sma50": 275,
+        "sma200": 250,
+        "sma200_prev": 246,
+        "rsiD": 55,
+        "rsiW": 54,
+        "rangePos": 0.62
+      }
+    },
+    {
+      "ticker": "ZS",
+      "layer": "L11",
+      "bucket": "core",
+      "type": "contrarian",
+      "maxLossPct": 35,
+      "seed": {
+        "price": 250,
+        "sma50": 255,
+        "sma200": 290,
+        "sma200_prev": 300,
+        "rsiD": 42,
+        "rsiW": 40,
+        "rangePos": 0.3
+      }
+    },
+    {
+      "ticker": "NET",
+      "layer": "L11",
+      "bucket": "core",
+      "type": "trend",
+      "maxLossPct": null,
+      "seed": {
+        "price": 180,
+        "sma50": 172,
+        "sma200": 150,
+        "sma200_prev": 146,
+        "rsiD": 60,
+        "rsiW": 62,
+        "rangePos": 0.8
+      }
+    },
+    {
+      "ticker": "FTNT",
+      "layer": "L11",
+      "bucket": "core",
+      "type": "trend",
+      "maxLossPct": null,
+      "seed": {
+        "price": 105,
+        "sma50": 102,
+        "sma200": 98,
+        "sma200_prev": 96,
+        "rsiD": 52,
+        "rsiW": 54,
+        "rangePos": 0.66
+      }
+    },
+    {
+      "ticker": "OKTA",
+      "layer": "L11",
+      "bucket": "core",
+      "type": "contrarian",
+      "maxLossPct": 35,
+      "seed": {
+        "price": 95,
+        "sma50": 92,
+        "sma200": 88,
+        "sma200_prev": 90,
+        "rsiD": 49,
+        "rsiW": 47,
+        "rangePos": 0.45
+      }
+    },
+    {
+      "ticker": "MU",
+      "layer": "L1b",
+      "bucket": "core",
+      "type": "trend",
+      "maxLossPct": null,
+      "seed": {
+        "price": 971,
+        "sma50": 557.56,
+        "sma200": 338.74,
+        "sma200_prev": 334.52,
+        "rsiD": 78,
+        "rsiW": 76,
+        "rangePos": 1.0
+      }
+    },
+    {
+      "ticker": "SNDK",
+      "layer": "L1b",
+      "bucket": "core",
+      "type": "trend",
+      "maxLossPct": null,
+      "seed": {
+        "price": 1694.98,
+        "sma50": 1078.61,
+        "sma200": 488.24,
+        "sma200_prev": 480.0,
+        "rsiD": 77,
+        "rsiW": 75,
+        "rangePos": 1.0
+      }
+    },
+    {
+      "ticker": "WDC",
+      "layer": "L1b",
+      "bucket": "core",
+      "type": "trend",
+      "maxLossPct": null,
+      "seed": {
+        "price": 180,
+        "sma50": 150,
+        "sma200": 110,
+        "sma200_prev": 107,
+        "rsiD": 72,
+        "rsiW": 70,
+        "rangePos": 0.96
+      }
+    },
+    {
+      "ticker": "XYL",
+      "layer": "L12",
+      "bucket": "core",
+      "type": "trend",
+      "maxLossPct": null,
+      "seed": {
+        "price": 150,
+        "sma50": 145,
+        "sma200": 135,
+        "sma200_prev": 133,
+        "rsiD": 55,
+        "rsiW": 57,
+        "rangePos": 0.78
+      }
+    },
+    {
+      "ticker": "AWK",
+      "layer": "L12",
+      "bucket": "core",
+      "type": "trend",
+      "maxLossPct": null,
+      "seed": {
+        "price": 150,
+        "sma50": 148,
+        "sma200": 142,
+        "sma200_prev": 141,
+        "rsiD": 50,
+        "rsiW": 52,
+        "rangePos": 0.6
+      }
+    },
+    {
+      "ticker": "PWR",
+      "layer": "L12",
+      "bucket": "core",
+      "type": "trend",
+      "maxLossPct": null,
+      "seed": {
+        "price": 420,
+        "sma50": 400,
+        "sma200": 350,
+        "sma200_prev": 344,
+        "rsiD": 60,
+        "rsiW": 62,
+        "rangePos": 0.9
+      }
+    },
+    {
+      "ticker": "ETR",
+      "layer": "L12",
+      "bucket": "core",
+      "type": "trend",
+      "maxLossPct": null,
+      "seed": {
+        "price": 95,
+        "sma50": 92,
+        "sma200": 86,
+        "sma200_prev": 85,
+        "rsiD": 53,
+        "rsiW": 55,
+        "rangePos": 0.72
+      }
+    },
+    {
+      "ticker": "CCJ",
+      "layer": "L13",
+      "bucket": "core",
+      "type": "trend",
+      "maxLossPct": null,
+      "seed": {
+        "price": 108,
+        "sma50": 100,
+        "sma200": 90,
+        "sma200_prev": 88,
+        "rsiD": 55,
+        "rsiW": 57,
+        "rangePos": 0.64
+      }
+    },
+    {
+      "ticker": "UEC",
+      "layer": "L13",
+      "bucket": "satellite",
+      "type": "contrarian",
+      "maxLossPct": 40,
+      "seed": {
+        "price": 9.5,
+        "sma50": 8.8,
+        "sma200": 8.0,
+        "sma200_prev": 7.9,
+        "rsiD": 56,
+        "rsiW": 54,
+        "rangePos": 0.62
+      }
+    },
+    {
+      "ticker": "UUUU",
+      "layer": "L13",
+      "bucket": "satellite",
+      "type": "contrarian",
+      "maxLossPct": 40,
+      "seed": {
+        "price": 9,
+        "sma50": 8.3,
+        "sma200": 7.5,
+        "sma200_prev": 7.4,
+        "rsiD": 57,
+        "rsiW": 55,
+        "rangePos": 0.66
+      }
+    },
+    {
+      "ticker": "NXE",
+      "layer": "L13",
+      "bucket": "satellite",
+      "type": "contrarian",
+      "maxLossPct": 40,
+      "seed": {
+        "price": 8.5,
+        "sma50": 8.0,
+        "sma200": 7.2,
+        "sma200_prev": 7.1,
+        "rsiD": 55,
+        "rsiW": 53,
+        "rangePos": 0.6
+      }
+    },
+    {
+      "ticker": "LEU",
+      "layer": "L13",
+      "bucket": "core",
+      "type": "contrarian",
+      "maxLossPct": 40,
+      "seed": {
+        "price": 180,
+        "sma50": 160,
+        "sma200": 130,
+        "sma200_prev": 127,
+        "rsiD": 60,
+        "rsiW": 58,
+        "rangePos": 0.78
+      }
+    },
+    {
+      "ticker": "DNN",
+      "layer": "L13",
+      "bucket": "satellite",
+      "type": "contrarian",
+      "maxLossPct": 45,
+      "seed": {
+        "price": 2.2,
+        "sma50": 2.0,
+        "sma200": 1.85,
+        "sma200_prev": 1.83,
+        "rsiD": 54,
+        "rsiW": 52,
+        "rangePos": 0.58
+      }
+    },
+    {
+      "ticker": "BTC",
+      "layer": "L4c",
+      "bucket": "bitcoin",
+      "type": "token",
+      "maxLossPct": null,
+      "seed": {
+        "price": 73366,
+        "sma50": 79800,
+        "sma200": 79800,
+        "sma200_prev": 80500,
+        "rsiD": 45,
+        "rsiW": 42,
+        "rangePos": 0.23
+      }
+    },
+    {
+      "ticker": "ETH",
+      "layer": "L4c",
+      "bucket": "bitcoin",
+      "type": "token",
+      "maxLossPct": null,
+      "seed": {
+        "price": 2934,
+        "sma50": 3038,
+        "sma200": 3587,
+        "sma200_prev": 3620,
+        "rsiD": 44,
+        "rsiW": 40,
+        "rangePos": 0.38
+      }
+    },
+    {
+      "ticker": "SOL",
+      "layer": "L4c",
+      "bucket": "bitcoin",
+      "type": "token",
+      "maxLossPct": null,
+      "seed": {
+        "price": 135,
+        "sma50": 150,
+        "sma200": 175,
+        "sma200_prev": 178,
+        "rsiD": 42,
+        "rsiW": 40,
+        "rangePos": 0.3
+      }
+    },
+    {
+      "ticker": "HYPE",
+      "layer": "L4c",
+      "bucket": "bitcoin",
+      "type": "token",
+      "maxLossPct": null,
+      "seed": {
+        "price": 28,
+        "sma50": 32,
+        "sma200": 38,
+        "sma200_prev": 39,
+        "rsiD": 40,
+        "rsiW": 38,
+        "rangePos": 0.25
+      }
+    },
+    {
+      "ticker": "SUI",
+      "layer": "L4c",
+      "bucket": "bitcoin",
+      "type": "token",
+      "maxLossPct": null,
+      "seed": {
+        "price": 2.8,
+        "sma50": 3.2,
+        "sma200": 3.8,
+        "sma200_prev": 3.85,
+        "rsiD": 41,
+        "rsiW": 39,
+        "rangePos": 0.22
+      }
+    },
+    {
+      "ticker": "MARA",
+      "layer": "L4c",
+      "bucket": "satellite",
+      "type": "contrarian",
+      "maxLossPct": 45,
+      "seed": {
+        "price": 14,
+        "sma50": 15,
+        "sma200": 18,
+        "sma200_prev": 18.3,
+        "rsiD": 46,
+        "rsiW": 44,
+        "rangePos": 0.3
+      }
+    },
+    {
+      "ticker": "RIOT",
+      "layer": "L4c",
+      "bucket": "satellite",
+      "type": "contrarian",
+      "maxLossPct": 45,
+      "seed": {
+        "price": 11,
+        "sma50": 11.5,
+        "sma200": 13,
+        "sma200_prev": 13.2,
+        "rsiD": 47,
+        "rsiW": 45,
+        "rangePos": 0.32
+      }
+    },
+    {
+      "ticker": "LHX",
+      "layer": "L9",
+      "bucket": "core",
+      "type": "trend",
+      "maxLossPct": null,
+      "seed": {
+        "price": 270,
+        "sma50": 260,
+        "sma200": 240,
+        "sma200_prev": 237,
+        "rsiD": 55,
+        "rsiW": 57,
+        "rangePos": 0.74
+      }
+    },
+    {
+      "ticker": "RTX",
+      "layer": "L9",
+      "bucket": "core",
+      "type": "trend",
+      "maxLossPct": null,
+      "seed": {
+        "price": 165,
+        "sma50": 160,
+        "sma200": 150,
+        "sma200_prev": 148,
+        "rsiD": 56,
+        "rsiW": 58,
+        "rangePos": 0.8
+      }
+    },
+    {
+      "ticker": "LMT",
+      "layer": "L9",
+      "bucket": "core",
+      "type": "trend",
+      "maxLossPct": null,
+      "seed": {
+        "price": 490,
+        "sma50": 485,
+        "sma200": 470,
+        "sma200_prev": 468,
+        "rsiD": 50,
+        "rsiW": 52,
+        "rangePos": 0.55
+      }
+    },
+    {
+      "ticker": "HII",
+      "layer": "L9",
+      "bucket": "core",
+      "type": "trend",
+      "maxLossPct": null,
+      "seed": {
+        "price": 290,
+        "sma50": 278,
+        "sma200": 255,
+        "sma200_prev": 251,
+        "rsiD": 60,
+        "rsiW": 62,
+        "rangePos": 0.85
+      }
+    },
+    {
+      "ticker": "PL",
+      "layer": "L8",
+      "bucket": "satellite",
+      "type": "contrarian",
+      "maxLossPct": 45,
+      "seed": {
+        "price": 9.5,
+        "sma50": 9.0,
+        "sma200": 7.5,
+        "sma200_prev": 7.3,
+        "rsiD": 58,
+        "rsiW": 56,
+        "rangePos": 0.8
+      }
+    },
+    {
+      "ticker": "IRDM",
+      "layer": "L8",
+      "bucket": "satellite",
+      "type": "contrarian",
+      "maxLossPct": 40,
+      "seed": {
+        "price": 28,
+        "sma50": 27,
+        "sma200": 26,
+        "sma200_prev": 25.8,
+        "rsiD": 50,
+        "rsiW": 52,
+        "rangePos": 0.55
+      }
+    },
+    {
+      "ticker": "SATS",
+      "layer": "L8",
+      "bucket": "satellite",
+      "type": "contrarian",
+      "maxLossPct": 45,
+      "seed": {
+        "price": 32,
+        "sma50": 30,
+        "sma200": 24,
+        "sma200_prev": 23.5,
+        "rsiD": 62,
+        "rsiW": 60,
+        "rangePos": 0.88
+      }
+    },
+    {
+      "ticker": "SHLD",
+      "layer": "L9",
+      "bucket": "core",
+      "type": "etf",
+      "maxLossPct": null,
+      "seed": {
+        "price": 55,
+        "sma50": 53,
+        "sma200": 48,
+        "sma200_prev": 47,
+        "rsiD": 56,
+        "rsiW": 58,
+        "rangePos": 0.78
+      }
+    },
+    {
+      "ticker": "XAR",
+      "layer": "L9",
+      "bucket": "core",
+      "type": "etf",
+      "maxLossPct": null,
+      "seed": {
+        "price": 230,
+        "sma50": 222,
+        "sma200": 200,
+        "sma200_prev": 197,
+        "rsiD": 58,
+        "rsiW": 60,
+        "rangePos": 0.82
+      }
+    },
+    {
+      "ticker": "ITA",
+      "layer": "L9",
+      "bucket": "core",
+      "type": "etf",
+      "maxLossPct": null,
+      "seed": {
+        "price": 235,
+        "sma50": 230,
+        "sma200": 215,
+        "sma200_prev": 213,
+        "rsiD": 55,
+        "rsiW": 57,
+        "rangePos": 0.78
+      }
+    },
+    {
+      "ticker": "JEDI",
+      "layer": "L8",
+      "bucket": "satellite",
+      "type": "etf",
+      "maxLossPct": null,
+      "seed": {
+        "price": 108.56,
+        "sma50": 100,
+        "sma200": 82,
+        "sma200_prev": 80,
+        "rsiD": 62,
+        "rsiW": 60,
+        "rangePos": 0.92
+      }
+    },
+    {
+      "ticker": "UFO",
+      "layer": "L8",
+      "bucket": "satellite",
+      "type": "etf",
+      "maxLossPct": null,
+      "seed": {
+        "price": 62,
+        "sma50": 60,
+        "sma200": 50,
+        "sma200_prev": 49,
+        "rsiD": 60,
+        "rsiW": 58,
+        "rangePos": 0.85
+      }
+    }
+  ]
+}

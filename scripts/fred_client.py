@@ -37,6 +37,7 @@ FRED_SERIES: dict[str, str] = {
     "manufacturing_output_idx":     "IPMAN",         # Manufacturing Output Index
     # Treasury Yield Curve (daily — nominal constant-maturity yields)
     # Used by the browser yield-curve regime classifier (bull/bear × steepen/flatten)
+    "treasury_3mo":                 "DGS3MO",        # 3-Month Treasury (true Atreides CPI>3M-bill gate)
     "treasury_2yr":                 "DGS2",          # 2Y Treasury (short end)
     "treasury_5yr":                 "DGS5",          # 5Y Treasury (belly — Brigden LFPR thesis)
     "treasury_10yr":                "DGS10",         # 10Y Treasury (nominal benchmark)

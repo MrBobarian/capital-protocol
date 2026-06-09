@@ -78,14 +78,14 @@ jobs:
         id: diff
         run: |
           # git diff only tracks modified files — also catch new/untracked files
-          git status --porcelain data/metrics.json data/archive/ | grep -q . && echo "changed=true" >> "$GITHUB_OUTPUT" || true
+          git status --porcelain data/metrics.json data/archive/ data/heatmap_universe.json | grep -q . && echo "changed=true" >> "$GITHUB_OUTPUT" || true
 
       - name: Commit and push updated metrics
         if: steps.diff.outputs.changed == 'true'
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add data/metrics.json data/archive/
+          git add data/metrics.json data/archive/ data/heatmap_universe.json
           git commit -m "chore(data): update metrics [$(date -u +%Y-%m-%d)] mode=${{ steps.mode.outputs.mode }} [skip ci]"
           git push
 

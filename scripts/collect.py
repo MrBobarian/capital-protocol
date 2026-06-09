@@ -39,6 +39,7 @@ ROOT = Path(__file__).parent.parent
 DATA_DIR = ROOT / "data"
 ARCHIVE_DIR = DATA_DIR / "archive"
 METRICS_PATH = DATA_DIR / "metrics.json"
+HEATMAP_PATH = DATA_DIR / "heatmap_universe.json"
 LOG_PATH = DATA_DIR / "collect.log"
 BOFAMS_PATH = DATA_DIR / "bofams_override.json"
 
@@ -527,6 +528,43 @@ def collect_alternatives() -> dict:
 # FRED macro data collection
 # ---------------------------------------------------------------------------
 
+def _fred_yoy(series_id: str, api_key: str | None) -> float | None:
+    """Direct FRED fetch of ~13 monthly observations → YoY % (latest vs 12-mo prior).
+
+    Used for index series (e.g. PCEPI) that the standard 2-obs fetch can only
+    return as a level, not a year-over-year rate.
+    """
+    if not api_key:
+        return None
+    try:
+        import requests as _req
+        r = _req.get(
+            "https://api.stlouisfed.org/fred/series/observations",
+            params={
+                "series_id":         series_id,
+                "api_key":           api_key,
+                "file_type":         "json",
+                "sort_order":        "desc",
+                "limit":             13,
+                "observation_start": "2022-01-01",
+            },
+            timeout=10,
+        )
+        if r.status_code != 200:
+            return None
+        obs = [
+            float(o["value"])
+            for o in r.json().get("observations", [])
+            if o.get("value") not in (".", None, "")
+        ]
+        # desc order: obs[0] = latest, obs[12] = 12 months prior
+        if len(obs) >= 13 and obs[12] != 0:
+            return round((obs[0] / obs[12] - 1) * 100, 2)
+    except Exception as e:
+        logging.warning("_fred_yoy(%s): %s", series_id, e)
+    return None
+
+
 FRED_SERIES_WEEKLY = [
     # ISM Manufacturing sourced from ism_override.json (manual) — not FRED
     # Capital Goods — Census Advance Durable Goods (~25th of month)
@@ -537,6 +575,7 @@ FRED_SERIES_WEEKLY = [
     "industrial_production_idx",
     "capacity_utilization_pct",
     # Treasury yield curve (daily) — nominal CMT yields for yield-curve regime
+    "treasury_3mo",
     "treasury_2yr",
     "treasury_5yr",
     "treasury_10yr",
@@ -906,11 +945,13 @@ def collect_fred_macro(
     # Raw data feed — the browser computes the bull/bear × steepen/flatten
     # regime classification from these values (Gap 7).
     # ------------------------------------------------------------------
+    y3mo = _val("treasury_3mo")
     y2  = _val("treasury_2yr")
     y5  = _val("treasury_5yr")
     y10 = _val("treasury_10yr")
     y30 = _val("treasury_30yr")
     yield_curve_block: dict = {
+        "treasury_3mo":        y3mo,
         "treasury_2yr":        y2,
         "treasury_5yr":        y5,
         "treasury_10yr":       y10,
@@ -1921,11 +1962,76 @@ def run(mode: str) -> None:
             )
         except Exception as e:
             logging.error("collect_equity_monitor failed: %s", e)
+            equity_data = {"tickers": {}}
             existing["equity_monitor"] = {
                 "fetched_at":   datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
                 "error":        str(e),
                 "ticker_count": 0,
             }
+
+        # Thesis Heatmap — merge live indicators onto the editorial roster
+        # (data/heatmap_meta.json) → data/heatmap_universe.json + metrics.heatmap.
+        # READ-ONLY visualization data; no scoring/veto logic lives here.
+        logging.info("--- Building Thesis Heatmap universe ---")
+        try:
+            from equity_monitor import (
+                build_heatmap_universe,
+                compute_hyperscaler_weeks_below_20dma,
+                _make_poly_session,
+            )
+            # prior_rows: `existing` was loaded from the prior metrics.json at the
+            # top of this run, so its heatmap is last run's — carry sma200_prev/PRIOR
+            # from it BEFORE we overwrite existing["heatmap"] below.
+            prior_heatmap = (existing.get("heatmap") or {}).get("universe") or []
+            heatmap_rows = build_heatmap_universe(
+                equity_data.get("tickers", {}),
+                massive_api_key=massive_api_key,
+                prior_rows=prior_heatmap,
+            )
+            # Hyperscaler F3 basket (MSFT/GOOGL/AMZN/META weeks below 20DMA)
+            hyper_wk = None
+            if massive_api_key:
+                try:
+                    hyper_wk = compute_hyperscaler_weeks_below_20dma(
+                        _make_poly_session(massive_api_key)
+                    )
+                except Exception as he:
+                    logging.warning("hyperscaler basket failed: %s", he)
+            # Macro object the heatmap consumes. y30wk is added client-side from
+            # the browser's DGS30 history (the pipeline only retains latest/prior).
+            yc  = fred_data.get("yield_curve_fred", {}) if isinstance(fred_data, dict) else {}
+            mr  = existing.get("macro_regime", {})
+            cpi_ov = load_json(DATA_DIR / "cpi_override.json")
+            tbill_real = yc.get("treasury_3mo")
+            heatmap_macro = {
+                "y30":            safe_float(yc.get("treasury_30yr")),
+                "tbill":          safe_float(tbill_real if tbill_real is not None
+                                             else mr.get("mr1_tbill_3mo_proxy")),
+                "tbill_is_proxy": tbill_real is None,
+                "cpi":            safe_float(cpi_ov.get("cpi_yoy_pct")),
+                "pce":            _fred_yoy("PCEPI", fred_api_key),
+                "hyperWk":        hyper_wk,
+            }
+            existing["heatmap"] = {
+                "universe":     heatmap_rows,
+                "macro":        heatmap_macro,
+                "as_of":        date.today().isoformat(),
+                "generated_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+            }
+            write_json(HEATMAP_PATH, {
+                "universe":     heatmap_rows,
+                "macro":        heatmap_macro,
+                "as_of":        date.today().isoformat(),
+                "generated_at": existing["heatmap"]["generated_at"],
+            })
+            logging.info(
+                "Heatmap: %d rows | hyperWk=%s | y30=%s tbill=%s%s cpi=%s pce=%s",
+                len(heatmap_rows), hyper_wk, heatmap_macro["y30"], heatmap_macro["tbill"],
+                " (proxy)" if heatmap_macro["tbill_is_proxy"] else "",
+                heatmap_macro["cpi"], heatmap_macro["pce"],
+            )
+        except Exception as e:
+            logging.error("build_heatmap_universe failed: %s", e)
 
     # Yahoo prices — key dashboard tickers (local only; CI skipped via YFINANCE_ENABLED=false)
     logging.info("--- Collecting Yahoo Finance prices ---")
@@ -1982,6 +2088,8 @@ def run(mode: str) -> None:
         "liquidity_driver": existing.get("liquidity_driver", {"score": None, "signal": "UNKNOWN"}),
         # Equity Market Monitor (populated on weekly/full runs)
         "equity_monitor": existing.get("equity_monitor", {"ticker_count": 0}),
+        # Thesis Heatmap universe + macro (populated on weekly/full runs)
+        "heatmap": existing.get("heatmap", {"universe": [], "macro": {}}),
         # Yahoo prices (local runs only — CI skips; available when YFINANCE_ENABLED=true)
         "yahoo_prices": existing.get("yahoo_prices", {}),
     }

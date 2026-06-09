@@ -730,6 +730,212 @@ def collect_equity_monitor(
 
 
 # ---------------------------------------------------------------------------
+# Thesis Heatmap universe builder
+#
+# Merges live indicators onto the editorial roster (data/heatmap_meta.json) and
+# emits the flat contract array consumed by the Heatmap tab. READ-ONLY: this does
+# NOT touch the heatmap's scoring/band/veto logic (that lives in the frontend).
+# ---------------------------------------------------------------------------
+_HEATMAP_META_PATH = _DATA_DIR / "heatmap_meta.json"
+_HEATMAP_OUT_PATH  = _DATA_DIR / "heatmap_universe.json"
+
+# Tokens priced via Massive crypto aggs (X:<SYM>USD). Symbols absent here, or with
+# no Massive coverage, fall back to the editorial seed (src=EST).
+_HEATMAP_TOKEN_MASSIVE = {
+    "BTC": "X:BTCUSD", "ETH": "X:ETHUSD", "SOL": "X:SOLUSD",
+    "HYPE": "X:HYPEUSD", "SUI": "X:SUIUSD",
+}
+
+# Jordi hyperscaler basket — equal-weight; F3 'spenders' = consecutive weeks the
+# basket weekly close sits below its 20DMA.
+_HYPERSCALER_BASKET = ["MSFT", "GOOGL", "AMZN", "META"]
+
+
+def _load_json_safe(path: Path) -> dict:
+    try:
+        with path.open(encoding="utf-8") as f:
+            return json.load(f)
+    except Exception:
+        return {}
+
+
+def _range_pos(price, hi, lo):
+    if price is None or hi is None or lo is None or hi <= lo:
+        return None
+    return round(min(1.0, max(0.0, (price - lo) / (hi - lo))), 3)
+
+
+def _heatmap_indicators_from_ohlc(ohlc: list[dict]) -> dict | None:
+    """Compute the heatmap contract indicators from a daily OHLC list."""
+    from technical_signals import compute_ticker_technicals
+    closes = [b["c"] for b in ohlc if b.get("c") is not None]
+    if len(closes) < 2:
+        return None
+    price = round(closes[-1], 4)
+    tech = compute_ticker_technicals(ohlc, price)
+    rsi_d = _compute_rsi(closes, period=14)
+    wk = _get_ohlc_weekly(ohlc)
+    wk_closes = [b["c"] for b in wk if b.get("c") is not None]
+    rsi_w = _compute_rsi(wk_closes, period=14) if len(wk_closes) >= 15 else None
+    return {
+        "price": price, "sma50": tech.get("sma50"), "sma200": tech.get("sma200"),
+        "rsiD": rsi_d, "rsiW": rsi_w,
+        "rangePos": _range_pos(price, tech.get("high_52w"), tech.get("low_52w")),
+    }
+
+
+def _heatmap_indicators_from_equity(td: dict) -> dict | None:
+    """Reuse already-fetched equity_monitor.tickers[<t>] indicators."""
+    price = td.get("price")
+    if price is None:
+        return None
+    return {
+        "price": price, "sma50": td.get("sma50"), "sma200": td.get("sma200"),
+        "rsiD": td.get("rsi_14d"), "rsiW": td.get("rsi_14w"),
+        "rangePos": _range_pos(price, td.get("high_52w"), td.get("low_52w")),
+    }
+
+
+def compute_hyperscaler_weeks_below_20dma(poly_session, *, skip_sleep: bool = False) -> int | None:
+    """Equal-weight MSFT/GOOGL/AMZN/META basket; count consecutive most-recent
+    weeks the basket's weekly close is below its 20DMA. Jordi F3 tripwire."""
+    if poly_session is None:
+        return None
+    series: dict[str, dict] = {}
+    for t in _HYPERSCALER_BASKET:
+        if not skip_sleep:
+            time.sleep(RATE_LIMIT_SLEEP)
+        ohlc = _get_ohlc_massive(poly_session, t, days=400)
+        closes = {
+            datetime.fromtimestamp(b["t"] / 1000, tz=timezone.utc).date(): b["c"]
+            for b in ohlc if b.get("c") is not None
+        }
+        if closes:
+            series[t] = closes
+    if len(series) < 2:
+        return None
+    common = sorted(set.intersection(*[set(s.keys()) for s in series.values()]))
+    if len(common) < 100:
+        return None
+    base = {t: series[t][common[0]] for t in series}
+    basket = [(d, mean(series[t][d] / base[t] for t in series)) for d in common]
+    vals = [v for _, v in basket]
+    ma20 = [mean(vals[max(0, i - 19):i + 1]) if i >= 19 else None for i in range(len(vals))]
+    weekly: dict[tuple, tuple] = {}
+    for (d, v), m20 in zip(basket, ma20):
+        weekly[d.isocalendar()[:2]] = (v, m20)
+    ordered = [weekly[k] for k in sorted(weekly.keys())]
+    streak = 0
+    for v, m20 in reversed(ordered):
+        if m20 is None or v >= m20:
+            break
+        streak += 1
+    return streak
+
+
+def build_heatmap_universe(
+    equity_tickers: dict | None,
+    *,
+    massive_api_key: str | None = None,
+    prior_rows: list[dict] | None = None,
+    skip_sleep: bool = False,
+) -> list[dict]:
+    """Merge live indicators onto data/heatmap_meta.json → flat contract array.
+
+    src tagging:  FRESH = fetched/reused this run · PRIOR = carried from prior
+    committed file · EST = editorial seed only (no live data source).
+    sma200_prev is carried from the prior run's sma200 (never recomputed).
+    """
+    meta = _load_json_safe(_HEATMAP_META_PATH)
+    rows_meta = meta.get("rows", []) if isinstance(meta, dict) else []
+    if not rows_meta:
+        logger.warning("heatmap_meta.json missing/empty — heatmap universe empty")
+        return []
+
+    poly_key = massive_api_key or os.environ.get("MASSIVE_API_KEY", "")
+    poly_session = _make_poly_session(poly_key) if poly_key else None
+    equity_tickers = equity_tickers or {}
+
+    prior_map: dict[tuple, dict] = {
+        (r.get("ticker"), r.get("layer")): r for r in (prior_rows or [])
+    }
+
+    # ── Fetch live indicators for each distinct ticker exactly once ───────────
+    distinct = list(dict.fromkeys(r["ticker"] for r in rows_meta))
+    live_map: dict[str, dict] = {}
+    for t in distinct:
+        if t in equity_tickers:                      # 1) reuse equity_monitor fetch
+            ind = _heatmap_indicators_from_equity(equity_tickers[t])
+            if ind:
+                live_map[t] = ind
+                continue
+        if t in _HEATMAP_TOKEN_MASSIVE and poly_session is not None:  # 2) crypto
+            if not skip_sleep:
+                time.sleep(RATE_LIMIT_SLEEP)
+            ohlc = _get_ohlc_massive(poly_session, _HEATMAP_TOKEN_MASSIVE[t], days=365)
+            ind = _heatmap_indicators_from_ohlc(ohlc) if ohlc else None
+            if ind:
+                live_map[t] = ind
+                continue
+        if poly_session is not None:                 # 3) heatmap-only equity fetch
+            ohlc = _get_ohlc(None, poly_session, t, days=365,
+                             massive_sleep=0.0 if skip_sleep else RATE_LIMIT_SLEEP)
+            ind = _heatmap_indicators_from_ohlc(ohlc) if ohlc else None
+            if ind:
+                live_map[t] = ind
+
+    # ── Assemble rows (preserve order + (ticker,layer) duplicates) ────────────
+    out_rows: list[dict] = []
+    unassigned: list[str] = []
+    for r in rows_meta:
+        t, layer = r["ticker"], r["layer"]
+        seed = r.get("seed", {}) or {}
+        live = live_map.get(t)
+        prior = prior_map.get((t, layer))
+        if live:
+            src = "FRESH"
+            price, sma50, sma200 = live["price"], live["sma50"], live["sma200"]
+            rsi_d, rsi_w, rng = live["rsiD"], live["rsiW"], live["rangePos"]
+        elif prior and prior.get("price") is not None and prior.get("src") != "EST":
+            src = "PRIOR"
+            price, sma50, sma200 = prior.get("price"), prior.get("sma50"), prior.get("sma200")
+            rsi_d, rsi_w, rng = prior.get("rsiD"), prior.get("rsiW"), prior.get("rangePos")
+        else:
+            src = "EST"
+            price, sma50, sma200 = seed.get("price"), seed.get("sma50"), seed.get("sma200")
+            rsi_d, rsi_w, rng = seed.get("rsiD"), seed.get("rsiW"), seed.get("rangePos")
+
+        if prior and prior.get("sma200") is not None:
+            sma200_prev = prior.get("sma200")          # carry prior run's 200DMA
+        elif seed.get("sma200_prev") is not None:
+            sma200_prev = seed.get("sma200_prev")
+        else:
+            sma200_prev = sma200
+
+        if r.get("bucket") not in ("core", "satellite", "bitcoin"):
+            unassigned.append(t)
+
+        out_rows.append({
+            "ticker": t, "layer": layer,
+            "price": price, "sma50": sma50, "sma200": sma200, "sma200_prev": sma200_prev,
+            "rsiD": rsi_d, "rsiW": rsi_w, "rangePos": rng,
+            "bucket": r.get("bucket"), "type": r.get("type"),
+            "maxLossPct": r.get("maxLossPct"), "src": src,
+        })
+
+    if unassigned:
+        logger.warning("Heatmap rows with no bucket (render UNASSIGNED): %s", unassigned)
+    logger.info(
+        "Heatmap universe: %d rows | FRESH %d · PRIOR %d · EST %d",
+        len(out_rows),
+        sum(1 for r in out_rows if r["src"] == "FRESH"),
+        sum(1 for r in out_rows if r["src"] == "PRIOR"),
+        sum(1 for r in out_rows if r["src"] == "EST"),
+    )
+    return out_rows
+
+
+# ---------------------------------------------------------------------------
 # CLI
 # ---------------------------------------------------------------------------
 def _setup_logging() -> None:

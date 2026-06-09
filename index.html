@@ -343,6 +343,59 @@
   .layer-metric{font-size:10px;color:var(--muted);margin-bottom:7px;font-family:var(--mono)}
   .layer-assets{display:flex;flex-wrap:wrap;gap:3px}
   .layer-tag{font-size:9px;font-family:var(--mono);background:var(--bg);border:1px solid var(--border);border-radius:3px;padding:2px 5px;color:var(--muted)}
+
+  /* ===== THESIS HEATMAP (ported prototype — all rules scoped to #p-heatmap) ===== */
+  #p-heatmap #cp-root{--bg:#0a0d13;--panel:#111621;--line:#1e2636;--ink:#e8edf4;--dim:#8693a9;
+    --cold:#4ec9b0;--cool:#5aa9ff;--mid:#6b7a93;--warm:#e9c46a;--hot:#f4a261;--exit:#e85d6c;--core:#7ee0c4;
+    --mono:'Space Mono',monospace;--sans:'Archivo',sans-serif;
+    background:var(--bg);color:var(--ink);font-family:var(--sans);padding:26px;border-radius:14px;max-width:1200px;margin:0 auto;border:1px solid var(--line)}
+  #p-heatmap #cp-root *{box-sizing:border-box}
+  #p-heatmap .h{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:1px solid var(--line);padding-bottom:16px;margin-bottom:14px;flex-wrap:wrap;gap:12px}
+  #p-heatmap .t1{font-size:23px;font-weight:800;letter-spacing:-.5px}#p-heatmap .t1 b{color:var(--cold)}
+  #p-heatmap .sub{color:var(--dim);font-size:11.5px;font-family:var(--mono);margin-top:7px;max-width:720px;line-height:1.5}
+  #p-heatmap .asof{font-family:var(--mono);font-size:12px;color:var(--dim);text-align:right}
+  #p-heatmap .bucketbar{display:flex;gap:18px;font-family:var(--mono);font-size:11px;color:var(--dim);margin-bottom:8px;flex-wrap:wrap}
+  #p-heatmap .bucketbar b{color:var(--ink)}
+  #p-heatmap .bsec{border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin:16px 0}
+  #p-heatmap .bsec.core{border-color:rgba(126,224,196,.3);background:rgba(126,224,196,.03)}
+  #p-heatmap .bsec.satellite{border-color:rgba(244,162,97,.25);background:rgba(244,162,97,.03)}
+  #p-heatmap .bsec.bitcoin{border-color:rgba(90,169,255,.3);background:rgba(90,169,255,.04)}
+  #p-heatmap .bhead{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px;flex-wrap:wrap;gap:8px}
+  #p-heatmap .bname{font-size:17px;font-weight:800}#p-heatmap .bname.core{color:var(--core)}#p-heatmap .bname.satellite{color:var(--hot)}#p-heatmap .bname.bitcoin{color:var(--cool)}
+  #p-heatmap .brule{font-family:var(--mono);font-size:10.5px;color:var(--dim);max-width:560px;line-height:1.5;margin-bottom:12px}
+  #p-heatmap .sec{font-family:var(--mono);font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--dim);margin:14px 0 9px;display:flex;justify-content:space-between}
+  #p-heatmap .gauges{display:grid;grid-template-columns:repeat(auto-fill,minmax(225px,1fr));gap:8px}
+  #p-heatmap .gauge{background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:11px 13px}
+  #p-heatmap .gtop{display:flex;justify-content:space-between;align-items:baseline}
+  #p-heatmap .glay{font-weight:800;font-size:12.5px}#p-heatmap .glay small{font-weight:400;color:var(--dim);font-size:9px;display:block;margin-top:2px}
+  #p-heatmap .gscore{font-family:var(--mono);font-weight:700;font-size:18px}
+  #p-heatmap .gbar{height:6px;border-radius:5px;margin-top:8px;background:linear-gradient(90deg,var(--cold),var(--mid) 50%,var(--hot) 82%,var(--exit));position:relative}
+  #p-heatmap .gbar i{position:absolute;top:-3px;width:3px;height:12px;background:#fff;border-radius:2px;box-shadow:0 0 5px rgba(0,0,0,.7)}
+  #p-heatmap .gverdict{font-family:var(--mono);font-size:9.5px;margin-top:6px}
+  #p-heatmap .gnames{font-family:var(--mono);font-size:9px;color:var(--dim);margin-top:5px;line-height:1.5}
+  #p-heatmap .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(255px,1fr));gap:7px}
+  #p-heatmap .card{background:var(--panel);border:1px solid var(--line);border-left-width:3px;border-radius:7px;padding:10px 12px}
+  #p-heatmap .card.exit{border-left-color:var(--exit)}#p-heatmap .card.trim{border-left-color:var(--hot)}#p-heatmap .card.ease{border-left-color:var(--warm)}
+  #p-heatmap .card.normal{border-left-color:var(--mid)}#p-heatmap .card.add{border-left-color:var(--cold)}#p-heatmap .card.accelerate{border-left-color:var(--cold)}
+  #p-heatmap .card.pace{border-left-color:var(--core)}
+  #p-heatmap .ctop{display:flex;justify-content:space-between;align-items:baseline;gap:5px}
+  #p-heatmap .tk{font-weight:800;font-size:13px}#p-heatmap .tk small{font-weight:400;color:var(--dim);font-size:9px;margin-left:3px}
+  #p-heatmap .tok{font-size:8px;font-family:var(--mono);font-weight:700;padding:1px 4px;border-radius:3px;margin-left:4px;background:rgba(126,224,196,.15);color:var(--core)}
+  #p-heatmap .bdg{font-family:var(--mono);font-size:8.5px;font-weight:700;padding:2px 6px;border-radius:4px;white-space:nowrap}
+  #p-heatmap .b-exit{background:rgba(232,93,108,.18);color:var(--exit)}#p-heatmap .b-trim{background:rgba(244,162,97,.16);color:var(--hot)}
+  #p-heatmap .b-ease{background:rgba(233,196,106,.16);color:var(--warm)}#p-heatmap .b-normal{background:rgba(107,122,147,.2);color:#9fb0c8}
+  #p-heatmap .b-add{background:rgba(78,201,176,.16);color:var(--cold)}#p-heatmap .b-accelerate{background:rgba(78,201,176,.24);color:var(--cold)}
+  #p-heatmap .b-pace{background:rgba(126,224,196,.14);color:var(--core)}#p-heatmap .b-wait{background:rgba(90,169,255,.16);color:var(--cool)}
+  #p-heatmap .meter{height:5px;border-radius:4px;margin-top:8px;background:linear-gradient(90deg,var(--cold),var(--mid) 50%,var(--hot) 82%,var(--exit));position:relative}
+  #p-heatmap .meter i{position:absolute;top:-3px;width:3px;height:11px;background:#fff;border-radius:2px}
+  #p-heatmap .metrics{display:flex;gap:9px;margin-top:7px;flex-wrap:wrap;font-family:var(--mono);font-size:9.5px;color:var(--dim)}
+  #p-heatmap .metrics b{color:var(--ink)} #p-heatmap .src{font-size:8px;padding:1px 4px;border:1px solid var(--line);border-radius:3px;color:var(--dim);margin-left:4px}
+  #p-heatmap .ctxbanner{font-family:var(--mono);font-size:11px;border-radius:8px;padding:11px 14px;margin-bottom:10px;display:flex;align-items:center;gap:10px}
+  #p-heatmap .ctxbanner.ok{background:rgba(126,224,196,.08);border:1px solid rgba(126,224,196,.25);color:var(--core)}
+  #p-heatmap .ctxbanner.armed{background:rgba(233,196,106,.1);border:1px solid rgba(233,196,106,.3);color:var(--warm)}
+  #p-heatmap .ctxbanner.breach{background:rgba(232,93,108,.1);border:1px solid rgba(232,93,108,.35);color:var(--exit)}
+  #p-heatmap .dot{width:9px;height:9px;border-radius:50%;flex:none}#p-heatmap .d-ok{background:var(--core)}#p-heatmap .d-armed{background:var(--warm)}#p-heatmap .d-breach{background:var(--exit)}
+  #p-heatmap .foot{margin-top:20px;padding-top:14px;border-top:1px solid var(--line);font-family:var(--mono);font-size:9.5px;color:var(--dim);line-height:1.7}
 </style>
 </head>
 <body>
@@ -379,6 +432,7 @@
     <button data-tab="portfolio">Risk Gates</button>
     <button data-tab="scenarios">Scenarios</button>
     <button data-tab="intel">Intelligence</button>
+    <button data-tab="heatmap">Heatmap</button>
     <button data-tab="settings">Settings</button>
   </nav>
 </header>
@@ -770,6 +824,11 @@
       </div>
     </div>
 
+  </section>
+
+  <!-- ======== THESIS HEATMAP (ported from prototype; scoped to #p-heatmap) ======== -->
+  <section class="panel" id="p-heatmap">
+    <div id="cp-root"></div>
   </section>
 
   <!-- ======== SETTINGS ======== -->
@@ -3498,6 +3557,9 @@ function rerender(){
   renderNews(STATE.news.items||[]);
   renderSOXXIntelligence();
 
+  // HEATMAP (ported prototype; reads STATE.metrics.heatmap, falls back to embedded sample)
+  try{ Heatmap.render(); }catch(e){ console.error('Heatmap.render', e); }
+
   // RISK GATES
   renderHarvest(computeHarvestCountdown());
   renderRotation(computeLayerRotation(yahoo));
@@ -3754,6 +3816,133 @@ function renderLayerSentiment(dashboard){
 }
 
 /* ---------- 16. INIT ---------- */
+/* ---------- THESIS HEATMAP (ported prototype, namespaced) ----------
+   Logic (exhaustion formula, three-bucket rulesets, 200DMA gates, veto) is
+   UNCHANGED from the prototype. Only the data source is rewired: it reads the
+   live universe + macro from STATE.metrics.heatmap, and falls back to the
+   embedded sample array when the pipeline data is absent. */
+const Heatmap = (function(){
+  // Embedded sample — offline fallback only (used when STATE.metrics.heatmap absent)
+  const EMBEDDED_UNIVERSE = [{"ticker": "NVDA", "layer": "L1", "price": 211.14, "sma50": 199.35, "sma200": 187.65, "sma200_prev": 187.51, "rsiD": 56, "rsiW": 58, "rangePos": 0.76, "type": "trend", "maxLossPct": null, "src": "FRESH", "bucket": "core"}, {"ticker": "TSM", "layer": "L1", "price": 205, "sma50": 198, "sma200": 190, "sma200_prev": 188, "rsiD": 56, "rsiW": 58, "rangePos": 0.78, "type": "trend", "maxLossPct": null, "src": "PRIOR", "bucket": "core"}, {"ticker": "MRVL", "layer": "L1", "price": 92, "sma50": 86, "sma200": 80, "sma200_prev": 78, "rsiD": 62, "rsiW": 61, "rangePos": 0.7, "type": "trend", "maxLossPct": null, "src": "PRIOR", "bucket": "core"}, {"ticker": "AVGO", "layer": "L1", "price": 446.77, "sma50": 385.7, "sma200": 352.3, "sma200_prev": 351.63, "rsiD": 60, "rsiW": 62, "rangePos": 1.0, "type": "trend", "maxLossPct": null, "src": "FRESH", "bucket": "core"}, {"ticker": "AMD", "layer": "L1", "price": 516.1, "sma50": 328.15, "sma200": 237.58, "sma200_prev": 235.88, "rsiD": 72, "rsiW": 74, "rangePos": 1.0, "type": "trend", "maxLossPct": null, "src": "FRESH", "bucket": "core"}, {"ticker": "MU", "layer": "L1", "price": 971, "sma50": 557.56, "sma200": 338.74, "sma200_prev": 334.52, "rsiD": 78, "rsiW": 76, "rangePos": 1.0, "type": "trend", "maxLossPct": null, "src": "FRESH", "bucket": "core"}, {"ticker": "ARM", "layer": "L1", "price": 353.29, "sma50": 198.44, "sma200": 150.84, "sma200_prev": 149.79, "rsiD": 75, "rsiW": 72, "rangePos": 1.0, "type": "trend", "maxLossPct": null, "src": "FRESH", "bucket": "core"}, {"ticker": "SNDK", "layer": "L1", "price": 1694.98, "sma50": 1078.61, "sma200": 488.24, "sma200_prev": 480.0, "rsiD": 77, "rsiW": 75, "rangePos": 1.0, "type": "trend", "maxLossPct": null, "src": "FRESH", "bucket": "core"}, {"ticker": "ETN", "layer": "L2", "price": 400.6, "sma50": 393.53, "sma200": 365.0, "sma200_prev": 364.81, "rsiD": 55, "rsiW": 58, "rangePos": 0.72, "type": "trend", "maxLossPct": null, "src": "FRESH", "bucket": "core"}, {"ticker": "CEG", "layer": "L2", "price": 287.75, "sma50": 283, "sma200": 300, "sma200_prev": 303, "rsiD": 48, "rsiW": 52, "rangePos": 0.3, "type": "trend", "maxLossPct": null, "src": "FRESH", "bucket": "core"}, {"ticker": "VRT", "layer": "L2", "price": 315.71, "sma50": 300, "sma200": 252, "sma200_prev": 246, "rsiD": 62, "rsiW": 66, "rangePos": 0.84, "type": "trend", "maxLossPct": null, "src": "PRIOR", "bucket": "core"}, {"ticker": "GEV", "layer": "L2", "price": 968.32, "sma50": 1001, "sma200": 749, "sma200_prev": 735, "rsiD": 51, "rsiW": 63, "rangePos": 0.66, "type": "trend", "maxLossPct": null, "src": "PRIOR", "bucket": "core"}, {"ticker": "HUBB", "layer": "L2", "price": 430, "sma50": 418, "sma200": 405, "sma200_prev": 402, "rsiD": 55, "rsiW": 57, "rangePos": 0.75, "type": "trend", "maxLossPct": null, "src": "PRIOR", "bucket": "core"}, {"ticker": "NVT", "layer": "L2", "price": 166.99, "sma50": 144.01, "sma200": 114.32, "sma200_prev": 112, "rsiD": 64, "rsiW": 68, "rangePos": 0.96, "type": "trend", "maxLossPct": null, "src": "PRIOR", "bucket": "core"}, {"ticker": "VST", "layer": "L2", "price": 195, "sma50": 185, "sma200": 150, "sma200_prev": 147, "rsiD": 58, "rsiW": 60, "rangePos": 0.8, "type": "trend", "maxLossPct": null, "src": "EST", "bucket": "core"}, {"ticker": "POWL", "layer": "L2", "price": 285, "sma50": 270, "sma200": 230, "sma200_prev": 226, "rsiD": 57, "rsiW": 59, "rangePos": 0.78, "type": "trend", "maxLossPct": null, "src": "EST", "bucket": "core"}, {"ticker": "FLR", "layer": "L2", "price": 45.76, "sma50": 47.63, "sma200": 45.3, "sma200_prev": 45.1, "rsiD": 49, "rsiW": 50, "rangePos": 0.42, "type": "trend", "maxLossPct": null, "src": "PRIOR", "bucket": "core"}, {"ticker": "BE", "layer": "L2", "price": 62, "sma50": 54, "sma200": 45, "sma200_prev": 43, "rsiD": 60, "rsiW": 62, "rangePos": 0.85, "type": "contrarian", "maxLossPct": 35, "src": "EST", "bucket": "core"}, {"ticker": "ABB", "layer": "L3", "price": 62, "sma50": 58, "sma200": 52, "sma200_prev": 51, "rsiD": 56, "rsiW": 58, "rangePos": 0.82, "type": "trend", "maxLossPct": null, "src": "EST", "bucket": "core"}, {"ticker": "ROK", "layer": "L3", "price": 360, "sma50": 345, "sma200": 310, "sma200_prev": 306, "rsiD": 55, "rsiW": 57, "rangePos": 0.8, "type": "trend", "maxLossPct": null, "src": "EST", "bucket": "core"}, {"ticker": "TER", "layer": "L3", "price": 135, "sma50": 120, "sma200": 105, "sma200_prev": 103, "rsiD": 60, "rsiW": 62, "rangePos": 0.88, "type": "trend", "maxLossPct": null, "src": "EST", "bucket": "core"}, {"ticker": "SYM", "layer": "L3", "price": 48, "sma50": 40, "sma200": 32, "sma200_prev": 31, "rsiD": 62, "rsiW": 60, "rangePos": 0.78, "type": "contrarian", "maxLossPct": 35, "src": "EST", "bucket": "satellite"}, {"ticker": "TSLA", "layer": "L3", "price": 340, "sma50": 320, "sma200": 300, "sma200_prev": 298, "rsiD": 55, "rsiW": 53, "rangePos": 0.62, "type": "trend", "maxLossPct": null, "src": "EST", "bucket": "core"}, {"ticker": "IONQ", "layer": "L7", "price": 72.07, "sma50": 43.74, "sma200": 47.84, "sma200_prev": 46, "rsiD": 76, "rsiW": 71, "rangePos": 0.85, "type": "contrarian", "maxLossPct": 40, "src": "PRIOR", "bucket": "satellite"}, {"ticker": "QBTS", "layer": "L7", "price": 30.14, "sma50": 19.5, "sma200": 23.2, "sma200_prev": 22.8, "rsiD": 68, "rsiW": 64, "rangePos": 0.67, "type": "contrarian", "maxLossPct": 40, "src": "PRIOR", "bucket": "satellite"}, {"ticker": "RGTI", "layer": "L7", "price": 25.54, "sma50": 17.68, "sma200": 23.31, "sma200_prev": 23.5, "rsiD": 64, "rsiW": 60, "rangePos": 0.44, "type": "contrarian", "maxLossPct": 40, "src": "PRIOR", "bucket": "satellite"}, {"ticker": "LAES", "layer": "L7", "price": 3.48, "sma50": 2.83, "sma200": 3.93, "sma200_prev": 4.0, "rsiD": 55, "rsiW": 50, "rangePos": 0.4, "type": "contrarian", "maxLossPct": 45, "src": "PRIOR", "bucket": "satellite"}, {"ticker": "ARQQ", "layer": "L7", "price": 16.51, "sma50": 14.31, "sma200": 25.37, "sma200_prev": 26, "rsiD": 52, "rsiW": 48, "rangePos": 0.27, "type": "contrarian", "maxLossPct": 45, "src": "PRIOR", "bucket": "satellite"}, {"ticker": "RKLB", "layer": "L8", "price": 143.48, "sma50": 91.27, "sma200": 69, "sma200_prev": 67, "rsiD": 66, "rsiW": 68, "rangePos": 0.96, "type": "contrarian", "maxLossPct": 40, "src": "PRIOR", "bucket": "satellite"}, {"ticker": "ASTS", "layer": "L8", "price": 113.41, "sma50": 86.9, "sma200": 77.2, "sma200_prev": 75, "rsiD": 58, "rsiW": 60, "rangePos": 0.85, "type": "contrarian", "maxLossPct": 45, "src": "PRIOR", "bucket": "satellite"}, {"ticker": "LUNR", "layer": "L8", "price": 12, "sma50": 10, "sma200": 14, "sma200_prev": 14.3, "rsiD": 48, "rsiW": 45, "rangePos": 0.3, "type": "contrarian", "maxLossPct": 45, "src": "EST", "bucket": "satellite"}, {"ticker": "RDW", "layer": "L8", "price": 18, "sma50": 16, "sma200": 15, "sma200_prev": 14.8, "rsiD": 55, "rsiW": 52, "rangePos": 0.55, "type": "contrarian", "maxLossPct": 45, "src": "EST", "bucket": "satellite"}, {"ticker": "PLTR", "layer": "L9", "price": 135, "sma50": 124, "sma200": 90, "sma200_prev": 88, "rsiD": 60, "rsiW": 62, "rangePos": 0.92, "type": "trend", "maxLossPct": null, "src": "PRIOR", "bucket": "core"}, {"ticker": "KTOS", "layer": "L9", "price": 64.13, "sma50": 66, "sma200": 80, "sma200_prev": 82, "rsiD": 47, "rsiW": 44, "rangePos": 0.18, "type": "contrarian", "maxLossPct": 35, "src": "PRIOR", "bucket": "core"}, {"ticker": "AXON", "layer": "L9", "price": 448.72, "sma50": 408, "sma200": 470, "sma200_prev": 475, "rsiD": 52, "rsiW": 50, "rangePos": 0.51, "type": "trend", "maxLossPct": null, "src": "PRIOR", "bucket": "core"}, {"ticker": "MP", "layer": "L9", "price": 64.7, "sma50": 59.73, "sma200": 62.91, "sma200_prev": 63.2, "rsiD": 59, "rsiW": 58, "rangePos": 0.45, "type": "contrarian", "maxLossPct": 35, "src": "FRESH", "bucket": "core"}, {"ticker": "LDOS", "layer": "L9", "price": 165, "sma50": 156, "sma200": 145, "sma200_prev": 143, "rsiD": 55, "rsiW": 57, "rangePos": 0.72, "type": "trend", "maxLossPct": null, "src": "EST", "bucket": "core"}, {"ticker": "LLY", "layer": "L10", "price": 1080, "sma50": 951, "sma200": 935, "sma200_prev": 922, "rsiD": 70, "rsiW": 71, "rangePos": 0.96, "type": "trend", "maxLossPct": null, "src": "PRIOR", "bucket": "core"}, {"ticker": "TEM", "layer": "L10", "price": 62, "sma50": 54, "sma200": 48, "sma200_prev": 47, "rsiD": 58, "rsiW": 56, "rangePos": 0.7, "type": "contrarian", "maxLossPct": 40, "src": "EST", "bucket": "satellite"}, {"ticker": "ISRG", "layer": "L10", "price": 560, "sma50": 540, "sma200": 520, "sma200_prev": 517, "rsiD": 54, "rsiW": 56, "rangePos": 0.74, "type": "trend", "maxLossPct": null, "src": "EST", "bucket": "core"}, {"ticker": "RXRX", "layer": "L10", "price": 6.5, "sma50": 6.0, "sma200": 7.5, "sma200_prev": 7.7, "rsiD": 48, "rsiW": 44, "rangePos": 0.28, "type": "contrarian", "maxLossPct": 45, "src": "EST", "bucket": "satellite"}, {"ticker": "COIN", "layer": "L4", "price": 189.03, "sma50": 189.35, "sma200": 248.43, "sma200_prev": 249.1, "rsiD": 49, "rsiW": 45, "rangePos": 0.17, "type": "contrarian", "maxLossPct": 35, "src": "FRESH", "bucket": "core"}, {"ticker": "HOOD", "layer": "L4", "price": 94.3, "sma50": 76.78, "sma200": 103.91, "sma200_prev": 104.01, "rsiD": 58, "rsiW": 54, "rangePos": 0.34, "type": "contrarian", "maxLossPct": 40, "src": "FRESH", "bucket": "core"}, {"ticker": "CRCL", "layer": "L4", "price": 113.0, "sma50": 105.92, "sma200": 102.81, "sma200_prev": 103.06, "rsiD": 55, "rsiW": 53, "rangePos": 0.29, "type": "contrarian", "maxLossPct": 40, "src": "FRESH", "bucket": "core"}, {"ticker": "CIFR", "layer": "L4", "price": 23.65, "sma50": 18.1, "sma200": 15.92, "sma200_prev": 15.82, "rsiD": 64, "rsiW": 60, "rangePos": 0.93, "type": "contrarian", "maxLossPct": 45, "src": "FRESH", "bucket": "satellite"}, {"ticker": "MSTR", "layer": "L4", "price": 159.09, "sma50": 162, "sma200": 210, "sma200_prev": 214, "rsiD": 48, "rsiW": 45, "rangePos": 0.35, "type": "contrarian", "maxLossPct": 40, "src": "PRIOR", "bucket": "bitcoin"}, {"ticker": "CRWD", "layer": "L11", "price": 429, "sma50": 400, "sma200": 360, "sma200_prev": 355, "rsiD": 68, "rsiW": 66, "rangePos": 0.92, "type": "trend", "maxLossPct": null, "src": "EST", "bucket": "core"}, {"ticker": "PANW", "layer": "L11", "price": 283, "sma50": 275, "sma200": 250, "sma200_prev": 246, "rsiD": 55, "rsiW": 54, "rangePos": 0.62, "type": "trend", "maxLossPct": null, "src": "EST", "bucket": "core"}, {"ticker": "ZS", "layer": "L11", "price": 250, "sma50": 255, "sma200": 290, "sma200_prev": 300, "rsiD": 42, "rsiW": 40, "rangePos": 0.3, "type": "contrarian", "maxLossPct": 35, "src": "EST", "bucket": "core"}, {"ticker": "NET", "layer": "L11", "price": 180, "sma50": 172, "sma200": 150, "sma200_prev": 146, "rsiD": 60, "rsiW": 62, "rangePos": 0.8, "type": "trend", "maxLossPct": null, "src": "EST", "bucket": "core"}, {"ticker": "FTNT", "layer": "L11", "price": 105, "sma50": 102, "sma200": 98, "sma200_prev": 96, "rsiD": 52, "rsiW": 54, "rangePos": 0.66, "type": "trend", "maxLossPct": null, "src": "EST", "bucket": "core"}, {"ticker": "OKTA", "layer": "L11", "price": 95, "sma50": 92, "sma200": 88, "sma200_prev": 90, "rsiD": 49, "rsiW": 47, "rangePos": 0.45, "type": "contrarian", "maxLossPct": 35, "src": "EST", "bucket": "core"}, {"ticker": "MU", "layer": "L1b", "price": 971, "sma50": 557.56, "sma200": 338.74, "sma200_prev": 334.52, "rsiD": 78, "rsiW": 76, "rangePos": 1.0, "type": "trend", "maxLossPct": null, "src": "FRESH", "bucket": "core"}, {"ticker": "SNDK", "layer": "L1b", "price": 1694.98, "sma50": 1078.61, "sma200": 488.24, "sma200_prev": 480.0, "rsiD": 77, "rsiW": 75, "rangePos": 1.0, "type": "trend", "maxLossPct": null, "src": "FRESH", "bucket": "core"}, {"ticker": "WDC", "layer": "L1b", "price": 180, "sma50": 150, "sma200": 110, "sma200_prev": 107, "rsiD": 72, "rsiW": 70, "rangePos": 0.96, "type": "trend", "maxLossPct": null, "src": "EST", "bucket": "core"}, {"ticker": "XYL", "layer": "L12", "price": 150, "sma50": 145, "sma200": 135, "sma200_prev": 133, "rsiD": 55, "rsiW": 57, "rangePos": 0.78, "type": "trend", "maxLossPct": null, "src": "EST", "bucket": "core"}, {"ticker": "AWK", "layer": "L12", "price": 150, "sma50": 148, "sma200": 142, "sma200_prev": 141, "rsiD": 50, "rsiW": 52, "rangePos": 0.6, "type": "trend", "maxLossPct": null, "src": "EST", "bucket": "core"}, {"ticker": "PWR", "layer": "L12", "price": 420, "sma50": 400, "sma200": 350, "sma200_prev": 344, "rsiD": 60, "rsiW": 62, "rangePos": 0.9, "type": "trend", "maxLossPct": null, "src": "EST", "bucket": "core"}, {"ticker": "ETR", "layer": "L12", "price": 95, "sma50": 92, "sma200": 86, "sma200_prev": 85, "rsiD": 53, "rsiW": 55, "rangePos": 0.72, "type": "trend", "maxLossPct": null, "src": "EST", "bucket": "core"}, {"ticker": "CCJ", "layer": "L13", "price": 108, "sma50": 100, "sma200": 90, "sma200_prev": 88, "rsiD": 55, "rsiW": 57, "rangePos": 0.64, "type": "trend", "maxLossPct": null, "src": "EST", "bucket": "core"}, {"ticker": "UEC", "layer": "L13", "price": 9.5, "sma50": 8.8, "sma200": 8.0, "sma200_prev": 7.9, "rsiD": 56, "rsiW": 54, "rangePos": 0.62, "type": "contrarian", "maxLossPct": 40, "src": "EST", "bucket": "satellite"}, {"ticker": "UUUU", "layer": "L13", "price": 9, "sma50": 8.3, "sma200": 7.5, "sma200_prev": 7.4, "rsiD": 57, "rsiW": 55, "rangePos": 0.66, "type": "contrarian", "maxLossPct": 40, "src": "EST", "bucket": "satellite"}, {"ticker": "NXE", "layer": "L13", "price": 8.5, "sma50": 8.0, "sma200": 7.2, "sma200_prev": 7.1, "rsiD": 55, "rsiW": 53, "rangePos": 0.6, "type": "contrarian", "maxLossPct": 40, "src": "EST", "bucket": "satellite"}, {"ticker": "LEU", "layer": "L13", "price": 180, "sma50": 160, "sma200": 130, "sma200_prev": 127, "rsiD": 60, "rsiW": 58, "rangePos": 0.78, "type": "contrarian", "maxLossPct": 40, "src": "EST", "bucket": "core"}, {"ticker": "DNN", "layer": "L13", "price": 2.2, "sma50": 2.0, "sma200": 1.85, "sma200_prev": 1.83, "rsiD": 54, "rsiW": 52, "rangePos": 0.58, "type": "contrarian", "maxLossPct": 45, "src": "EST", "bucket": "satellite"}, {"ticker": "BTC", "layer": "L4c", "price": 73366, "sma50": 79800, "sma200": 79800, "sma200_prev": 80500, "rsiD": 45, "rsiW": 42, "rangePos": 0.23, "type": "token", "maxLossPct": null, "src": "FRESH", "bucket": "bitcoin"}, {"ticker": "ETH", "layer": "L4c", "price": 2934, "sma50": 3038, "sma200": 3587, "sma200_prev": 3620, "rsiD": 44, "rsiW": 40, "rangePos": 0.38, "type": "token", "maxLossPct": null, "src": "FRESH", "bucket": "bitcoin"}, {"ticker": "SOL", "layer": "L4c", "price": 135, "sma50": 150, "sma200": 175, "sma200_prev": 178, "rsiD": 42, "rsiW": 40, "rangePos": 0.3, "type": "token", "maxLossPct": null, "src": "EST", "bucket": "bitcoin"}, {"ticker": "HYPE", "layer": "L4c", "price": 28, "sma50": 32, "sma200": 38, "sma200_prev": 39, "rsiD": 40, "rsiW": 38, "rangePos": 0.25, "type": "token", "maxLossPct": null, "src": "EST", "bucket": "bitcoin"}, {"ticker": "SUI", "layer": "L4c", "price": 2.8, "sma50": 3.2, "sma200": 3.8, "sma200_prev": 3.85, "rsiD": 41, "rsiW": 39, "rangePos": 0.22, "type": "token", "maxLossPct": null, "src": "EST", "bucket": "bitcoin"}, {"ticker": "MARA", "layer": "L4c", "price": 14, "sma50": 15, "sma200": 18, "sma200_prev": 18.3, "rsiD": 46, "rsiW": 44, "rangePos": 0.3, "type": "contrarian", "maxLossPct": 45, "src": "EST", "bucket": "satellite"}, {"ticker": "RIOT", "layer": "L4c", "price": 11, "sma50": 11.5, "sma200": 13, "sma200_prev": 13.2, "rsiD": 47, "rsiW": 45, "rangePos": 0.32, "type": "contrarian", "maxLossPct": 45, "src": "EST", "bucket": "satellite"}, {"ticker": "LHX", "layer": "L9", "price": 270, "sma50": 260, "sma200": 240, "sma200_prev": 237, "rsiD": 55, "rsiW": 57, "rangePos": 0.74, "bucket": "core", "type": "trend", "maxLossPct": null, "src": "EST"}, {"ticker": "RTX", "layer": "L9", "price": 165, "sma50": 160, "sma200": 150, "sma200_prev": 148, "rsiD": 56, "rsiW": 58, "rangePos": 0.8, "bucket": "core", "type": "trend", "maxLossPct": null, "src": "EST"}, {"ticker": "LMT", "layer": "L9", "price": 490, "sma50": 485, "sma200": 470, "sma200_prev": 468, "rsiD": 50, "rsiW": 52, "rangePos": 0.55, "bucket": "core", "type": "trend", "maxLossPct": null, "src": "EST"}, {"ticker": "HII", "layer": "L9", "price": 290, "sma50": 278, "sma200": 255, "sma200_prev": 251, "rsiD": 60, "rsiW": 62, "rangePos": 0.85, "bucket": "core", "type": "trend", "maxLossPct": null, "src": "EST"}, {"ticker": "PL", "layer": "L8", "price": 9.5, "sma50": 9.0, "sma200": 7.5, "sma200_prev": 7.3, "rsiD": 58, "rsiW": 56, "rangePos": 0.8, "bucket": "satellite", "type": "contrarian", "maxLossPct": 45, "src": "EST"}, {"ticker": "IRDM", "layer": "L8", "price": 28, "sma50": 27, "sma200": 26, "sma200_prev": 25.8, "rsiD": 50, "rsiW": 52, "rangePos": 0.55, "bucket": "satellite", "type": "contrarian", "maxLossPct": 40, "src": "EST"}, {"ticker": "SATS", "layer": "L8", "price": 32, "sma50": 30, "sma200": 24, "sma200_prev": 23.5, "rsiD": 62, "rsiW": 60, "rangePos": 0.88, "bucket": "satellite", "type": "contrarian", "maxLossPct": 45, "src": "EST"}, {"ticker": "SHLD", "layer": "L9", "price": 55, "sma50": 53, "sma200": 48, "sma200_prev": 47, "rsiD": 56, "rsiW": 58, "rangePos": 0.78, "bucket": "core", "type": "etf", "maxLossPct": null, "src": "EST"}, {"ticker": "XAR", "layer": "L9", "price": 230, "sma50": 222, "sma200": 200, "sma200_prev": 197, "rsiD": 58, "rsiW": 60, "rangePos": 0.82, "bucket": "core", "type": "etf", "maxLossPct": null, "src": "EST"}, {"ticker": "ITA", "layer": "L9", "price": 235, "sma50": 230, "sma200": 215, "sma200_prev": 213, "rsiD": 55, "rsiW": 57, "rangePos": 0.78, "bucket": "core", "type": "etf", "maxLossPct": null, "src": "EST"}, {"ticker": "JEDI", "layer": "L8", "price": 108.56, "sma50": 100, "sma200": 82, "sma200_prev": 80, "rsiD": 62, "rsiW": 60, "rangePos": 0.92, "bucket": "satellite", "type": "etf", "maxLossPct": null, "src": "EST"}, {"ticker": "UFO", "layer": "L8", "price": 62, "sma50": 60, "sma200": 50, "sma200_prev": 49, "rsiD": 60, "rsiW": 58, "rangePos": 0.85, "bucket": "satellite", "type": "etf", "maxLossPct": null, "src": "EST"}];
+  const EMBEDDED_MACRO = {y30:5.01,y30wk:1,cpi:3.8,pce:3.8,hyperWk:1,tbill:3.69};
+  const LAYERS={'L1':'Semis','L1b':'Memory','L2':'Power/Grid','L3':'Robotics','L4':'Crypto-eq','L4c':'Crypto','L7':'Quantum','L8':'Space','L9':'Defense/Mat','L10':'Applied AI','L11':'Cybersec','L12':'Water/Infra','L13':'Uranium'};
+  const clamp=(x,a,b)=>Math.max(a,Math.min(b,x)),sub=(v,lo,hi)=>clamp((v-lo)/(hi-lo)*100,0,100);
+  function exh(h){const e=(h.price/h.sma50-1)*100;return Math.round(.3*sub(h.rsiD,30,70)+.25*sub(h.rsiW,30,70)+.25*sub(e,-25,40)+.2*clamp(h.rangePos*100,0,100));}
+  function paceband(s){return s<=25?['accelerate','ACCEL DCA']:s<=45?['add','ADD DCA']:s<=62?['normal','DCA NORMAL']:s<=80?['ease','EASE DCA']:['pace','SLOW/PAUSE DCA'];}
+  function tradeband(s){return s<=25?['accelerate','ACCUMULATE']:s<=45?['add','ADD']:s<=62?['normal','HOLD']:s<=80?['ease','REDUCE']:['trim','TRIM'];}
+  function evalCore(h){ // exhaustion -> pacing only, NEVER exit
+   const s=exh(h),b=paceband(s),ext=(h.price/h.sma50-1)*100;
+   return {...h,s,ext,key:'pace',label:b[1],sub:b[0],below:h.price<h.sma200};}
+  function evalSat(h){ // full technical ruleset incl exits
+   const s=exh(h),b=tradeband(s),ext=(h.price/h.sma50-1)*100,below=h.price<h.sma200,fall=h.sma200<h.sma200_prev;
+   let key=b[0],label=b[1],msg='';
+   if(below&&fall){key='exit';label='EXIT';msg='below 200DMA &amp; falling — technical stop';}
+   else if(h.maxLossPct&&h.pnlPct!=null&&h.pnlPct<=-h.maxLossPct){key='exit';label='STOP';msg='past max-loss stop';}
+   return {...h,s,ext,key,label,msg,below};}
+  function evalBtc(h,below){const ext=(h.price/h.sma50-1)*100;
+   let key=below?'wait':'normal',label=below?'DCA-WAIT (below 200DMA)':'DCA-ARMED (above 200DMA)';
+   return {...h,ext,s:exh(h),key,label,below};}
+  function gv(a){return a<=35?['var(--cold)','OVERSOLD — hunt']:a<=55?['var(--mid)','BALANCED']:a<=72?['var(--warm)','WARM']:['var(--exit)','HOT — avoid chasing'];}
+
+  // ── Data wiring (replaces the prototype's hardcoded UNIVERSE + macro) ──────
+  function getUniverse(){
+    const hm = (typeof STATE!=='undefined' && STATE.metrics && STATE.metrics.heatmap) || null;
+    let rows = (hm && Array.isArray(hm.universe) && hm.universe.length) ? hm.universe : EMBEDDED_UNIVERSE;
+    // Drop rows missing the minimum numerics the exhaustion formula needs (avoids NaN cards)
+    const usable = rows.filter(h => h && h.price!=null && h.sma50!=null && h.rsiD!=null && h.rsiW!=null && h.rangePos!=null);
+    const dropped = rows.length - usable.length;
+    if(dropped>0) console.warn('Heatmap: dropped', dropped, 'rows missing indicators');
+    return usable;
+  }
+  // y30wk = consecutive most-recent weeks the 30Y yield rose (from browser DGS30 history).
+  function y30WeeksRising(){
+    const arr = (typeof STATE!=='undefined' && STATE.fred && STATE.fred.DGS30 && STATE.fred.DGS30.data) || null;
+    if(!arr || arr.length < 10) return null;
+    const weekly=[]; for(let i=arr.length-1;i>=0;i-=5){ weekly.unshift(arr[i].v); }
+    let streak=0;
+    for(let i=weekly.length-1;i>0;i--){ if(weekly[i]>weekly[i-1]) streak++; else break; }
+    return streak;
+  }
+  function getMacro(){
+    const hm = (typeof STATE!=='undefined' && STATE.metrics && STATE.metrics.heatmap) || null;
+    const base = (hm && hm.macro) ? hm.macro : {};
+    const wk = y30WeeksRising();
+    return {
+      y30:     base.y30     ?? EMBEDDED_MACRO.y30,
+      y30wk:   wk!=null ? wk : (base.y30wk ?? EMBEDDED_MACRO.y30wk),
+      cpi:     base.cpi     ?? EMBEDDED_MACRO.cpi,
+      pce:     base.pce     ?? EMBEDDED_MACRO.pce,
+      hyperWk: base.hyperWk ?? EMBEDDED_MACRO.hyperWk,
+      tbill:   base.tbill   ?? EMBEDDED_MACRO.tbill,
+    };
+  }
+  function asOf(){
+    const hm = (typeof STATE!=='undefined' && STATE.metrics && STATE.metrics.heatmap) || null;
+    return (hm && hm.as_of) || (typeof STATE!=='undefined' && STATE.metrics && STATE.metrics.data_date) || '—';
+  }
+
+  function render(){
+   const root=document.getElementById('cp-root'); if(!root) return;
+   const UNIVERSE=getUniverse();
+   const macro=getMacro();
+   const core=UNIVERSE.filter(h=>h.bucket==='core').map(evalCore);
+   const sat=UNIVERSE.filter(h=>h.bucket==='satellite').map(evalSat);
+   const btc=UNIVERSE.filter(h=>h.bucket==='bitcoin');
+   // macro context flags (core uses as CONTEXT only)
+   const flags=[];
+   if(macro.y30>5.1&&macro.y30wk>=2)flags.push('F1 rates');
+   if(macro.cpi>4&&macro.pce>4)flags.push('F2 inflation');
+   if(macro.hyperWk>=3)flags.push('F3 spenders');
+   const coreBreadth=core.length?core.filter(c=>!c.below).length/core.length:1;
+   if(coreBreadth<0.5)flags.push('F6 breadth');
+   const ctxState=flags.length>=2?'breach':flags.length===1?'armed':'ok';
+   const ctxMsg=flags.length?`Macro context deteriorating (${flags.join(', ')}) — review core fundamentals in your research process`:'Macro context stable — no tripwires firing';
+
+   // layer gauges within core only (the long-term map)
+   const byL={};core.forEach(h=>{(byL[h.layer]=byL[h.layer]||[]).push(h);});
+   const LAYORD=['L1','L1b','L2','L3','L4','L4c','L7','L8','L9','L10','L11','L12','L13'];
+   const order=Object.keys(byL).sort((a,b)=>LAYORD.indexOf(a)-LAYORD.indexOf(b));
+   const gauges=order.map(L=>{const a=byL[L].slice().sort((x,y)=>y.s-x.s);const avg=Math.round(a.reduce((s,x)=>s+x.s,0)/a.length);return{L,avg,names:a};});
+
+   const cardCore=n=>`<div class="card pace"><div class="ctop"><span class="tk">${n.ticker}<small>${LAYERS[n.layer]||n.layer}</small>${n.type==='etf'?'<span class="tok">ETF</span>':''}<span class="src">${n.src}</span></span><span class="bdg b-pace">${n.label}</span></div><div class="meter"><i style="left:calc(${n.s}% - 1.5px)"></i></div><div class="metrics"><span>exh <b>${n.s}</b></span><span>vs50 <b>${n.ext>=0?'+':''}${n.ext.toFixed(0)}%</b></span>${n.below?'<span style="color:var(--warm)">&lt;200DMA</span>':''}</div></div>`;
+   const cardSat=n=>{const mp=n.key==='exit'?100:n.s;return `<div class="card ${n.key}"><div class="ctop"><span class="tk">${n.ticker}<small>${LAYERS[n.layer]||n.layer}</small>${n.type==='etf'?'<span class="tok">ETF</span>':''}<span class="src">${n.src}</span></span><span class="bdg b-${n.key}">${n.label}</span></div>${n.msg?`<div style="font-size:10px;color:var(--exit);margin-top:5px">${n.msg}</div>`:''}<div class="meter"><i style="left:calc(${mp}% - 1.5px)"></i></div><div class="metrics"><span>exh <b>${n.s}</b></span><span>vs50 <b>${n.ext>=0?'+':''}${n.ext.toFixed(0)}%</b></span>${n.below?'<span style="color:var(--warm)">&lt;200DMA</span>':''}</div></div>`;};
+   const cardBtc=n=>{const ev=evalBtc(n,n.price<n.sma200);return `<div class="card ${ev.key==='wait'?'ease':'add'}"><div class="ctop"><span class="tk">${n.ticker}<small>${n.ticker==='MSTR'?'BTC-beta':'token'}</small><span class="src">${n.src}</span></span><span class="bdg b-wait">${ev.label}</span></div><div class="metrics" style="margin-top:8px"><span>exh <b>${ev.s}</b></span><span>vs50 <b>${ev.ext>=0?'+':''}${ev.ext.toFixed(0)}%</b></span></div></div>`;};
+
+   root.innerHTML=`
+   <div class="h"><div><div class="t1">THESIS <b>HEATMAP</b> — three buckets</div>
+   <div class="sub">Core = long-term hold, exhaustion paces DCA only (never exits); macro = context for your research, not a sell signal. Satellite = trading sleeve, full technical stops. Bitcoin = 200DMA regime gate.</div></div>
+   <div class="asof">AS OF ${asOf()}</div></div>
+   <div class="bucketbar"><span><b>${core.length}</b> core</span><span><b>${sat.length}</b> satellite</span><span><b>${btc.length}</b> bitcoin</span></div>
+
+   <div class="bsec core"><div class="bhead"><span class="bname core">◆ CORE — long-term capital engine</span><span style="font-family:var(--mono);font-size:10px;color:var(--dim)">exits on fundamentals/macro only · exhaustion = DCA pacing</span></div>
+   <div class="brule">Real present income. Held through overbought — technicals do NOT trigger exits here. The badges pace your DCA: cold = add more, hot = slow down. Exits live in your separate fundamental research.</div>
+   <div class="ctxbanner ${ctxState}"><span class="dot d-${ctxState==='ok'?'ok':ctxState==='armed'?'armed':'breach'}"></span>${ctxMsg}</div>
+   <div class="sec"><span>Core layer gauges — where to pace DCA (coldest first)</span><span>oversold ◄──► overbought</span></div>
+   <div class="gauges">${gauges.map(g=>{const v=gv(g.avg);return `<div class="gauge"><div class="gtop"><div class="glay">${g.L} <small>${LAYERS[g.L]||g.L}</small></div><div class="gscore" style="color:${v[0]}">${g.avg}</div></div><div class="gbar"><i style="left:calc(${g.avg}% - 1.5px)"></i></div><div class="gverdict" style="color:${v[0]}">${v[1]}</div><div class="gnames">${g.names.slice(0,3).map(n=>n.ticker+':'+n.s).join('  ')}</div></div>`;}).join('')}</div>
+   <div class="sec"><span>Core names — cold (add) to hot (ease) within layer</span><span>DCA pacing</span></div>
+   ${order.map(L=>`<div style="font-family:var(--mono);font-size:10px;color:var(--dim);margin:10px 0 6px">${L} · ${LAYERS[L]||L}</div><div class="grid">${byL[L].slice().sort((a,b)=>a.s-b.s).map(cardCore).join('')}</div>`).join('')}
+   </div>
+
+   <div class="bsec satellite"><div class="bhead"><span class="bname satellite">▲ SATELLITE — trading sleeve (side capital)</span><span style="font-family:var(--mono);font-size:10px;color:var(--dim)">full technical stops · EXIT enabled</span></div>
+   <div class="brule">Future-income speculation / price proxies. Mean-reversion rules apply: exhaustion stops, 200DMA exit, max-loss stops. This is the ONLY bucket where the dashboard says EXIT. Not the core return engine.</div>
+   <div class="grid">${sat.slice().sort((a,b)=>(b.key==='exit'?999:b.s)-(a.key==='exit'?999:a.s)).map(cardSat).join('')}</div>
+   </div>
+
+   <div class="bsec bitcoin"><div class="bhead"><span class="bname bitcoin">● BITCOIN — own thesis, Atreides-gated</span><span style="font-family:var(--mono);font-size:10px;color:var(--dim)">200DMA regime line · no RSI exit</span></div>
+   <div class="brule">Separate basket. DCA gated on 200DMA reclaim + Atreides trigger (CPI &gt; 3M T-bill). Held long-term through overextension; the 200DMA is a regime line, not an exhaustion signal. MSTR rides here as BTC-beta.</div>
+   <div class="ctxbanner ${macro.cpi>macro.tbill?'armed':'ok'}"><span class="dot d-${macro.cpi>macro.tbill?'armed':'ok'}"></span>Atreides ${macro.cpi>macro.tbill?'ARMED':'not fired'}: CPI ${macro.cpi}% vs 3M ${macro.tbill}% · tokens below 200DMA = DCA paused</div>
+   <div class="grid">${btc.map(cardBtc).join('')}</div>
+   </div>
+
+   <div class="foot">
+   THREE RULESETS — CORE: exhaustion paces DCA, never exits; macro tripwires are CONTEXT pointing to your fundamental research (the dashboard cannot judge fundamentals and does not try). SATELLITE: full technical stops + 200DMA exit + max-loss; only bucket that issues EXIT. BITCOIN: 200DMA regime gate + Atreides, no RSI exit.<br>
+   EXHAUSTION 0–100 = 0.30·RSI(d)+0.25·RSI(w)+0.25·(dist 50DMA)+0.20·(52w range pos). DATA: FRESH=this run · PRIOR=carried from last run · EST=editorial seed (no live data). Discipline tool, not advice.
+   </div>`;
+  }
+
+  return { render };
+})();
+
 function init(){
   CORS_PROXIES = buildCORSProxies();
   wireTabs();
