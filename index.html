@@ -1101,6 +1101,7 @@ const HARVEST_WINDOW_END   = '2026-12-31';
 const HARVEST_WINDOW_REASON = 'Apartment purchase — capital must be liquid in Q4 2026';
 
 const PAIN_THRESHOLD = 5_900_000; // $M ≈ $5.9T
+const PAL_NEUTRAL_BAND_PCT = 0.03; // ±3% of threshold treated as neutral zone
 
 const DEFAULT_SCENARIOS = [
   {id:'A',label:'Full Resolution + Liquidity Recovery',pct:48,color:'green', semi:65,  btc:'Re-grossing event, MSTR strong'},
@@ -1475,7 +1476,7 @@ function buildFullExport(){
   const pipelineRegime  = pm?.dashboard?.current_regime || null;
   const pipelineDrivers = pm?.dashboard?.drivers || [];
   const driverByKey = (id) => pipelineDrivers.find(d=>d.id===id) || null;
-  const palSig = scores.s1?.aboveThreshold ? 'Bullish' : (scores.s1?.score>40 ? 'Neutral' : 'Bearish');
+  const palSig = scores.s1?.palSignal ?? (scores.s1?.aboveThreshold ? 'Bullish' : 'Bearish');
   const howSig = flowSig>2 ? 'Bullish' : flowSig>-2 ? 'Neutral' : 'Bearish';
   const steSig = (scores.s1?.aboveThreshold && sprd!=null && sprd<0) ? 'Bullish' : (sprd!=null&&sprd>0.05) ? 'Bearish' : 'Neutral';
   const mvrv   = resolveManual('mvrv').value;
@@ -2208,6 +2209,13 @@ function directionMod(rocPct){
   return clamp(1 + rocPct*0.02, 0.7, 1.3);
 }
 
+function getPalSignal(fnl, fnlRoc3m) {
+  const delta = (fnl - PAIN_THRESHOLD) / PAIN_THRESHOLD;
+  if (fnl >= PAIN_THRESHOLD) return 'Bullish';
+  if (delta >= -PAL_NEUTRAL_BAND_PCT) return fnlRoc3m > 0 ? 'Neutral' : 'Bearish';
+  return 'Bearish';
+}
+
 function score1_FedNetLiquidity(fred){
   const fnl = fedNetLiquidity(fred.WALCL, fred.WTREGEN, fred.RRPONTSYD);
   if(!fnl||fnl.length<10) return null;
@@ -2218,16 +2226,30 @@ function score1_FedNetLiquidity(fred){
   const pct = pctile(window, last);
   const mod = directionMod(roc);
   const score = clamp(pct*mod, 0, 100);
-  const aboveThreshold = last > PAIN_THRESHOLD*1000; // FNL in $M units; convert pain to $M
+  const aboveThreshold = last > PAIN_THRESHOLD; // PAIN_THRESHOLD already in $M
+  const painDelta = ((last / PAIN_THRESHOLD) - 1) * 100;
+  const palSignal = getPalSignal(last, roc);
+  const dp = painDelta.toFixed(1);
+  let note;
+  if (aboveThreshold) {
+    note = 'Above pain threshold — supportive';
+  } else if (Math.abs(painDelta) <= PAL_NEUTRAL_BAND_PCT * 100) {
+    note = roc > 0
+      ? `Near pain threshold (${dp}%) — rising trend, neutral`
+      : `Near pain threshold (${dp}%) — falling trend, caution`;
+  } else {
+    note = `Below pain threshold (${dp}%) — bearish`;
+  }
   return {
     score, pct, roc,
     level: last,
     prev: prev3m,
     aboveThreshold,
-    painDelta: ((last/(PAIN_THRESHOLD*1000))-1)*100,
+    painDelta,
+    palSignal,
     asof: lastDate(fnl),
     label:'Fed Net Liquidity',
-    note: aboveThreshold ? 'Above pain threshold' : 'Below pain — caution',
+    note,
   };
 }
 
@@ -2877,7 +2899,7 @@ function renderQuadrant(scores){
 function renderFrameworks(scores){
   // Pal: stock level — FNL level vs pain
   const s1 = scores.s1, s2 = scores.s2;
-  const palSig = s1?.aboveThreshold ? 'Bullish' : (s1?.score>40 ? 'Neutral' : 'Bearish');
+  const palSig = s1?.palSignal ?? (s1?.aboveThreshold ? 'Bullish' : 'Bearish');
   const palRead = s1 ? `FNL ${fmt.trillion(s1.level)} (${fmt.pct(s1.painDelta,1)} vs pain)` : '—';
 
   // Howell: flow ROC — TLS ROC + GLI auto/manual
