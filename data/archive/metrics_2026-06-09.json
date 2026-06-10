@@ -1,15 +1,15 @@
 {
-  "generated_at": "2026-06-09T15:05:14Z",
+  "generated_at": "2026-06-09T18:45:46Z",
   "data_date": "2026-06-09",
   "pipeline": {
     "available": true,
-    "run_mode": "full",
-    "last_run_at": "2026-06-09T15:05:14Z",
+    "run_mode": "daily",
+    "last_run_at": "2026-06-09T18:45:46Z",
     "data_date": "2026-06-09"
   },
   "sentiment": {
-    "soxx_put_call_ratio": 3.8474,
-    "soxx_put_call_ratio_note": "Above 1.2: elevated hedging/fear. Below 0.6: complacency. Range 0.6\u20131.2: neutral positioning.",
+    "soxx_put_call_ratio": null,
+    "soxx_put_call_ratio_note": null,
     "soxx_short_interest_ratio": 0.395,
     "soxx_short_interest_ratio_note": "Above 0.55: elevated short positioning. Below 0.40: consensus long. Range 0.40\u20130.55: neutral.",
     "bofams_survey_month": null,
@@ -47,23 +47,23 @@
       "score": 10,
       "label": "Extreme Fear",
       "score_7d_avg": 11.0,
-      "fetched_at": "2026-06-09T15:05:14Z"
+      "fetched_at": "2026-06-09T18:45:46Z"
     }
   },
   "valuation": {
-    "soxx_forward_pe": 70.9694,
+    "soxx_forward_pe": 71.1545,
     "soxx_price_to_book": 10.1789,
     "soxx_pe_sample_size": 26,
     "soxx_pb_sample_size": 29,
     "soxx_pe_source_note": "Finnhub /stock/metric \u2014 TTM P/E (peTTM) and annual P/B (pbAnnual). Trailing 12-month P/E \u2014 directionally comparable to forward P/E but not equivalent.",
-    "soxx_forward_pe_3yr_avg": 71.8998,
+    "soxx_forward_pe_3yr_avg": 71.8377,
     "soxx_price_to_book_3yr_avg": 10.1789,
-    "soxx_valuation_baseline_weeks_available": 14
+    "soxx_valuation_baseline_weeks_available": 15
   },
   "breadth": {
     "soxx_breadth_above_200ma_pct": 100.0,
     "soxx_breadth_above_200ma_weighted_pct": 100.0,
-    "soxx_breadth_sample_size": 28,
+    "soxx_breadth_sample_size": 27,
     "soxx_breadth_note": "Below 40%: narrow/fragile rally. 40\u201370%: mixed participation. Above 70%: broad participation.",
     "soxx_breadth_detail": [
       {
@@ -71,12 +71,6 @@
         "above_200ma": true,
         "close": 154.76,
         "ma200": 98.7833
-      },
-      {
-        "ticker": "ADI",
-        "above_200ma": true,
-        "close": 403.89,
-        "ma200": 304.0065
       },
       {
         "ticker": "AMAT",
@@ -109,12 +103,6 @@
         "ma200": 135.9147
       },
       {
-        "ticker": "DIOD",
-        "above_200ma": true,
-        "close": 104.66,
-        "ma200": 66.2121
-      },
-      {
         "ticker": "ENPH",
         "above_200ma": true,
         "close": 56.88,
@@ -143,6 +131,12 @@
         "above_200ma": true,
         "close": 324.45,
         "ma200": 199.6096
+      },
+      {
+        "ticker": "MCHP",
+        "above_200ma": true,
+        "close": 91.37,
+        "ma200": 71.4199
       },
       {
         "ticker": "MPWR",
@@ -266,11 +260,11 @@
     "soxx_vs_spy_3mo": 57.748,
     "soxx_vs_spy_1mo": 7.273,
     "sox_soxx_90d_correlation": null,
-    "soxx_top10_analyst_upside_pct": 7.1985,
+    "soxx_top10_analyst_upside_pct": 13.4485,
     "earnings_revision_proxy_note": "Computed from 10/10 top SOXX holdings with valid target/current price data."
   },
   "layer2": {
-    "l2_vs_l1_pe_spread": -44.3982,
+    "l2_vs_l1_pe_spread": -45.6556,
     "layer2_macro": {
       "updated_month": null,
       "us_datacenter_gw_current_year": null,
@@ -282,8 +276,8 @@
     "baskets": {
       "thermal_management": {
         "label": "Data Centre Thermal Management",
-        "forward_pe": 30.4646,
-        "price_to_book": 16.0579,
+        "forward_pe": 29.0582,
+        "price_to_book": 15.2812,
         "sample_size_pe": 3,
         "sample_size_pb": 3,
         "breadth_above_200ma_pct": 100.0,
@@ -294,8 +288,8 @@
       },
       "grid_infrastructure": {
         "label": "Grid Infrastructure & Transformers",
-        "forward_pe": 28.3393,
-        "price_to_book": 10.2253,
+        "forward_pe": 26.9034,
+        "price_to_book": 9.6927,
         "sample_size_pe": 5,
         "sample_size_pb": 5,
         "breadth_above_200ma_pct": 80.0,
@@ -306,8 +300,8 @@
       },
       "hv_cables": {
         "label": "High-Voltage Cables",
-        "forward_pe": 25.0119,
-        "price_to_book": 3.3306,
+        "forward_pe": 24.8619,
+        "price_to_book": 3.344,
         "sample_size_pe": 1,
         "sample_size_pb": 3,
         "breadth_above_200ma_pct": 50.0,
@@ -318,8 +312,8 @@
       },
       "backup_power": {
         "label": "Backup Power & UPS",
-        "forward_pe": 25.0269,
-        "price_to_book": 12.0861,
+        "forward_pe": 23.8723,
+        "price_to_book": 11.5636,
         "sample_size_pe": 3,
         "sample_size_pb": 3,
         "breadth_above_200ma_pct": 100.0,
@@ -330,8 +324,8 @@
       },
       "specialty_chemicals": {
         "label": "Semiconductor Specialty Chemicals",
-        "forward_pe": 20.1941,
-        "price_to_book": 3.3019,
+        "forward_pe": 18.6857,
+        "price_to_book": 3.0423,
         "sample_size_pe": 2,
         "sample_size_pb": 2,
         "breadth_above_200ma_pct": 100.0,
@@ -342,8 +336,8 @@
       },
       "european_industrials": {
         "label": "European Industrials (rotation proxy)",
-        "forward_pe": 30.3903,
-        "price_to_book": 3.738,
+        "forward_pe": 29.6117,
+        "price_to_book": 3.6486,
         "sample_size_pe": 1,
         "sample_size_pb": 2,
         "breadth_above_200ma_pct": 100.0,
@@ -355,23 +349,23 @@
     }
   },
   "layer3": {
-    "power_semi_forward_pe": 33.3107,
-    "power_semi_price_to_book": 6.3481,
-    "power_semi_vs_soxx_pe_spread": -37.6587,
+    "power_semi_forward_pe": 30.44,
+    "power_semi_price_to_book": 5.7356,
+    "power_semi_vs_soxx_pe_spread": -40.7145,
     "power_semi_sample_size": 4,
     "power_semi_breadth_above_200ma_pct": 100.0,
-    "power_semi_rel_perf_vs_soxx_1yr": null,
-    "power_semi_rel_perf_vs_soxx_6mo": null,
-    "power_semi_rel_perf_vs_soxx_3mo": null,
-    "power_semi_rel_perf_vs_soxx_1mo": null
+    "power_semi_rel_perf_vs_soxx_1yr": 575.2214,
+    "power_semi_rel_perf_vs_soxx_6mo": 61.6926,
+    "power_semi_rel_perf_vs_soxx_3mo": 50.2657,
+    "power_semi_rel_perf_vs_soxx_1mo": 6.4668
   },
   "layer4": {
-    "humanoid_proxy_forward_pe": 64.7516,
-    "humanoid_proxy_price_to_book": 14.7619,
+    "humanoid_proxy_forward_pe": 61.8147,
+    "humanoid_proxy_price_to_book": 13.9893,
     "humanoid_valuation_tsla_distortion_note": null,
-    "humanoid_proxy_rel_perf_vs_spy_1yr": 62.4051,
-    "humanoid_proxy_rel_perf_vs_spy_6mo": 7.9743,
-    "humanoid_proxy_rel_perf_vs_spy_3mo": -9.8636,
+    "humanoid_proxy_rel_perf_vs_spy_1yr": 80.121,
+    "humanoid_proxy_rel_perf_vs_spy_6mo": 15.8831,
+    "humanoid_proxy_rel_perf_vs_spy_3mo": -10.1443,
     "milestones": {
       "updated_date": null,
       "tesla_optimus": {
@@ -397,13 +391,13 @@
     }
   },
   "layer5": {
-    "app_layer_forward_pe": 27.9205,
-    "app_layer_price_to_book": 10.9956,
-    "app_layer_vs_soxx_pe_spread": -43.0489,
-    "app_layer_rel_perf_vs_soxx_1yr": -155.6627,
-    "app_layer_rel_perf_vs_soxx_6mo": -99.6165,
-    "app_layer_rel_perf_vs_spy_1yr": -22.0541,
-    "app_layer_rel_perf_vs_spy_6mo": -25.1893
+    "app_layer_forward_pe": 27.0906,
+    "app_layer_price_to_book": 10.6407,
+    "app_layer_vs_soxx_pe_spread": -44.0639,
+    "app_layer_rel_perf_vs_soxx_1yr": -143.6177,
+    "app_layer_rel_perf_vs_soxx_6mo": -96.5184,
+    "app_layer_rel_perf_vs_spy_1yr": -10.0091,
+    "app_layer_rel_perf_vs_spy_6mo": -22.0912
   },
   "macro_regime": {
     "mr1_cpi_yoy_pct": null,
@@ -522,15 +516,15 @@
     "cc2_updated_date": null
   },
   "cycle_rotation_signal": {
-    "layer1_crowding_score": 67.8,
+    "layer1_crowding_score": 67.9,
     "layer2_opportunity_score": 100.0,
-    "layer3_opportunity_score": 60.0,
-    "layer4_readiness_score": 46.6,
+    "layer3_opportunity_score": 40.0,
+    "layer4_readiness_score": 59.8,
     "macro_regime_score": null,
     "software_deterioration_score": null,
     "concentration_risk_score": null,
-    "rotation_narrative": "Layer 1 crowding score 68/100 \u2014 moderate. Layer 2 opportunity score 100/100 \u2014 rotation thesis active. Layer 3 score 60/100 \u2014 building. Layer 4 readiness 47/100 \u2014 early institutional. Macro regime n/a/100 \u2014 n/a. Software deterioration n/a/100 \u2014 n/a. Concentration risk n/a/100 \u2014 n/a.",
-    "signal_computed_at": "2026-06-09T14:41:54Z"
+    "rotation_narrative": "Layer 1 crowding score 68/100 \u2014 moderate. Layer 2 opportunity score 100/100 \u2014 rotation thesis active. Layer 3 score 40/100 \u2014 early. Layer 4 readiness 60/100 \u2014 early institutional. Macro regime n/a/100 \u2014 n/a. Software deterioration n/a/100 \u2014 n/a. Concentration risk n/a/100 \u2014 n/a.",
+    "signal_computed_at": "2026-06-09T16:48:35Z"
   },
   "fred_macro": {
     "fred_available": true,
@@ -615,6 +609,7 @@
       "dxy_signal": "USD 120.1 \u2014 tightening financial conditions globally"
     },
     "yield_curve_fred": {
+      "treasury_3mo": 3.78,
       "treasury_2yr": 4.17,
       "treasury_5yr": 4.29,
       "treasury_10yr": 4.55,
@@ -633,7 +628,7 @@
     }
   },
   "market_overview": {
-    "collected_at": "2026-06-09T14:18:09.610504+00:00",
+    "collected_at": "2026-06-09T16:22:24.510976+00:00",
     "yield_curve": {
       "date": "2026-06-05",
       "yield_1m": 3.71,
@@ -751,8 +746,8 @@
     "dual_liquidity_confirmed": null
   },
   "equity_monitor": {
-    "fetched_at": "2026-06-09T14:58:16Z",
-    "ticker_count": 46,
+    "fetched_at": "2026-06-09T17:07:17Z",
+    "ticker_count": 42,
     "tickers": {
       "ETN": {
         "name": "Eaton Corp",
@@ -793,12 +788,12 @@
         "t_score": 20.0,
         "band": "STRONG",
         "exhaustion_flag": false,
-        "rs_spy": 104.7,
+        "rs_spy": null,
         "rs_qqq": 96.6,
         "rs_smh": 75.1,
         "rs_xli": 112.6,
         "rs_xle": 110.0,
-        "rs_igv": 104.1,
+        "rs_igv": null,
         "rs_robo": 98.8,
         "pe_ttm": 39.4089,
         "pb_annual": 6.3686,
@@ -850,12 +845,12 @@
         "t_score": 20.0,
         "band": "STRONG",
         "exhaustion_flag": false,
-        "rs_spy": 116.4,
+        "rs_spy": null,
         "rs_qqq": 107.4,
         "rs_smh": 83.5,
         "rs_xli": 125.2,
         "rs_xle": 122.3,
-        "rs_igv": 115.7,
+        "rs_igv": null,
         "rs_robo": 109.9,
         "pe_ttm": 94.7241,
         "pb_annual": 6.3753,
@@ -907,12 +902,12 @@
         "t_score": 5.0,
         "band": "EXTREME_EXHAUSTION",
         "exhaustion_flag": true,
-        "rs_spy": 69.6,
+        "rs_spy": null,
         "rs_qqq": 64.2,
         "rs_smh": 49.9,
         "rs_xli": 74.8,
         "rs_xle": 73.1,
-        "rs_igv": 69.2,
+        "rs_igv": null,
         "rs_robo": 65.7,
         "pe_ttm": 23.8828,
         "pb_annual": 7.5996,
@@ -964,12 +959,12 @@
         "t_score": 8.3,
         "band": "RISKY",
         "exhaustion_flag": true,
-        "rs_spy": 110.9,
+        "rs_spy": null,
         "rs_qqq": 102.3,
         "rs_smh": 79.5,
         "rs_xli": 119.3,
         "rs_xle": 116.5,
-        "rs_igv": 110.3,
+        "rs_igv": null,
         "rs_robo": 104.7,
         "pe_ttm": 74.0686,
         "pb_annual": 15.7163,
@@ -1021,12 +1016,12 @@
         "t_score": 16.7,
         "band": "CONSTRUCTIVE",
         "exhaustion_flag": false,
-        "rs_spy": 105.6,
+        "rs_spy": null,
         "rs_qqq": 97.4,
         "rs_smh": 75.7,
         "rs_xli": 113.5,
         "rs_xle": 110.9,
-        "rs_igv": 105.0,
+        "rs_igv": null,
         "rs_robo": 99.7,
         "pe_ttm": 26.9768,
         "pb_annual": 7.4545,
@@ -1075,14 +1070,14 @@
         "t_score": 20.0,
         "band": "STRONG",
         "exhaustion_flag": false,
-        "rs_spy": 97.1,
+        "rs_spy": null,
         "rs_qqq": 89.6,
         "rs_smh": 69.7,
         "rs_xli": 104.4,
         "rs_xle": 102.1,
-        "rs_igv": 96.6,
+        "rs_igv": null,
         "rs_robo": 91.7,
-        "pe_ttm": 39.5835,
+        "pe_ttm": 42.3798,
         "pb_annual": 12.3326,
         "beta": 1.2844502,
         "fh_52w_high": 167.04,
@@ -1129,12 +1124,12 @@
         "t_score": 8.3,
         "band": "RISKY",
         "exhaustion_flag": true,
-        "rs_spy": 105.6,
+        "rs_spy": null,
         "rs_qqq": 97.4,
         "rs_smh": 75.7,
         "rs_xli": 113.5,
         "rs_xle": 110.9,
-        "rs_igv": 105.0,
+        "rs_igv": null,
         "rs_robo": 99.7,
         "pe_ttm": 26.7702,
         "pb_annual": 15.8639,
@@ -1153,56 +1148,7 @@
         "layer": "L2\u2192P3",
         "priority": 1,
         "notes": "Merchant nuclear; AWS/Meta PPAs; Jordi buying; PE 35% discount",
-        "price": 146.9,
-        "sma20": 150.25,
-        "sma50": 154.27,
-        "sma200": 171.87,
-        "sma50_slope_pct": -0.2,
-        "sma200_slope_pct": -1.283,
-        "vs_sma20_pct": -2.23,
-        "vs_sma50_pct": -4.78,
-        "vs_sma200_pct": -14.53,
-        "pct_1w": -5.08,
-        "pct_1m": -4.58,
-        "pct_3m": -12.25,
-        "pct_1yr": 0.55,
-        "high_52w": 219.82,
-        "low_52w": 132.66,
-        "dist_52w_high_pct": -33.17,
-        "dist_52w_low_pct": 10.73,
-        "atr_pct": 4.498,
-        "vol_ratio": 0.605,
-        "rsi_14d": 43.46,
-        "rsi_14w": 42.99,
-        "macd": -0.4321,
-        "macd_signal": -0.2282,
-        "macd_histogram": -0.2039,
-        "macd_above_signal": false,
-        "macd_crossover_bullish": false,
-        "macd_crossover_bearish": true,
-        "t1_trend": 1,
-        "t2_momentum": 0,
-        "t3_exhaustion": 0,
-        "t_score": 1.7,
-        "band": "EXTREME_EXHAUSTION",
-        "exhaustion_flag": true,
-        "rs_spy": 80.9,
-        "rs_qqq": 74.6,
-        "rs_smh": 58.0,
-        "rs_xli": 87.0,
-        "rs_xle": 85.0,
-        "rs_igv": 80.4,
-        "rs_robo": 76.3,
-        "pe_ttm": 22.3825,
-        "pb_annual": 10.7245,
-        "beta": 1.4408703,
-        "fh_52w_high": 219.82,
-        "fh_52w_low": 132.66,
-        "revenue_growth_3y": 4.01,
-        "eps_growth_3y": null,
-        "forward_pe": 22.0,
-        "forward_pe_5yr_avg": 33.8,
-        "override_note": "PE 35% discount to 5yr avg. Merchant nuclear; AWS/Meta PPAs; Jordi buying signal."
+        "error": "no_ohlc_data"
       },
       "ON": {
         "name": "ON Semiconductor",
@@ -1243,12 +1189,12 @@
         "t_score": 18.3,
         "band": "STRONG",
         "exhaustion_flag": false,
-        "rs_spy": 183.1,
+        "rs_spy": null,
         "rs_qqq": 169.0,
         "rs_smh": 131.3,
         "rs_xli": 196.9,
         "rs_xle": 192.4,
-        "rs_igv": 182.0,
+        "rs_igv": null,
         "rs_robo": 172.8,
         "pe_ttm": 83.1078,
         "pb_annual": 2.8396,
@@ -1297,12 +1243,12 @@
         "t_score": 18.3,
         "band": "STRONG",
         "exhaustion_flag": false,
-        "rs_spy": 111.2,
+        "rs_spy": null,
         "rs_qqq": 102.6,
         "rs_smh": 79.7,
         "rs_xli": 119.5,
         "rs_xle": 116.8,
-        "rs_igv": 110.5,
+        "rs_igv": null,
         "rs_robo": 104.9,
         "pe_ttm": 30.8559,
         "pb_annual": 7.2731,
@@ -1351,12 +1297,12 @@
         "t_score": 18.3,
         "band": "STRONG",
         "exhaustion_flag": false,
-        "rs_spy": 220.4,
+        "rs_spy": null,
         "rs_qqq": 203.3,
         "rs_smh": 158.0,
         "rs_xli": 236.9,
         "rs_xle": 231.5,
-        "rs_igv": 219.0,
+        "rs_igv": null,
         "rs_robo": 207.9,
         "pe_ttm": 44.3287,
         "pb_annual": 2.5207,
@@ -1405,12 +1351,12 @@
         "t_score": 18.3,
         "band": "STRONG",
         "exhaustion_flag": false,
-        "rs_spy": 98.2,
+        "rs_spy": null,
         "rs_qqq": 90.6,
         "rs_smh": 70.4,
         "rs_xli": 105.6,
         "rs_xle": 103.1,
-        "rs_igv": 97.6,
+        "rs_igv": null,
         "rs_robo": 92.7,
         "pe_ttm": 77.7247,
         "pb_annual": 3.2307,
@@ -1459,12 +1405,12 @@
         "t_score": 18.3,
         "band": "STRONG",
         "exhaustion_flag": false,
-        "rs_spy": 93.8,
+        "rs_spy": null,
         "rs_qqq": 86.6,
         "rs_smh": 67.3,
         "rs_xli": 100.9,
         "rs_xle": 98.6,
-        "rs_igv": 93.2,
+        "rs_igv": null,
         "rs_robo": 88.5,
         "pe_ttm": 28.3807,
         "pb_annual": 6.1338,
@@ -1480,53 +1426,7 @@
         "layer": "L2",
         "priority": 2,
         "notes": "53% rev growth; 76% Systems Protection; trades at 40% PE discount to VRT",
-        "price": 163.81,
-        "sma20": 167.99,
-        "sma50": 149.83,
-        "sma200": 116.76,
-        "sma50_slope_pct": 7.162,
-        "sma200_slope_pct": 3.54,
-        "vs_sma20_pct": -2.49,
-        "vs_sma50_pct": 9.33,
-        "vs_sma200_pct": 40.3,
-        "pct_1w": -4.51,
-        "pct_1m": -1.75,
-        "pct_3m": 48.18,
-        "pct_1yr": 146.18,
-        "high_52w": 178,
-        "low_52w": 67.17,
-        "dist_52w_high_pct": -7.97,
-        "dist_52w_low_pct": 143.86,
-        "atr_pct": 4.417,
-        "vol_ratio": 1.314,
-        "rsi_14d": 51.26,
-        "rsi_14w": 74.48,
-        "macd": 4.6829,
-        "macd_signal": 6.2309,
-        "macd_histogram": -1.548,
-        "macd_above_signal": false,
-        "macd_crossover_bullish": false,
-        "macd_crossover_bearish": false,
-        "t1_trend": 4,
-        "t2_momentum": 3,
-        "t3_exhaustion": 4,
-        "t_score": 18.3,
-        "band": "STRONG",
-        "exhaustion_flag": false,
-        "rs_spy": 136.6,
-        "rs_qqq": 126.0,
-        "rs_smh": 97.9,
-        "rs_xli": 146.8,
-        "rs_xle": 143.5,
-        "rs_igv": 135.7,
-        "rs_robo": 128.9,
-        "pe_ttm": 53.6465,
-        "pb_annual": 4.411,
-        "beta": 1.377476,
-        "fh_52w_high": 178,
-        "fh_52w_low": 67.175,
-        "revenue_growth_3y": 10.2,
-        "eps_growth_3y": 22.01
+        "error": "no_ohlc_data"
       },
       "ANET": {
         "name": "Arista Networks",
@@ -1534,53 +1434,7 @@
         "layer": "L1\u2192L2",
         "priority": 2,
         "notes": "AI networking OS; $3.5B AI rev target; 100/100 GF Score",
-        "price": 156.4,
-        "sma20": 153.0,
-        "sma50": 152.95,
-        "sma200": 141.06,
-        "sma50_slope_pct": 4.003,
-        "sma200_slope_pct": 0.904,
-        "vs_sma20_pct": 2.22,
-        "vs_sma50_pct": 2.25,
-        "vs_sma200_pct": 10.87,
-        "pct_1w": -8.37,
-        "pct_1m": 10.34,
-        "pct_3m": 12.2,
-        "pct_1yr": 69.41,
-        "high_52w": 179.8,
-        "low_52w": 85.58,
-        "dist_52w_high_pct": -13.01,
-        "dist_52w_low_pct": 82.75,
-        "atr_pct": 5.246,
-        "vol_ratio": 0.526,
-        "rsi_14d": 49.9,
-        "rsi_14w": 55.45,
-        "macd": 3.0528,
-        "macd_signal": 2.4383,
-        "macd_histogram": 0.6146,
-        "macd_above_signal": true,
-        "macd_crossover_bullish": false,
-        "macd_crossover_bearish": false,
-        "t1_trend": 4,
-        "t2_momentum": 4,
-        "t3_exhaustion": 4,
-        "t_score": 20.0,
-        "band": "STRONG",
-        "exhaustion_flag": false,
-        "rs_spy": 103.4,
-        "rs_qqq": 95.4,
-        "rs_smh": 74.2,
-        "rs_xli": 111.2,
-        "rs_xle": 108.6,
-        "rs_igv": 102.8,
-        "rs_robo": 97.6,
-        "pe_ttm": 52.3514,
-        "pb_annual": 13.3385,
-        "beta": 1.6183665,
-        "fh_52w_high": 179.8,
-        "fh_52w_low": 85.58,
-        "revenue_growth_3y": 27.15,
-        "eps_growth_3y": 37.09
+        "error": "no_ohlc_data"
       },
       "LITE": {
         "name": "Lumentum",
@@ -1621,12 +1475,12 @@
         "t_score": 20.0,
         "band": "STRONG",
         "exhaustion_flag": false,
-        "rs_spy": 126.8,
+        "rs_spy": null,
         "rs_qqq": 117.0,
         "rs_smh": 90.9,
         "rs_xli": 136.3,
         "rs_xle": 133.2,
-        "rs_igv": 126.0,
+        "rs_igv": null,
         "rs_robo": 119.7,
         "pe_ttm": 157.1245,
         "pb_annual": 5.8475,
@@ -1675,12 +1529,12 @@
         "t_score": 18.3,
         "band": "STRONG",
         "exhaustion_flag": false,
-        "rs_spy": 145.9,
+        "rs_spy": null,
         "rs_qqq": 134.6,
         "rs_smh": 104.6,
         "rs_xli": 156.9,
         "rs_xle": 153.3,
-        "rs_igv": 145.0,
+        "rs_igv": null,
         "rs_robo": 137.7,
         "pe_ttm": 163.1548,
         "pb_annual": 1.7061,
@@ -1696,53 +1550,7 @@
         "layer": "L1\u2192L2",
         "priority": 2,
         "notes": "Custom AI ASICs + optical DSP; FY2027 guided $11B; Q1 FY27 May 27",
-        "price": 288.85,
-        "sma20": 214.46,
-        "sma50": 169.17,
-        "sma200": 104.58,
-        "sma50_slope_pct": 23.032,
-        "sma200_slope_pct": 9.043,
-        "vs_sma20_pct": 34.69,
-        "vs_sma50_pct": 70.75,
-        "vs_sma200_pct": 176.2,
-        "pct_1w": 31.64,
-        "pct_1m": 80.52,
-        "pct_3m": 281.67,
-        "pct_1yr": 347.83,
-        "high_52w": 324.2,
-        "low_52w": 61.44,
-        "dist_52w_high_pct": -10.9,
-        "dist_52w_low_pct": 370.13,
-        "atr_pct": 9.706,
-        "vol_ratio": 1.879,
-        "rsi_14d": 69.18,
-        "rsi_14w": 94.66,
-        "macd": 34.7459,
-        "macd_signal": 26.4746,
-        "macd_histogram": 8.2712,
-        "macd_above_signal": true,
-        "macd_crossover_bullish": false,
-        "macd_crossover_bearish": false,
-        "t1_trend": 4,
-        "t2_momentum": 3,
-        "t3_exhaustion": 4,
-        "t_score": 18.3,
-        "band": "STRONG",
-        "exhaustion_flag": false,
-        "rs_spy": 351.8,
-        "rs_qqq": 324.5,
-        "rs_smh": 252.3,
-        "rs_xli": 378.2,
-        "rs_xle": 369.5,
-        "rs_igv": 349.6,
-        "rs_robo": 332.0,
-        "pe_ttm": 100.0063,
-        "pb_annual": 4.7977,
-        "beta": 2.1722825,
-        "fh_52w_high": 324.2,
-        "fh_52w_low": 61.44,
-        "revenue_growth_3y": 11.45,
-        "eps_growth_3y": null
+        "error": "no_ohlc_data"
       },
       "GFS": {
         "name": "GlobalFoundries",
@@ -1783,12 +1591,12 @@
         "t_score": 20.0,
         "band": "STRONG",
         "exhaustion_flag": false,
-        "rs_spy": 147.4,
+        "rs_spy": null,
         "rs_qqq": 136.0,
         "rs_smh": 105.7,
         "rs_xli": 158.5,
         "rs_xle": 154.9,
-        "rs_igv": 146.5,
+        "rs_igv": null,
         "rs_robo": 139.1,
         "pe_ttm": 54.4263,
         "pb_annual": 1.6268,
@@ -1804,7 +1612,56 @@
         "layer": "L2",
         "priority": 2,
         "notes": "Modular HVAC; 56% of rev is AI DC; speed-to-power advantage; PE 52x flag",
-        "error": "no_ohlc_data"
+        "price": 1852.03,
+        "sma20": 1893.19,
+        "sma50": 1755.04,
+        "sma200": 1206.35,
+        "sma50_slope_pct": 5.327,
+        "sma200_slope_pct": 5.066,
+        "vs_sma20_pct": -2.17,
+        "vs_sma50_pct": 5.53,
+        "vs_sma200_pct": 53.52,
+        "pct_1w": 3.59,
+        "pct_1m": -4.63,
+        "pct_3m": 37.37,
+        "pct_1yr": 309.87,
+        "high_52w": 2073.99,
+        "low_52w": 469.16,
+        "dist_52w_high_pct": -10.7,
+        "dist_52w_low_pct": 294.75,
+        "atr_pct": 4.95,
+        "vol_ratio": 0.849,
+        "rsi_14d": 50.94,
+        "rsi_14w": 73.45,
+        "macd": 17.7076,
+        "macd_signal": 31.1367,
+        "macd_histogram": -13.4291,
+        "macd_above_signal": false,
+        "macd_crossover_bullish": false,
+        "macd_crossover_bearish": false,
+        "t1_trend": 4,
+        "t2_momentum": 3,
+        "t3_exhaustion": 4,
+        "t_score": 18.3,
+        "band": "STRONG",
+        "exhaustion_flag": false,
+        "rs_spy": null,
+        "rs_qqq": 116.8,
+        "rs_smh": 90.8,
+        "rs_xli": 136.1,
+        "rs_xle": 133.0,
+        "rs_igv": null,
+        "rs_robo": 119.5,
+        "pe_ttm": 52.6536,
+        "pb_annual": 13.443,
+        "beta": 1.7031891,
+        "fh_52w_high": 2073.99,
+        "fh_52w_low": 469.16,
+        "revenue_growth_3y": 30.03,
+        "eps_growth_3y": 61.75,
+        "forward_pe": 52.0,
+        "forward_pe_5yr_avg": null,
+        "override_note": "PE 52x flag. Modular HVAC; 56% of rev is AI DC; speed-to-power competitive advantage."
       },
       "STRL": {
         "name": "Sterling Infrastructure",
@@ -1845,12 +1702,12 @@
         "t_score": 18.3,
         "band": "STRONG",
         "exhaustion_flag": false,
-        "rs_spy": 206.1,
+        "rs_spy": null,
         "rs_qqq": 190.1,
         "rs_smh": 147.8,
         "rs_xli": 221.6,
         "rs_xle": 216.5,
-        "rs_igv": 204.8,
+        "rs_igv": null,
         "rs_robo": 194.5,
         "pe_ttm": 78.0398,
         "pb_annual": 8.4863,
@@ -1902,12 +1759,12 @@
         "t_score": 11.7,
         "band": "CAUTION",
         "exhaustion_flag": true,
-        "rs_spy": 146.1,
+        "rs_spy": null,
         "rs_qqq": 134.8,
         "rs_smh": 104.8,
         "rs_xli": 157.1,
         "rs_xle": 153.5,
-        "rs_igv": 145.2,
+        "rs_igv": null,
         "rs_robo": 137.9,
         "pe_ttm": 11834.1472,
         "pb_annual": 26.736,
@@ -1956,12 +1813,12 @@
         "t_score": 13.3,
         "band": "CAUTION",
         "exhaustion_flag": false,
-        "rs_spy": 100.4,
+        "rs_spy": null,
         "rs_qqq": 92.6,
         "rs_smh": 72.0,
         "rs_xli": 108.0,
         "rs_xle": 105.5,
-        "rs_igv": 99.8,
+        "rs_igv": null,
         "rs_robo": 94.8,
         "pe_ttm": null,
         "pb_annual": 15.6685,
@@ -2010,12 +1867,12 @@
         "t_score": 11.7,
         "band": "CAUTION",
         "exhaustion_flag": true,
-        "rs_spy": 140.8,
+        "rs_spy": null,
         "rs_qqq": 129.9,
         "rs_smh": 100.9,
         "rs_xli": 151.4,
         "rs_xle": 147.9,
-        "rs_igv": 139.9,
+        "rs_igv": null,
         "rs_robo": 132.8,
         "pe_ttm": null,
         "pb_annual": 4.5882,
@@ -2064,12 +1921,12 @@
         "t_score": 5.0,
         "band": "EXTREME_EXHAUSTION",
         "exhaustion_flag": true,
-        "rs_spy": 72.6,
+        "rs_spy": null,
         "rs_qqq": 67.0,
         "rs_smh": 52.1,
         "rs_xli": 78.1,
         "rs_xle": 76.3,
-        "rs_igv": 72.2,
+        "rs_igv": null,
         "rs_robo": 68.5,
         "pe_ttm": 53.3469,
         "pb_annual": 4.1222,
@@ -2118,12 +1975,12 @@
         "t_score": 6.7,
         "band": "RISKY",
         "exhaustion_flag": true,
-        "rs_spy": 97.3,
+        "rs_spy": null,
         "rs_qqq": 89.8,
         "rs_smh": 69.8,
         "rs_xli": 104.6,
         "rs_xle": 102.2,
-        "rs_igv": 96.7,
+        "rs_igv": null,
         "rs_robo": 91.8,
         "pe_ttm": 40.4043,
         "pb_annual": 11.1267,
@@ -2172,12 +2029,12 @@
         "t_score": 13.3,
         "band": "CAUTION",
         "exhaustion_flag": true,
-        "rs_spy": 149.6,
+        "rs_spy": null,
         "rs_qqq": 138.1,
         "rs_smh": 107.3,
         "rs_xli": 160.9,
         "rs_xle": 157.2,
-        "rs_igv": 148.7,
+        "rs_igv": null,
         "rs_robo": 141.2,
         "pe_ttm": null,
         "pb_annual": 21.6411,
@@ -2226,12 +2083,12 @@
         "t_score": 11.7,
         "band": "CAUTION",
         "exhaustion_flag": true,
-        "rs_spy": 160.7,
+        "rs_spy": null,
         "rs_qqq": 148.3,
         "rs_smh": 115.2,
         "rs_xli": 172.8,
         "rs_xle": 168.8,
-        "rs_igv": 159.7,
+        "rs_igv": null,
         "rs_robo": 151.6,
         "pe_ttm": 71.6348,
         "pb_annual": 23.5997,
@@ -2280,12 +2137,12 @@
         "t_score": 6.7,
         "band": "RISKY",
         "exhaustion_flag": true,
-        "rs_spy": 118.2,
+        "rs_spy": null,
         "rs_qqq": 109.1,
         "rs_smh": 84.8,
         "rs_xli": 127.1,
         "rs_xle": 124.2,
-        "rs_igv": 117.5,
+        "rs_igv": null,
         "rs_robo": 111.6,
         "pe_ttm": null,
         "pb_annual": 29.1137,
@@ -2334,12 +2191,12 @@
         "t_score": 11.7,
         "band": "CAUTION",
         "exhaustion_flag": true,
-        "rs_spy": 126.4,
+        "rs_spy": null,
         "rs_qqq": 116.6,
         "rs_smh": 90.7,
         "rs_xli": 135.9,
         "rs_xle": 132.8,
-        "rs_igv": 125.7,
+        "rs_igv": null,
         "rs_robo": 119.3,
         "pe_ttm": null,
         "pb_annual": 10.7432,
@@ -2355,53 +2212,7 @@
         "layer": "L5",
         "priority": 3,
         "notes": "Photonic quantum; early stage; NASA/USAF contracts",
-        "price": 10.45,
-        "sma20": 11.11,
-        "sma50": 9.47,
-        "sma200": 12.02,
-        "sma50_slope_pct": 9.702,
-        "sma200_slope_pct": -1.73,
-        "vs_sma20_pct": -5.93,
-        "vs_sma50_pct": 10.3,
-        "vs_sma200_pct": -13.03,
-        "pct_1w": -15.66,
-        "pct_1m": 8.52,
-        "pct_3m": 35.36,
-        "pct_1yr": 14.84,
-        "high_52w": 25.84,
-        "low_52w": 6.18,
-        "dist_52w_high_pct": -59.56,
-        "dist_52w_low_pct": 69.09,
-        "atr_pct": 10.612,
-        "vol_ratio": 0.368,
-        "rsi_14d": 48.79,
-        "rsi_14w": 50.67,
-        "macd": 0.4012,
-        "macd_signal": 0.6166,
-        "macd_histogram": -0.2153,
-        "macd_above_signal": false,
-        "macd_crossover_bullish": false,
-        "macd_crossover_bearish": false,
-        "t1_trend": 0,
-        "t2_momentum": 4,
-        "t3_exhaustion": 0,
-        "t_score": 6.7,
-        "band": "RISKY",
-        "exhaustion_flag": true,
-        "rs_spy": 124.8,
-        "rs_qqq": 115.1,
-        "rs_smh": 89.5,
-        "rs_xli": 134.1,
-        "rs_xle": 131.1,
-        "rs_igv": 124.0,
-        "rs_robo": 117.7,
-        "pe_ttm": null,
-        "pb_annual": 1.4388,
-        "beta": 3.7972662,
-        "fh_52w_high": 25.84,
-        "fh_52w_low": 6.18,
-        "revenue_growth_3y": 69.52,
-        "eps_growth_3y": null
+        "error": "no_ohlc_data"
       },
       "ARQQ": {
         "name": "Arqit Quantum",
@@ -2442,12 +2253,12 @@
         "t_score": 1.7,
         "band": "EXTREME_EXHAUSTION",
         "exhaustion_flag": true,
-        "rs_spy": 74.2,
+        "rs_spy": null,
         "rs_qqq": 68.5,
         "rs_smh": 53.2,
         "rs_xli": 79.8,
         "rs_xle": 78.0,
-        "rs_igv": 73.8,
+        "rs_igv": null,
         "rs_robo": 70.0,
         "pe_ttm": null,
         "pb_annual": 21.7564,
@@ -2496,12 +2307,12 @@
         "t_score": 13.3,
         "band": "CAUTION",
         "exhaustion_flag": true,
-        "rs_spy": 90.4,
+        "rs_spy": null,
         "rs_qqq": 83.4,
         "rs_smh": 64.8,
         "rs_xli": 97.2,
         "rs_xle": 95.0,
-        "rs_igv": 89.8,
+        "rs_igv": null,
         "rs_robo": 85.3,
         "pe_ttm": null,
         "pb_annual": 14.4908,
@@ -2550,12 +2361,12 @@
         "t_score": 11.7,
         "band": "CAUTION",
         "exhaustion_flag": true,
-        "rs_spy": 155.1,
+        "rs_spy": null,
         "rs_qqq": 143.1,
         "rs_smh": 111.2,
         "rs_xli": 166.8,
         "rs_xle": 162.9,
-        "rs_igv": 154.2,
+        "rs_igv": null,
         "rs_robo": 146.4,
         "pe_ttm": null,
         "pb_annual": null,
@@ -2604,12 +2415,12 @@
         "t_score": 11.7,
         "band": "CAUTION",
         "exhaustion_flag": true,
-        "rs_spy": 148.3,
+        "rs_spy": null,
         "rs_qqq": 136.9,
         "rs_smh": 106.4,
         "rs_xli": 159.5,
         "rs_xle": 155.8,
-        "rs_igv": 147.4,
+        "rs_igv": null,
         "rs_robo": 140.0,
         "pe_ttm": null,
         "pb_annual": 0.7405,
@@ -2658,12 +2469,12 @@
         "t_score": 10.0,
         "band": "CAUTION",
         "exhaustion_flag": true,
-        "rs_spy": 260.7,
+        "rs_spy": null,
         "rs_qqq": 240.5,
         "rs_smh": 187.0,
         "rs_xli": 280.3,
         "rs_xle": 273.9,
-        "rs_igv": 259.1,
+        "rs_igv": null,
         "rs_robo": 246.0,
         "pe_ttm": null,
         "pb_annual": 2.8382,
@@ -2712,12 +2523,12 @@
         "t_score": 8.3,
         "band": "RISKY",
         "exhaustion_flag": true,
-        "rs_spy": 82.4,
+        "rs_spy": null,
         "rs_qqq": 76.0,
         "rs_smh": 59.1,
         "rs_xli": 88.6,
         "rs_xle": 86.6,
-        "rs_igv": 81.9,
+        "rs_igv": null,
         "rs_robo": 77.8,
         "pe_ttm": 143.3956,
         "pb_annual": 57.3495,
@@ -2766,12 +2577,12 @@
         "t_score": 6.7,
         "band": "RISKY",
         "exhaustion_flag": true,
-        "rs_spy": 76.1,
+        "rs_spy": null,
         "rs_qqq": 70.2,
         "rs_smh": 54.6,
         "rs_xli": 81.8,
         "rs_xle": 79.9,
-        "rs_igv": 75.6,
+        "rs_igv": null,
         "rs_robo": 71.8,
         "pe_ttm": 184.3234,
         "pb_annual": 13.8206,
@@ -2820,12 +2631,12 @@
         "t_score": 8.3,
         "band": "RISKY",
         "exhaustion_flag": true,
-        "rs_spy": 62.2,
+        "rs_spy": null,
         "rs_qqq": 57.4,
         "rs_smh": 44.6,
         "rs_xli": 66.9,
         "rs_xle": 65.3,
-        "rs_igv": 61.8,
+        "rs_igv": null,
         "rs_robo": 58.7,
         "pe_ttm": 372.7757,
         "pb_annual": 6.5522,
@@ -2874,12 +2685,12 @@
         "t_score": 5.0,
         "band": "EXTREME_EXHAUSTION",
         "exhaustion_flag": true,
-        "rs_spy": 64.4,
+        "rs_spy": null,
         "rs_qqq": 59.4,
         "rs_smh": 46.2,
         "rs_xli": 69.3,
         "rs_xle": 67.7,
-        "rs_igv": 64.0,
+        "rs_igv": null,
         "rs_robo": 60.8,
         "pe_ttm": 15.1563,
         "pb_annual": 4.7717,
@@ -2928,14 +2739,14 @@
         "t_score": 1.7,
         "band": "EXTREME_EXHAUSTION",
         "exhaustion_flag": true,
-        "rs_spy": 77.7,
+        "rs_spy": null,
         "rs_qqq": 71.7,
         "rs_smh": 55.7,
         "rs_xli": 83.5,
         "rs_xle": 81.6,
-        "rs_igv": 77.2,
+        "rs_igv": null,
         "rs_robo": 73.3,
-        "pe_ttm": 49.9847,
+        "pe_ttm": 50.6401,
         "pb_annual": 11.2642,
         "beta": 1.446904,
         "fh_52w_high": 603.88,
@@ -2949,53 +2760,7 @@
         "layer": "L3",
         "priority": 3,
         "notes": "Industrial robot leader; Japan; AI training data for humanoid motion",
-        "price": 22.88,
-        "sma20": 24.84,
-        "sma50": 21.96,
-        "sma200": 18.8,
-        "sma50_slope_pct": 5.954,
-        "sma200_slope_pct": 2.592,
-        "vs_sma20_pct": -7.9,
-        "vs_sma50_pct": 4.18,
-        "vs_sma200_pct": 21.72,
-        "pct_1w": -9.67,
-        "pct_1m": 3.25,
-        "pct_3m": 16.68,
-        "pct_1yr": 73.86,
-        "high_52w": 27.54,
-        "low_52w": 12.27,
-        "dist_52w_high_pct": -16.92,
-        "dist_52w_low_pct": 86.47,
-        "atr_pct": 5.069,
-        "vol_ratio": 0.745,
-        "rsi_14d": 45.28,
-        "rsi_14w": 57.24,
-        "macd": 0.3853,
-        "macd_signal": 0.8425,
-        "macd_histogram": -0.4572,
-        "macd_above_signal": false,
-        "macd_crossover_bullish": false,
-        "macd_crossover_bearish": false,
-        "t1_trend": 4,
-        "t2_momentum": 4,
-        "t3_exhaustion": 4,
-        "t_score": 20.0,
-        "band": "STRONG",
-        "exhaustion_flag": false,
-        "rs_spy": 107.5,
-        "rs_qqq": 99.2,
-        "rs_smh": 77.1,
-        "rs_xli": 115.6,
-        "rs_xle": 113.0,
-        "rs_igv": 106.9,
-        "rs_robo": 101.5,
-        "pe_ttm": 42.4709,
-        "pb_annual": 2.793,
-        "beta": 1.9371259,
-        "fh_52w_high": 8880,
-        "fh_52w_low": 3650,
-        "revenue_growth_3y": 0.23,
-        "eps_growth_3y": -0.01
+        "error": "no_ohlc_data"
       },
       "ABB": {
         "name": "ABB Ltd ADR",
@@ -3044,18 +2809,18 @@
         "t_score": 13.3,
         "band": "CAUTION",
         "exhaustion_flag": true,
-        "rs_spy": 226.5,
+        "rs_spy": null,
         "rs_qqq": 208.9,
         "rs_smh": 162.4,
         "rs_xli": 243.5,
         "rs_xle": 237.9,
-        "rs_igv": 225.1,
+        "rs_igv": null,
         "rs_robo": 213.7,
         "pe_ttm": null,
         "pb_annual": 1.2797,
         "beta": 1.9709996,
         "fh_52w_high": 9.08,
-        "fh_52w_low": 1.86,
+        "fh_52w_low": 1.9,
         "revenue_growth_3y": 5.85,
         "eps_growth_3y": null
       },
@@ -3098,12 +2863,12 @@
         "t_score": 5.0,
         "band": "EXTREME_EXHAUSTION",
         "exhaustion_flag": true,
-        "rs_spy": 83.9,
+        "rs_spy": null,
         "rs_qqq": 77.4,
         "rs_smh": 60.1,
         "rs_xli": 90.2,
         "rs_xle": 88.1,
-        "rs_igv": 83.3,
+        "rs_igv": null,
         "rs_robo": 79.1,
         "pe_ttm": null,
         "pb_annual": 0.8554,
@@ -3152,12 +2917,12 @@
         "t_score": 10.0,
         "band": "CAUTION",
         "exhaustion_flag": true,
-        "rs_spy": 144.8,
+        "rs_spy": null,
         "rs_qqq": 133.6,
         "rs_smh": 103.9,
         "rs_xli": 155.7,
         "rs_xle": 152.1,
-        "rs_igv": 143.9,
+        "rs_igv": null,
         "rs_robo": 136.7,
         "pe_ttm": null,
         "pb_annual": 1.3784,
@@ -3173,7 +2938,53 @@
         "layer": "L4",
         "priority": 3,
         "notes": "BTC miner; clean energy focus; lower risk profile than MARA",
-        "error": "no_ohlc_data"
+        "price": 16.52,
+        "sma20": 15.9,
+        "sma50": 13.11,
+        "sma200": 12.77,
+        "sma50_slope_pct": 13.248,
+        "sma200_slope_pct": 3.049,
+        "vs_sma20_pct": 3.93,
+        "vs_sma50_pct": 26.03,
+        "vs_sma200_pct": 29.39,
+        "pct_1w": -12.17,
+        "pct_1m": 18.17,
+        "pct_3m": 66.03,
+        "pct_1yr": 71.73,
+        "high_52w": 23.61,
+        "low_52w": 8,
+        "dist_52w_high_pct": -30.03,
+        "dist_52w_low_pct": 106.5,
+        "atr_pct": 8.709,
+        "vol_ratio": 0.835,
+        "rsi_14d": 56.81,
+        "rsi_14w": 60.14,
+        "macd": 1.1416,
+        "macd_signal": 1.3325,
+        "macd_histogram": -0.1909,
+        "macd_above_signal": false,
+        "macd_crossover_bullish": false,
+        "macd_crossover_bearish": false,
+        "t1_trend": 4,
+        "t2_momentum": 4,
+        "t3_exhaustion": 0,
+        "t_score": 13.3,
+        "band": "CAUTION",
+        "exhaustion_flag": true,
+        "rs_spy": null,
+        "rs_qqq": 141.2,
+        "rs_smh": 109.7,
+        "rs_xli": 164.5,
+        "rs_xle": 160.8,
+        "rs_igv": null,
+        "rs_robo": 144.4,
+        "pe_ttm": null,
+        "pb_annual": 1.8954,
+        "beta": 3.8757567,
+        "fh_52w_high": 23.61,
+        "fh_52w_low": 8,
+        "revenue_growth_3y": 79.95,
+        "eps_growth_3y": null
       },
       "ASML": {
         "name": "ASML Holding",
@@ -3214,17 +3025,17 @@
         "t_score": 16.7,
         "band": "CONSTRUCTIVE",
         "exhaustion_flag": false,
-        "rs_spy": 117.8,
+        "rs_spy": null,
         "rs_qqq": 108.7,
         "rs_smh": 84.5,
         "rs_xli": 126.7,
         "rs_xle": 123.8,
-        "rs_igv": 117.1,
+        "rs_igv": null,
         "rs_robo": 111.2,
         "pe_ttm": 54.6889,
         "pb_annual": 14.5055,
         "beta": 2.2493536,
-        "fh_52w_high": 1499,
+        "fh_52w_high": 1532.6,
         "fh_52w_low": 587.8,
         "revenue_growth_3y": 15.55,
         "eps_growth_3y": 17.79
@@ -3268,12 +3079,12 @@
         "t_score": 3.3,
         "band": "EXTREME_EXHAUSTION",
         "exhaustion_flag": true,
-        "rs_spy": 84.9,
+        "rs_spy": null,
         "rs_qqq": 78.3,
         "rs_smh": 60.9,
         "rs_xli": 91.3,
         "rs_xle": 89.2,
-        "rs_igv": 84.4,
+        "rs_igv": null,
         "rs_robo": 80.1,
         "pe_ttm": 18.5978,
         "pb_annual": 1.9154,
@@ -3286,10 +3097,10 @@
     },
     "benchmarks": {
       "SPY": {
-        "price": 739.18,
-        "pct_1m": 1.04,
-        "pct_3m": 8.5,
-        "vs_sma200_pct": 8.0
+        "price": null,
+        "pct_1m": null,
+        "pct_3m": null,
+        "vs_sma200_pct": null
       },
       "QQQ": {
         "price": 716.08,
@@ -3316,10 +3127,10 @@
         "vs_sma200_pct": 15.65
       },
       "IGV": {
-        "price": 95.64,
-        "pct_1m": 5.28,
-        "pct_3m": 9.16,
-        "vs_sma200_pct": -3.01
+        "price": null,
+        "pct_1m": null,
+        "pct_3m": null,
+        "vs_sma200_pct": null
       },
       "ROBO": {
         "price": 84.33,
@@ -3345,13 +3156,13 @@
           "FIX",
           "STRL"
         ],
-        "avg_1w_pct": -1.36,
-        "avg_1m_pct": 3.87,
-        "avg_3m_pct": 47.78,
+        "avg_1w_pct": -0.69,
+        "avg_1m_pct": 3.63,
+        "avg_3m_pct": 46.88,
         "pct_above_sma50": 0.67,
         "pct_above_sma200": 1.0,
-        "avg_rs_spy": 136.2,
-        "avg_rs_qqq": 125.7,
+        "avg_rs_spy": null,
+        "avg_rs_qqq": 124.9,
         "breakout_count": 0,
         "breakdown_count": 0,
         "avg_t_score": 17.8,
@@ -3368,16 +3179,16 @@
           "FLNC",
           "BLDP"
         ],
-        "avg_1w_pct": -7.5,
-        "avg_1m_pct": -0.95,
-        "avg_3m_pct": 34.81,
-        "pct_above_sma50": 0.57,
-        "pct_above_sma200": 0.57,
-        "avg_rs_spy": 124.3,
-        "avg_rs_qqq": 114.6,
+        "avg_1w_pct": -7.91,
+        "avg_1m_pct": -0.34,
+        "avg_3m_pct": 42.66,
+        "pct_above_sma50": 0.67,
+        "pct_above_sma200": 0.67,
+        "avg_rs_spy": null,
+        "avg_rs_qqq": 121.3,
         "breakout_count": 0,
-        "breakdown_count": 3,
-        "avg_t_score": 9.3,
+        "breakdown_count": 2,
+        "avg_t_score": 10.6,
         "band": "CAUTION",
         "comment": "Mixed signals \u2014 wait for clarity before adding"
       },
@@ -3389,16 +3200,16 @@
           "COHR",
           "MRVL"
         ],
-        "avg_1w_pct": 6.22,
-        "avg_1m_pct": 24.44,
-        "avg_3m_pct": 79.03,
+        "avg_1w_pct": 2.61,
+        "avg_1m_pct": 10.45,
+        "avg_3m_pct": 33.77,
         "pct_above_sma50": 1.0,
         "pct_above_sma200": 1.0,
-        "avg_rs_spy": 165.0,
-        "avg_rs_qqq": 152.2,
+        "avg_rs_spy": null,
+        "avg_rs_qqq": 113.7,
         "breakout_count": 0,
         "breakdown_count": 0,
-        "avg_t_score": 19.3,
+        "avg_t_score": 19.4,
         "band": "STRONG",
         "comment": "Strong momentum \u2014 all systems go"
       },
@@ -3410,16 +3221,16 @@
           "MARA",
           "CLSK"
         ],
-        "avg_1w_pct": -9.95,
-        "avg_1m_pct": -6.32,
-        "avg_3m_pct": 8.12,
-        "pct_above_sma50": 0.5,
-        "pct_above_sma200": 0.25,
-        "avg_rs_spy": 99.7,
-        "avg_rs_qqq": 92.0,
+        "avg_1w_pct": -10.39,
+        "avg_1m_pct": -1.42,
+        "avg_3m_pct": 19.7,
+        "pct_above_sma50": 0.6,
+        "pct_above_sma200": 0.4,
+        "avg_rs_spy": null,
+        "avg_rs_qqq": 101.8,
         "breakout_count": 0,
         "breakdown_count": 3,
-        "avg_t_score": 6.7,
+        "avg_t_score": 8.0,
         "band": "EXTREME_EXHAUSTION",
         "comment": "Extreme exhaustion \u2014 trim leaders, do not add"
       },
@@ -3436,7 +3247,7 @@
         "avg_3m_pct": 74.51,
         "pct_above_sma50": 1.0,
         "pct_above_sma200": 1.0,
-        "avg_rs_spy": 160.8,
+        "avg_rs_spy": null,
         "avg_rs_qqq": 148.4,
         "breakout_count": 0,
         "breakdown_count": 0,
@@ -3451,16 +3262,16 @@
           "QBTS",
           "QUBT"
         ],
-        "avg_1w_pct": -12.89,
-        "avg_1m_pct": 19.09,
-        "avg_3m_pct": 43.78,
+        "avg_1w_pct": -11.97,
+        "avg_1m_pct": 22.62,
+        "avg_3m_pct": 46.59,
         "pct_above_sma50": 1.0,
-        "pct_above_sma200": 0.5,
-        "avg_rs_spy": 132.5,
-        "avg_rs_qqq": 122.3,
+        "pct_above_sma200": 0.67,
+        "avg_rs_spy": null,
+        "avg_rs_qqq": 124.7,
         "breakout_count": 0,
-        "breakdown_count": 2,
-        "avg_t_score": 9.2,
+        "breakdown_count": 1,
+        "avg_t_score": 10.0,
         "band": "CAUTION",
         "comment": "Mixed signals \u2014 wait for clarity before adding"
       },
@@ -3477,7 +3288,7 @@
         "avg_3m_pct": -22.02,
         "pct_above_sma50": 0.2,
         "pct_above_sma200": 0.0,
-        "avg_rs_spy": 71.9,
+        "avg_rs_spy": null,
         "avg_rs_qqq": 66.3,
         "breakout_count": 0,
         "breakdown_count": 5,
@@ -3491,16 +3302,16 @@
           "FANUY",
           "ABB"
         ],
-        "avg_1w_pct": -4.06,
-        "avg_1m_pct": -2.22,
-        "avg_3m_pct": 0.48,
-        "pct_above_sma50": 0.5,
-        "pct_above_sma200": 0.5,
-        "avg_rs_spy": 92.6,
-        "avg_rs_qqq": 85.5,
+        "avg_1w_pct": 1.54,
+        "avg_1m_pct": -7.69,
+        "avg_3m_pct": -15.72,
+        "pct_above_sma50": 0.0,
+        "pct_above_sma200": 0.0,
+        "avg_rs_spy": null,
+        "avg_rs_qqq": 71.7,
         "breakout_count": 0,
         "breakdown_count": 1,
-        "avg_t_score": 10.8,
+        "avg_t_score": 1.7,
         "band": "EXTREME_EXHAUSTION",
         "comment": "Extreme exhaustion \u2014 trim leaders, do not add"
       },
@@ -3515,7 +3326,7 @@
         "avg_3m_pct": 13.51,
         "pct_above_sma50": 0.67,
         "pct_above_sma200": 0.67,
-        "avg_rs_spy": 104.6,
+        "avg_rs_spy": null,
         "avg_rs_qqq": 96.5,
         "breakout_count": 1,
         "breakdown_count": 1,
@@ -3532,15 +3343,6 @@
         "rsi_14d": 34.82,
         "dist_52w_high_pct": -39.26,
         "price": 250.67,
-        "priority": 1
-      },
-      {
-        "ticker": "VST",
-        "band": "EXTREME_EXHAUSTION",
-        "t_score": 1.7,
-        "rsi_14d": 43.46,
-        "dist_52w_high_pct": -33.17,
-        "price": 146.9,
         "priority": 1
       },
       {
@@ -3607,7 +3409,7 @@
         "dist_52w_high_pct": -7.42,
         "price": 403.14,
         "priority": 1,
-        "rs_spy": 104.7
+        "rs_spy": null
       },
       {
         "ticker": "PWR",
@@ -3617,7 +3419,7 @@
         "dist_52w_high_pct": -12.04,
         "price": 693.81,
         "priority": 1,
-        "rs_spy": 116.4
+        "rs_spy": null
       },
       {
         "ticker": "APH",
@@ -3627,7 +3429,7 @@
         "dist_52w_high_pct": -14.03,
         "price": 143.6,
         "priority": 1,
-        "rs_spy": 97.1
+        "rs_spy": null
       },
       {
         "ticker": "ON",
@@ -3637,7 +3439,7 @@
         "dist_52w_high_pct": -10.39,
         "price": 120.9,
         "priority": 1,
-        "rs_spy": 183.1
+        "rs_spy": null
       },
       {
         "ticker": "TSM",
@@ -3647,7 +3449,7 @@
         "dist_52w_high_pct": -5.19,
         "price": 426.8,
         "priority": 1,
-        "rs_spy": 111.2
+        "rs_spy": null
       },
       {
         "ticker": "MU",
@@ -3657,7 +3459,7 @@
         "dist_52w_high_pct": -12.85,
         "price": 949.28,
         "priority": 1,
-        "rs_spy": 220.4
+        "rs_spy": null
       },
       {
         "ticker": "ENTG",
@@ -3667,7 +3469,7 @@
         "dist_52w_high_pct": -16.61,
         "price": 132.71,
         "priority": 1,
-        "rs_spy": 98.2
+        "rs_spy": null
       },
       {
         "ticker": "HUBB",
@@ -3677,7 +3479,7 @@
         "dist_52w_high_pct": -14.23,
         "price": 485.03,
         "priority": 1,
-        "rs_spy": 93.8
+        "rs_spy": null
       },
       {
         "ticker": "EME",
@@ -3687,17 +3489,7 @@
         "dist_52w_high_pct": -13.46,
         "price": 823.79,
         "priority": 1,
-        "rs_spy": 105.6
-      },
-      {
-        "ticker": "ANET",
-        "band": "STRONG",
-        "t_score": 20.0,
-        "rsi_14d": 49.9,
-        "dist_52w_high_pct": -13.01,
-        "price": 156.4,
-        "priority": 2,
-        "rs_spy": 103.4
+        "rs_spy": null
       },
       {
         "ticker": "LITE",
@@ -3707,7 +3499,7 @@
         "dist_52w_high_pct": -17.53,
         "price": 895.4,
         "priority": 2,
-        "rs_spy": 126.8
+        "rs_spy": null
       },
       {
         "ticker": "GFS",
@@ -3717,17 +3509,7 @@
         "dist_52w_high_pct": -16.47,
         "price": 77.31,
         "priority": 2,
-        "rs_spy": 147.4
-      },
-      {
-        "ticker": "NVT",
-        "band": "STRONG",
-        "t_score": 18.3,
-        "rsi_14d": 51.26,
-        "dist_52w_high_pct": -7.97,
-        "price": 163.81,
-        "priority": 2,
-        "rs_spy": 136.6
+        "rs_spy": null
       },
       {
         "ticker": "COHR",
@@ -3737,7 +3519,17 @@
         "dist_52w_high_pct": -8.65,
         "price": 401.93,
         "priority": 2,
-        "rs_spy": 145.9
+        "rs_spy": null
+      },
+      {
+        "ticker": "FIX",
+        "band": "STRONG",
+        "t_score": 18.3,
+        "rsi_14d": 50.94,
+        "dist_52w_high_pct": -10.7,
+        "price": 1852.03,
+        "priority": 2,
+        "rs_spy": null
       },
       {
         "ticker": "STRL",
@@ -3747,17 +3539,7 @@
         "dist_52w_high_pct": -11.32,
         "price": 891.86,
         "priority": 2,
-        "rs_spy": 206.1
-      },
-      {
-        "ticker": "FANUY",
-        "band": "STRONG",
-        "t_score": 20.0,
-        "rsi_14d": 45.28,
-        "dist_52w_high_pct": -16.92,
-        "price": 22.88,
-        "priority": 3,
-        "rs_spy": 107.5
+        "rs_spy": null
       }
     ],
     "priority_summary": {
@@ -3768,7 +3550,7 @@
           "t_score": 20.0,
           "rsi_14d": 50.38,
           "pct_3m": 13.63,
-          "rs_spy": 104.7
+          "rs_spy": null
         },
         {
           "ticker": "PWR",
@@ -3776,7 +3558,7 @@
           "t_score": 20.0,
           "rsi_14d": 46.38,
           "pct_3m": 26.33,
-          "rs_spy": 116.4
+          "rs_spy": null
         },
         {
           "ticker": "APH",
@@ -3784,7 +3566,7 @@
           "t_score": 20.0,
           "rsi_14d": 54.96,
           "pct_3m": 5.4,
-          "rs_spy": 97.1
+          "rs_spy": null
         },
         {
           "ticker": "ON",
@@ -3792,7 +3574,7 @@
           "t_score": 18.3,
           "rsi_14d": 56.65,
           "pct_3m": 98.69,
-          "rs_spy": 183.1
+          "rs_spy": null
         },
         {
           "ticker": "TSM",
@@ -3800,7 +3582,7 @@
           "t_score": 18.3,
           "rsi_14d": 55.57,
           "pct_3m": 20.61,
-          "rs_spy": 111.2
+          "rs_spy": null
         },
         {
           "ticker": "MU",
@@ -3808,7 +3590,7 @@
           "t_score": 18.3,
           "rsi_14d": 60.84,
           "pct_3m": 139.08,
-          "rs_spy": 220.4
+          "rs_spy": null
         },
         {
           "ticker": "ENTG",
@@ -3816,7 +3598,7 @@
           "t_score": 18.3,
           "rsi_14d": 46.14,
           "pct_3m": 6.53,
-          "rs_spy": 98.2
+          "rs_spy": null
         },
         {
           "ticker": "HUBB",
@@ -3824,7 +3606,7 @@
           "t_score": 18.3,
           "rsi_14d": 49.18,
           "pct_3m": 1.79,
-          "rs_spy": 93.8
+          "rs_spy": null
         },
         {
           "ticker": "EME",
@@ -3832,7 +3614,7 @@
           "t_score": 16.7,
           "rsi_14d": 41.08,
           "pct_3m": 14.57,
-          "rs_spy": 105.6
+          "rs_spy": null
         },
         {
           "ticker": "VRT",
@@ -3840,7 +3622,7 @@
           "t_score": 8.3,
           "rsi_14d": 39.87,
           "pct_3m": 20.35,
-          "rs_spy": 110.9
+          "rs_spy": null
         },
         {
           "ticker": "GEV",
@@ -3848,7 +3630,7 @@
           "t_score": 8.3,
           "rsi_14d": 37.24,
           "pct_3m": 14.58,
-          "rs_spy": 105.6
+          "rs_spy": null
         },
         {
           "ticker": "CEG",
@@ -3856,33 +3638,25 @@
           "t_score": 5.0,
           "rsi_14d": 34.82,
           "pct_3m": -24.51,
-          "rs_spy": 69.6
+          "rs_spy": null
         },
         {
           "ticker": "VST",
-          "band": "EXTREME_EXHAUSTION",
-          "t_score": 1.7,
-          "rsi_14d": 43.46,
-          "pct_3m": -12.25,
-          "rs_spy": 80.9
+          "band": null,
+          "t_score": null,
+          "rsi_14d": null,
+          "pct_3m": null,
+          "rs_spy": null
         }
       ],
       "P2": [
-        {
-          "ticker": "ANET",
-          "band": "STRONG",
-          "t_score": 20.0,
-          "rsi_14d": 49.9,
-          "pct_3m": 12.2,
-          "rs_spy": 103.4
-        },
         {
           "ticker": "LITE",
           "band": "STRONG",
           "t_score": 20.0,
           "rsi_14d": 48.77,
           "pct_3m": 37.58,
-          "rs_spy": 126.8
+          "rs_spy": null
         },
         {
           "ticker": "GFS",
@@ -3890,15 +3664,7 @@
           "t_score": 20.0,
           "rsi_14d": 53.05,
           "pct_3m": 59.96,
-          "rs_spy": 147.4
-        },
-        {
-          "ticker": "NVT",
-          "band": "STRONG",
-          "t_score": 18.3,
-          "rsi_14d": 51.26,
-          "pct_3m": 48.18,
-          "rs_spy": 136.6
+          "rs_spy": null
         },
         {
           "ticker": "COHR",
@@ -3906,15 +3672,15 @@
           "t_score": 18.3,
           "rsi_14d": 57.51,
           "pct_3m": 58.32,
-          "rs_spy": 145.9
+          "rs_spy": null
         },
         {
-          "ticker": "MRVL",
+          "ticker": "FIX",
           "band": "STRONG",
           "t_score": 18.3,
-          "rsi_14d": 69.18,
-          "pct_3m": 281.67,
-          "rs_spy": 351.8
+          "rsi_14d": 50.94,
+          "pct_3m": 37.37,
+          "rs_spy": null
         },
         {
           "ticker": "STRL",
@@ -3922,7 +3688,7 @@
           "t_score": 18.3,
           "rsi_14d": 60.54,
           "pct_3m": 123.6,
-          "rs_spy": 206.1
+          "rs_spy": null
         },
         {
           "ticker": "ASML",
@@ -3930,7 +3696,7 @@
           "t_score": 16.7,
           "rsi_14d": 63.33,
           "pct_3m": 27.82,
-          "rs_spy": 117.8
+          "rs_spy": null
         },
         {
           "ticker": "TLN",
@@ -3938,7 +3704,7 @@
           "t_score": 13.3,
           "rsi_14d": 49.14,
           "pct_3m": 8.94,
-          "rs_spy": 100.4
+          "rs_spy": null
         },
         {
           "ticker": "RKLB",
@@ -3946,7 +3712,7 @@
           "t_score": 13.3,
           "rsi_14d": 48.62,
           "pct_3m": 62.36,
-          "rs_spy": 149.6
+          "rs_spy": null
         },
         {
           "ticker": "BE",
@@ -3954,7 +3720,7 @@
           "t_score": 11.7,
           "rsi_14d": 44.65,
           "pct_3m": 58.49,
-          "rs_spy": 146.1
+          "rs_spy": null
         },
         {
           "ticker": "FLNC",
@@ -3962,7 +3728,7 @@
           "t_score": 11.7,
           "rsi_14d": 56.35,
           "pct_3m": 52.73,
-          "rs_spy": 140.8
+          "rs_spy": null
         },
         {
           "ticker": "HOOD",
@@ -3970,7 +3736,7 @@
           "t_score": 6.7,
           "rsi_14d": 53.97,
           "pct_3m": 5.56,
-          "rs_spy": 97.3
+          "rs_spy": null
         },
         {
           "ticker": "COIN",
@@ -3978,7 +3744,7 @@
           "t_score": 5.0,
           "rsi_14d": 39.44,
           "pct_3m": -21.19,
-          "rs_spy": 72.6
+          "rs_spy": null
         },
         {
           "ticker": "MSTR",
@@ -3986,10 +3752,26 @@
           "t_score": 5.0,
           "rsi_14d": 34.79,
           "pct_3m": -9.02,
-          "rs_spy": 83.9
+          "rs_spy": null
         },
         {
-          "ticker": "FIX",
+          "ticker": "NVT",
+          "band": null,
+          "t_score": null,
+          "rsi_14d": null,
+          "pct_3m": null,
+          "rs_spy": null
+        },
+        {
+          "ticker": "ANET",
+          "band": null,
+          "t_score": null,
+          "rsi_14d": null,
+          "pct_3m": null,
+          "rs_spy": null
+        },
+        {
+          "ticker": "MRVL",
           "band": null,
           "t_score": null,
           "rsi_14d": null,
@@ -3999,20 +3781,12 @@
       ],
       "P3": [
         {
-          "ticker": "FANUY",
-          "band": "STRONG",
-          "t_score": 20.0,
-          "rsi_14d": 45.28,
-          "pct_3m": 16.68,
-          "rs_spy": 107.5
-        },
-        {
           "ticker": "ASTS",
           "band": "CAUTION",
           "t_score": 13.3,
           "rsi_14d": 47.17,
           "pct_3m": -1.92,
-          "rs_spy": 90.4
+          "rs_spy": null
         },
         {
           "ticker": "BLDP",
@@ -4020,7 +3794,15 @@
           "t_score": 13.3,
           "rsi_14d": 52.53,
           "pct_3m": 145.71,
-          "rs_spy": 226.5
+          "rs_spy": null
+        },
+        {
+          "ticker": "CLSK",
+          "band": "CAUTION",
+          "t_score": 13.3,
+          "rsi_14d": 56.81,
+          "pct_3m": 66.03,
+          "rs_spy": null
         },
         {
           "ticker": "IONQ",
@@ -4028,7 +3810,7 @@
           "t_score": 11.7,
           "rsi_14d": 55.48,
           "pct_3m": 74.35,
-          "rs_spy": 160.7
+          "rs_spy": null
         },
         {
           "ticker": "QBTS",
@@ -4036,7 +3818,7 @@
           "t_score": 11.7,
           "rsi_14d": 53.23,
           "pct_3m": 37.17,
-          "rs_spy": 126.4
+          "rs_spy": null
         },
         {
           "ticker": "LUNR",
@@ -4044,7 +3826,7 @@
           "t_score": 11.7,
           "rsi_14d": 44.68,
           "pct_3m": 68.28,
-          "rs_spy": 155.1
+          "rs_spy": null
         },
         {
           "ticker": "SPCE",
@@ -4052,7 +3834,7 @@
           "t_score": 11.7,
           "rsi_14d": 52.54,
           "pct_3m": 60.94,
-          "rs_spy": 148.3
+          "rs_spy": null
         },
         {
           "ticker": "MNTS",
@@ -4060,7 +3842,7 @@
           "t_score": 10.0,
           "rsi_14d": 53.95,
           "pct_3m": 182.87,
-          "rs_spy": 260.7
+          "rs_spy": null
         },
         {
           "ticker": "MARA",
@@ -4068,7 +3850,7 @@
           "t_score": 10.0,
           "rsi_14d": 55.18,
           "pct_3m": 57.13,
-          "rs_spy": 144.8
+          "rs_spy": null
         },
         {
           "ticker": "PLTR",
@@ -4076,7 +3858,7 @@
           "t_score": 8.3,
           "rsi_14d": 45.69,
           "pct_3m": -10.61,
-          "rs_spy": 82.4
+          "rs_spy": null
         },
         {
           "ticker": "KTOS",
@@ -4084,7 +3866,7 @@
           "t_score": 8.3,
           "rsi_14d": 45.41,
           "pct_3m": -32.51,
-          "rs_spy": 62.2
+          "rs_spy": null
         },
         {
           "ticker": "RGTI",
@@ -4092,15 +3874,7 @@
           "t_score": 6.7,
           "rsi_14d": 50.66,
           "pct_3m": 28.26,
-          "rs_spy": 118.2
-        },
-        {
-          "ticker": "QUBT",
-          "band": "RISKY",
-          "t_score": 6.7,
-          "rsi_14d": 48.79,
-          "pct_3m": 35.36,
-          "rs_spy": 124.8
+          "rs_spy": null
         },
         {
           "ticker": "AXON",
@@ -4108,7 +3882,7 @@
           "t_score": 6.7,
           "rsi_14d": 59.7,
           "pct_3m": -17.43,
-          "rs_spy": 76.1
+          "rs_spy": null
         },
         {
           "ticker": "LDOS",
@@ -4116,7 +3890,7 @@
           "t_score": 5.0,
           "rsi_14d": 31.67,
           "pct_3m": -30.09,
-          "rs_spy": 64.4
+          "rs_spy": null
         },
         {
           "ticker": "BABA",
@@ -4124,7 +3898,7 @@
           "t_score": 3.3,
           "rsi_14d": 36.19,
           "pct_3m": -7.89,
-          "rs_spy": 84.9
+          "rs_spy": null
         },
         {
           "ticker": "ARQQ",
@@ -4132,7 +3906,7 @@
           "t_score": 1.7,
           "rsi_14d": 41.05,
           "pct_3m": -19.47,
-          "rs_spy": 74.2
+          "rs_spy": null
         },
         {
           "ticker": "ISRG",
@@ -4140,10 +3914,10 @@
           "t_score": 1.7,
           "rsi_14d": 42.5,
           "pct_3m": -15.72,
-          "rs_spy": 77.7
+          "rs_spy": null
         },
         {
-          "ticker": "ABB",
+          "ticker": "QUBT",
           "band": null,
           "t_score": null,
           "rsi_14d": null,
@@ -4151,7 +3925,15 @@
           "rs_spy": null
         },
         {
-          "ticker": "CLSK",
+          "ticker": "FANUY",
+          "band": null,
+          "t_score": null,
+          "rsi_14d": null,
+          "pct_3m": null,
+          "rs_spy": null
+        },
+        {
+          "ticker": "ABB",
           "band": null,
           "t_score": null,
           "rsi_14d": null,
@@ -4162,12 +3944,1286 @@
     },
     "rate_sleep_used": 15.0
   },
+  "heatmap": {
+    "universe": [
+      {
+        "ticker": "NVDA",
+        "layer": "L1",
+        "price": 208.64,
+        "sma50": 204.19,
+        "sma200": 188.74,
+        "sma200_prev": 187.51,
+        "rsiD": 46.71,
+        "rsiW": 57.24,
+        "rangePos": 0.708,
+        "bucket": "core",
+        "type": "trend",
+        "maxLossPct": null,
+        "src": "FRESH"
+      },
+      {
+        "ticker": "TSM",
+        "layer": "L1",
+        "price": 426.8,
+        "sma50": 391.04,
+        "sma200": 327.29,
+        "sma200_prev": 188,
+        "rsiD": 55.57,
+        "rsiW": 73.69,
+        "rangePos": 0.905,
+        "bucket": "core",
+        "type": "trend",
+        "maxLossPct": null,
+        "src": "FRESH"
+      },
+      {
+        "ticker": "MRVL",
+        "layer": "L1",
+        "price": 288.85,
+        "sma50": 169.17,
+        "sma200": 104.58,
+        "sma200_prev": 78,
+        "rsiD": 69.18,
+        "rsiW": 94.66,
+        "rangePos": 0.865,
+        "bucket": "core",
+        "type": "trend",
+        "maxLossPct": null,
+        "src": "FRESH"
+      },
+      {
+        "ticker": "AVGO",
+        "layer": "L1",
+        "price": 396.6,
+        "sma50": 400.15,
+        "sma200": 356.32,
+        "sma200_prev": 351.63,
+        "rsiD": 43.32,
+        "rsiW": 55.43,
+        "rangePos": 0.612,
+        "bucket": "core",
+        "type": "trend",
+        "maxLossPct": null,
+        "src": "FRESH"
+      },
+      {
+        "ticker": "AMD",
+        "layer": "L1",
+        "price": 490.33,
+        "sma50": 364.45,
+        "sma200": 247.6,
+        "sma200_prev": 235.88,
+        "rsiD": 58.8,
+        "rsiW": 73.6,
+        "rangePos": 0.87,
+        "bucket": "core",
+        "type": "trend",
+        "maxLossPct": null,
+        "src": "FRESH"
+      },
+      {
+        "ticker": "MU",
+        "layer": "L1",
+        "price": 949.28,
+        "sma50": 629.24,
+        "sma200": 365.01,
+        "sma200_prev": 334.52,
+        "rsiD": 60.84,
+        "rsiW": 77.71,
+        "rangePos": 0.858,
+        "bucket": "core",
+        "type": "trend",
+        "maxLossPct": null,
+        "src": "FRESH"
+      },
+      {
+        "ticker": "ARM",
+        "layer": "L1",
+        "price": 346.39,
+        "sma50": 227.64,
+        "sma200": 158.24,
+        "sma200_prev": 149.79,
+        "rsiD": 61.09,
+        "rsiW": 80.19,
+        "rangePos": 0.751,
+        "bucket": "core",
+        "type": "trend",
+        "maxLossPct": null,
+        "src": "FRESH"
+      },
+      {
+        "ticker": "SNDK",
+        "layer": "L1",
+        "price": 1642,
+        "sma50": 1200.66,
+        "sma200": 538.23,
+        "sma200_prev": 480.0,
+        "rsiD": 58.49,
+        "rsiW": 76.54,
+        "rangePos": 0.88,
+        "bucket": "core",
+        "type": "trend",
+        "maxLossPct": null,
+        "src": "FRESH"
+      },
+      {
+        "ticker": "ETN",
+        "layer": "L2",
+        "price": 403.14,
+        "sma50": 399.01,
+        "sma200": 366.72,
+        "sma200_prev": 364.81,
+        "rsiD": 50.38,
+        "rsiW": 57.82,
+        "rangePos": 0.739,
+        "bucket": "core",
+        "type": "trend",
+        "maxLossPct": null,
+        "src": "FRESH"
+      },
+      {
+        "ticker": "CEG",
+        "layer": "L2",
+        "price": 250.67,
+        "sma50": 288.4,
+        "sma200": 321.45,
+        "sma200_prev": 303,
+        "rsiD": 34.82,
+        "rsiW": 39.1,
+        "rangePos": 0.044,
+        "bucket": "core",
+        "type": "trend",
+        "maxLossPct": null,
+        "src": "FRESH"
+      },
+      {
+        "ticker": "VRT",
+        "layer": "L2",
+        "price": 300.57,
+        "sma50": 314.04,
+        "sma200": 216.88,
+        "sma200_prev": 246,
+        "rsiD": 39.87,
+        "rsiW": 59.77,
+        "rangePos": 0.709,
+        "bucket": "core",
+        "type": "trend",
+        "maxLossPct": null,
+        "src": "FRESH"
+      },
+      {
+        "ticker": "GEV",
+        "layer": "L2",
+        "price": 933.85,
+        "sma50": 1008.84,
+        "sma200": 758.31,
+        "sma200_prev": 735,
+        "rsiD": 37.24,
+        "rsiW": 56.85,
+        "rangePos": 0.657,
+        "bucket": "core",
+        "type": "trend",
+        "maxLossPct": null,
+        "src": "FRESH"
+      },
+      {
+        "ticker": "HUBB",
+        "layer": "L2",
+        "price": 485.03,
+        "sma50": 503.47,
+        "sma200": 469.7,
+        "sma200_prev": 402,
+        "rsiD": 49.18,
+        "rsiW": 50.4,
+        "rangePos": 0.564,
+        "bucket": "core",
+        "type": "trend",
+        "maxLossPct": null,
+        "src": "FRESH"
+      },
+      {
+        "ticker": "NVT",
+        "layer": "L2",
+        "price": 163.81,
+        "sma50": 149.83,
+        "sma200": 116.76,
+        "sma200_prev": 112,
+        "rsiD": 51.26,
+        "rsiW": 74.48,
+        "rangePos": 0.872,
+        "bucket": "core",
+        "type": "trend",
+        "maxLossPct": null,
+        "src": "FRESH"
+      },
+      {
+        "ticker": "VST",
+        "layer": "L2",
+        "price": 146.9,
+        "sma50": 154.27,
+        "sma200": 171.87,
+        "sma200_prev": 147,
+        "rsiD": 43.46,
+        "rsiW": 42.99,
+        "rangePos": 0.163,
+        "bucket": "core",
+        "type": "trend",
+        "maxLossPct": null,
+        "src": "FRESH"
+      },
+      {
+        "ticker": "POWL",
+        "layer": "L2",
+        "price": 293.6,
+        "sma50": 259.58,
+        "sma200": 161.19,
+        "sma200_prev": 226,
+        "rsiD": 55.99,
+        "rsiW": 75.83,
+        "rangePos": 0.873,
+        "bucket": "core",
+        "type": "trend",
+        "maxLossPct": null,
+        "src": "FRESH"
+      },
+      {
+        "ticker": "FLR",
+        "layer": "L2",
+        "price": 49.52,
+        "sma50": 47.87,
+        "sma200": 45.52,
+        "sma200_prev": 45.1,
+        "rsiD": 55.87,
+        "rsiW": 56.29,
+        "rangePos": 0.599,
+        "bucket": "core",
+        "type": "trend",
+        "maxLossPct": null,
+        "src": "FRESH"
+      },
+      {
+        "ticker": "BE",
+        "layer": "L2",
+        "price": 253.57,
+        "sma50": 239.36,
+        "sma200": 145.23,
+        "sma200_prev": 43,
+        "rsiD": 44.65,
+        "rsiW": 62.62,
+        "rangePos": 0.771,
+        "bucket": "core",
+        "type": "contrarian",
+        "maxLossPct": 35,
+        "src": "FRESH"
+      },
+      {
+        "ticker": "ABB",
+        "layer": "L3",
+        "price": 62,
+        "sma50": 58,
+        "sma200": 52,
+        "sma200_prev": 51,
+        "rsiD": 56,
+        "rsiW": 58,
+        "rangePos": 0.82,
+        "bucket": "core",
+        "type": "trend",
+        "maxLossPct": null,
+        "src": "EST"
+      },
+      {
+        "ticker": "ROK",
+        "layer": "L3",
+        "price": 451.66,
+        "sma50": 420.46,
+        "sma200": 388.75,
+        "sma200_prev": 306,
+        "rsiD": 55.4,
+        "rsiW": 65.4,
+        "rangePos": 0.899,
+        "bucket": "core",
+        "type": "trend",
+        "maxLossPct": null,
+        "src": "FRESH"
+      },
+      {
+        "ticker": "TER",
+        "layer": "L3",
+        "price": 374.69,
+        "sma50": 358.12,
+        "sma200": 242.12,
+        "sma200_prev": 103,
+        "rsiD": 51.76,
+        "rsiW": 63.36,
+        "rangePos": 0.86,
+        "bucket": "core",
+        "type": "trend",
+        "maxLossPct": null,
+        "src": "FRESH"
+      },
+      {
+        "ticker": "SYM",
+        "layer": "L3",
+        "price": 44.33,
+        "sma50": 53.82,
+        "sma200": 58.26,
+        "sma200_prev": 31,
+        "rsiD": 36.29,
+        "rsiW": 42.36,
+        "rangePos": 0.282,
+        "bucket": "satellite",
+        "type": "contrarian",
+        "maxLossPct": 35,
+        "src": "FRESH"
+      },
+      {
+        "ticker": "TSLA",
+        "layer": "L3",
+        "price": 408.95,
+        "sma50": 396.03,
+        "sma200": 414.57,
+        "sma200_prev": 298,
+        "rsiD": 48.02,
+        "rsiW": 50.51,
+        "rangePos": 0.586,
+        "bucket": "core",
+        "type": "trend",
+        "maxLossPct": null,
+        "src": "FRESH"
+      },
+      {
+        "ticker": "IONQ",
+        "layer": "L7",
+        "price": 62.8,
+        "sma50": 47.81,
+        "sma200": 48.63,
+        "sma200_prev": 46,
+        "rsiD": 55.48,
+        "rsiW": 61.51,
+        "rangePos": 0.628,
+        "bucket": "satellite",
+        "type": "contrarian",
+        "maxLossPct": 40,
+        "src": "FRESH"
+      },
+      {
+        "ticker": "QBTS",
+        "layer": "L7",
+        "price": 25.83,
+        "sma50": 20.89,
+        "sma200": 23.52,
+        "sma200_prev": 22.8,
+        "rsiD": 53.23,
+        "rsiW": 56.72,
+        "rangePos": 0.385,
+        "bucket": "satellite",
+        "type": "contrarian",
+        "maxLossPct": 40,
+        "src": "FRESH"
+      },
+      {
+        "ticker": "RGTI",
+        "layer": "L7",
+        "price": 21.77,
+        "sma50": 18.72,
+        "sma200": 23.53,
+        "sma200_prev": 23.5,
+        "rsiD": 50.66,
+        "rsiW": 52.99,
+        "rangePos": 0.24,
+        "bucket": "satellite",
+        "type": "contrarian",
+        "maxLossPct": 40,
+        "src": "FRESH"
+      },
+      {
+        "ticker": "LAES",
+        "layer": "L7",
+        "price": 3.22,
+        "sma50": 2.9,
+        "sma200": 3.96,
+        "sma200_prev": 4.0,
+        "rsiD": 49.79,
+        "rsiW": 49.64,
+        "rangePos": 0.183,
+        "bucket": "satellite",
+        "type": "contrarian",
+        "maxLossPct": 45,
+        "src": "FRESH"
+      },
+      {
+        "ticker": "ARQQ",
+        "layer": "L7",
+        "price": 12.82,
+        "sma50": 14.41,
+        "sma200": 24.85,
+        "sma200_prev": 26,
+        "rsiD": 41.05,
+        "rsiW": 43.1,
+        "rangePos": 0.026,
+        "bucket": "satellite",
+        "type": "contrarian",
+        "maxLossPct": 45,
+        "src": "FRESH"
+      },
+      {
+        "ticker": "RKLB",
+        "layer": "L8",
+        "price": 113.65,
+        "sma50": 97.09,
+        "sma200": 71.36,
+        "sma200_prev": 67,
+        "rsiD": 48.62,
+        "rsiW": 61.0,
+        "rangePos": 0.703,
+        "bucket": "satellite",
+        "type": "contrarian",
+        "maxLossPct": 40,
+        "src": "FRESH"
+      },
+      {
+        "ticker": "ASTS",
+        "layer": "L8",
+        "price": 92.06,
+        "sma50": 88.5,
+        "sma200": 78.93,
+        "sma200_prev": 75,
+        "rsiD": 47.17,
+        "rsiW": 52.75,
+        "rangePos": 0.598,
+        "bucket": "satellite",
+        "type": "contrarian",
+        "maxLossPct": 45,
+        "src": "FRESH"
+      },
+      {
+        "ticker": "LUNR",
+        "layer": "L8",
+        "price": 29.73,
+        "sma50": 28.89,
+        "sma200": 17.57,
+        "sma200_prev": 14.3,
+        "rsiD": 44.68,
+        "rsiW": 57.17,
+        "rangePos": 0.563,
+        "bucket": "satellite",
+        "type": "contrarian",
+        "maxLossPct": 45,
+        "src": "FRESH"
+      },
+      {
+        "ticker": "RDW",
+        "layer": "L8",
+        "price": 18.57,
+        "sma50": 12.81,
+        "sma200": 9.63,
+        "sma200_prev": 14.8,
+        "rsiD": 54.92,
+        "rsiW": 63.0,
+        "rangePos": 0.629,
+        "bucket": "satellite",
+        "type": "contrarian",
+        "maxLossPct": 45,
+        "src": "FRESH"
+      },
+      {
+        "ticker": "PLTR",
+        "layer": "L9",
+        "price": 136.47,
+        "sma50": 140.68,
+        "sma200": 160.98,
+        "sma200_prev": 88,
+        "rsiD": 45.69,
+        "rsiW": 44.57,
+        "rangePos": 0.17,
+        "bucket": "core",
+        "type": "trend",
+        "maxLossPct": null,
+        "src": "FRESH"
+      },
+      {
+        "ticker": "KTOS",
+        "layer": "L9",
+        "price": 57.73,
+        "sma50": 63.33,
+        "sma200": 80.43,
+        "sma200_prev": 82,
+        "rsiD": 45.41,
+        "rsiW": 40.73,
+        "rangePos": 0.206,
+        "bucket": "core",
+        "type": "contrarian",
+        "maxLossPct": 35,
+        "src": "FRESH"
+      },
+      {
+        "ticker": "AXON",
+        "layer": "L9",
+        "price": 471.06,
+        "sma50": 408.39,
+        "sma200": 557.44,
+        "sma200_prev": 475,
+        "rsiD": 59.7,
+        "rsiW": 48.28,
+        "rangePos": 0.241,
+        "bucket": "core",
+        "type": "trend",
+        "maxLossPct": null,
+        "src": "FRESH"
+      },
+      {
+        "ticker": "MP",
+        "layer": "L9",
+        "price": 57.58,
+        "sma50": 61.26,
+        "sma200": 62.69,
+        "sma200_prev": 63.2,
+        "rsiD": 41.88,
+        "rsiW": 47.49,
+        "rangePos": 0.446,
+        "bucket": "core",
+        "type": "contrarian",
+        "maxLossPct": 35,
+        "src": "FRESH"
+      },
+      {
+        "ticker": "LDOS",
+        "layer": "L9",
+        "price": 122.8,
+        "sma50": 140.88,
+        "sma200": 173.89,
+        "sma200_prev": 143,
+        "rsiD": 31.67,
+        "rsiW": 25.77,
+        "rangePos": 0.019,
+        "bucket": "core",
+        "type": "trend",
+        "maxLossPct": null,
+        "src": "FRESH"
+      },
+      {
+        "ticker": "LLY",
+        "layer": "L10",
+        "price": 1149.15,
+        "sma50": 978.07,
+        "sma200": 949.84,
+        "sma200_prev": 922,
+        "rsiD": 70.39,
+        "rsiW": 65.43,
+        "rangePos": 0.94,
+        "bucket": "core",
+        "type": "trend",
+        "maxLossPct": null,
+        "src": "FRESH"
+      },
+      {
+        "ticker": "TEM",
+        "layer": "L10",
+        "price": 48.59,
+        "sma50": 49.3,
+        "sma200": 65.33,
+        "sma200_prev": 47,
+        "rsiD": 49.28,
+        "rsiW": 44.27,
+        "rangePos": 0.11,
+        "bucket": "satellite",
+        "type": "contrarian",
+        "maxLossPct": 40,
+        "src": "FRESH"
+      },
+      {
+        "ticker": "ISRG",
+        "layer": "L10",
+        "price": 418.61,
+        "sma50": 446.64,
+        "sma200": 493.04,
+        "sma200_prev": 517,
+        "rsiD": 42.5,
+        "rsiW": 34.45,
+        "rangePos": 0.106,
+        "bucket": "core",
+        "type": "trend",
+        "maxLossPct": null,
+        "src": "FRESH"
+      },
+      {
+        "ticker": "RXRX",
+        "layer": "L10",
+        "price": 3.32,
+        "sma50": 3.32,
+        "sma200": 4.22,
+        "sma200_prev": 7.7,
+        "rsiD": 49.44,
+        "rsiW": 42.92,
+        "rangePos": 0.125,
+        "bucket": "satellite",
+        "type": "contrarian",
+        "maxLossPct": 45,
+        "src": "FRESH"
+      },
+      {
+        "ticker": "COIN",
+        "layer": "L4",
+        "price": 162.11,
+        "sma50": 186.59,
+        "sma200": 243.94,
+        "sma200_prev": 249.1,
+        "rsiD": 39.44,
+        "rsiW": 38.51,
+        "rangePos": 0.075,
+        "bucket": "core",
+        "type": "contrarian",
+        "maxLossPct": 35,
+        "src": "FRESH"
+      },
+      {
+        "ticker": "HOOD",
+        "layer": "L4",
+        "price": 85.04,
+        "sma50": 78.54,
+        "sma200": 103.19,
+        "sma200_prev": 104.01,
+        "rsiD": 53.97,
+        "rsiW": 49.0,
+        "rangePos": 0.238,
+        "bucket": "core",
+        "type": "contrarian",
+        "maxLossPct": 40,
+        "src": "FRESH"
+      },
+      {
+        "ticker": "CRCL",
+        "layer": "L4",
+        "price": 82.53,
+        "sma50": 103.22,
+        "sma200": 101.27,
+        "sma200_prev": 103.06,
+        "rsiD": 35.03,
+        "rsiW": 46.4,
+        "rangePos": 0.131,
+        "bucket": "core",
+        "type": "contrarian",
+        "maxLossPct": 40,
+        "src": "FRESH"
+      },
+      {
+        "ticker": "CIFR",
+        "layer": "L4",
+        "price": 24.29,
+        "sma50": 19.3,
+        "sma200": 16.5,
+        "sma200_prev": 15.82,
+        "rsiD": 57.39,
+        "rsiW": 65.88,
+        "rangePos": 0.829,
+        "bucket": "satellite",
+        "type": "contrarian",
+        "maxLossPct": 45,
+        "src": "FRESH"
+      },
+      {
+        "ticker": "MSTR",
+        "layer": "L4",
+        "price": 127.2,
+        "sma50": 155.16,
+        "sma200": 200.78,
+        "sma200_prev": 214,
+        "rsiD": 34.79,
+        "rsiW": 34.94,
+        "rangePos": 0.065,
+        "bucket": "bitcoin",
+        "type": "contrarian",
+        "maxLossPct": 40,
+        "src": "FRESH"
+      },
+      {
+        "ticker": "CRWD",
+        "layer": "L11",
+        "price": 658.79,
+        "sma50": 521.03,
+        "sma200": 479.23,
+        "sma200_prev": 355,
+        "rsiD": 56.02,
+        "rsiW": 66.24,
+        "rangePos": 0.714,
+        "bucket": "core",
+        "type": "trend",
+        "maxLossPct": null,
+        "src": "FRESH"
+      },
+      {
+        "ticker": "PANW",
+        "layer": "L11",
+        "price": 266.33,
+        "sma50": 206.06,
+        "sma200": 192.54,
+        "sma200_prev": 246,
+        "rsiD": 60.89,
+        "rsiW": 69.37,
+        "rangePos": 0.776,
+        "bucket": "core",
+        "type": "trend",
+        "maxLossPct": null,
+        "src": "FRESH"
+      },
+      {
+        "ticker": "ZS",
+        "layer": "L11",
+        "price": 129.25,
+        "sma50": 142.59,
+        "sma200": 217.44,
+        "sma200_prev": 300,
+        "rsiD": 41.39,
+        "rsiW": 36.7,
+        "rangePos": 0.066,
+        "bucket": "core",
+        "type": "contrarian",
+        "maxLossPct": 35,
+        "src": "FRESH"
+      },
+      {
+        "ticker": "NET",
+        "layer": "L11",
+        "price": 247.79,
+        "sma50": 214.38,
+        "sma200": 206.43,
+        "sma200_prev": 146,
+        "rsiD": 57.65,
+        "rsiW": 61.64,
+        "rangePos": 0.754,
+        "bucket": "core",
+        "type": "trend",
+        "maxLossPct": null,
+        "src": "FRESH"
+      },
+      {
+        "ticker": "FTNT",
+        "layer": "L11",
+        "price": 143.04,
+        "sma50": 104.02,
+        "sma200": 87.26,
+        "sma200_prev": 96,
+        "rsiD": 70.41,
+        "rsiW": 80.29,
+        "rangePos": 0.912,
+        "bucket": "core",
+        "type": "trend",
+        "maxLossPct": null,
+        "src": "FRESH"
+      },
+      {
+        "ticker": "OKTA",
+        "layer": "L11",
+        "price": 116.85,
+        "sma50": 85.2,
+        "sma200": 86.21,
+        "sma200_prev": 90,
+        "rsiD": 62.82,
+        "rsiW": 65.53,
+        "rangePos": 0.68,
+        "bucket": "core",
+        "type": "contrarian",
+        "maxLossPct": 35,
+        "src": "FRESH"
+      },
+      {
+        "ticker": "MU",
+        "layer": "L1b",
+        "price": 949.28,
+        "sma50": 629.24,
+        "sma200": 365.01,
+        "sma200_prev": 334.52,
+        "rsiD": 60.84,
+        "rsiW": 77.71,
+        "rangePos": 0.858,
+        "bucket": "core",
+        "type": "trend",
+        "maxLossPct": null,
+        "src": "FRESH"
+      },
+      {
+        "ticker": "SNDK",
+        "layer": "L1b",
+        "price": 1642,
+        "sma50": 1200.66,
+        "sma200": 538.23,
+        "sma200_prev": 480.0,
+        "rsiD": 58.49,
+        "rsiW": 76.54,
+        "rangePos": 0.88,
+        "bucket": "core",
+        "type": "trend",
+        "maxLossPct": null,
+        "src": "FRESH"
+      },
+      {
+        "ticker": "WDC",
+        "layer": "L1b",
+        "price": 526.93,
+        "sma50": 429.02,
+        "sma200": 244.82,
+        "sma200_prev": 107,
+        "rsiD": 57.09,
+        "rsiW": 84.23,
+        "rangePos": 0.862,
+        "bucket": "core",
+        "type": "trend",
+        "maxLossPct": null,
+        "src": "FRESH"
+      },
+      {
+        "ticker": "XYL",
+        "layer": "L12",
+        "price": 109.52,
+        "sma50": 116.51,
+        "sma200": 133.25,
+        "sma200_prev": 133,
+        "rsiD": 42.01,
+        "rsiW": 32.54,
+        "rangePos": 0.086,
+        "bucket": "core",
+        "type": "trend",
+        "maxLossPct": null,
+        "src": "FRESH"
+      },
+      {
+        "ticker": "AWK",
+        "layer": "L12",
+        "price": 122.49,
+        "sma50": 129.24,
+        "sma200": 132.88,
+        "sma200_prev": 141,
+        "rsiD": 42.21,
+        "rsiW": 37.75,
+        "rangePos": 0.07,
+        "bucket": "core",
+        "type": "trend",
+        "maxLossPct": null,
+        "src": "FRESH"
+      },
+      {
+        "ticker": "PWR",
+        "layer": "L12",
+        "price": 693.81,
+        "sma50": 668.63,
+        "sma200": 510.73,
+        "sma200_prev": 344,
+        "rsiD": 46.38,
+        "rsiW": 68.01,
+        "rangePos": 0.788,
+        "bucket": "core",
+        "type": "trend",
+        "maxLossPct": null,
+        "src": "FRESH"
+      },
+      {
+        "ticker": "ETR",
+        "layer": "L12",
+        "price": 108.11,
+        "sma50": 112.66,
+        "sma200": 100.03,
+        "sma200_prev": 85,
+        "rsiD": 43.2,
+        "rsiW": 53.2,
+        "rangePos": 0.73,
+        "bucket": "core",
+        "type": "trend",
+        "maxLossPct": null,
+        "src": "FRESH"
+      },
+      {
+        "ticker": "CCJ",
+        "layer": "L13",
+        "price": 105.44,
+        "sma50": 114.14,
+        "sma200": 101.87,
+        "sma200_prev": 88,
+        "rsiD": 42.79,
+        "rsiW": 50.16,
+        "rangePos": 0.608,
+        "bucket": "core",
+        "type": "trend",
+        "maxLossPct": null,
+        "src": "FRESH"
+      },
+      {
+        "ticker": "UEC",
+        "layer": "L13",
+        "price": 12.61,
+        "sma50": 14.12,
+        "sma200": 13.92,
+        "sma200_prev": 7.9,
+        "rsiD": 42.11,
+        "rsiW": 46.84,
+        "rangePos": 0.465,
+        "bucket": "satellite",
+        "type": "contrarian",
+        "maxLossPct": 40,
+        "src": "FRESH"
+      },
+      {
+        "ticker": "UUUU",
+        "layer": "L13",
+        "price": 15.21,
+        "sma50": 19.32,
+        "sma200": 18.17,
+        "sma200_prev": 7.4,
+        "rsiD": 35.83,
+        "rsiW": 42.19,
+        "rangePos": 0.44,
+        "bucket": "satellite",
+        "type": "contrarian",
+        "maxLossPct": 40,
+        "src": "FRESH"
+      },
+      {
+        "ticker": "NXE",
+        "layer": "L13",
+        "price": 10.4,
+        "sma50": 11.75,
+        "sma200": 10.37,
+        "sma200_prev": 7.1,
+        "rsiD": 40.05,
+        "rsiW": 47.55,
+        "rangePos": 0.541,
+        "bucket": "satellite",
+        "type": "contrarian",
+        "maxLossPct": 40,
+        "src": "FRESH"
+      },
+      {
+        "ticker": "LEU",
+        "layer": "L13",
+        "price": 163.74,
+        "sma50": 191.74,
+        "sma200": 248.78,
+        "sma200_prev": 127,
+        "rsiD": 39.5,
+        "rsiW": 38.03,
+        "rangePos": 0.093,
+        "bucket": "core",
+        "type": "contrarian",
+        "maxLossPct": 40,
+        "src": "FRESH"
+      },
+      {
+        "ticker": "DNN",
+        "layer": "L13",
+        "price": 3.07,
+        "sma50": 3.58,
+        "sma200": 3.2,
+        "sma200_prev": 1.83,
+        "rsiD": 37.57,
+        "rsiW": 45.9,
+        "rangePos": 0.526,
+        "bucket": "satellite",
+        "type": "contrarian",
+        "maxLossPct": 45,
+        "src": "FRESH"
+      },
+      {
+        "ticker": "BTC",
+        "layer": "L4c",
+        "price": 63078.49,
+        "sma50": 75589.73,
+        "sma200": 78362.16,
+        "sma200_prev": 80500,
+        "rsiD": 26.14,
+        "rsiW": 32.6,
+        "rangePos": 0.06,
+        "bucket": "bitcoin",
+        "type": "token",
+        "maxLossPct": null,
+        "src": "FRESH"
+      },
+      {
+        "ticker": "ETH",
+        "layer": "L4c",
+        "price": 1690.28,
+        "sma50": 2148.55,
+        "sma200": 2444.43,
+        "sma200_prev": 3620,
+        "rsiD": 28.14,
+        "rsiW": 29.87,
+        "rangePos": 0.057,
+        "bucket": "bitcoin",
+        "type": "token",
+        "maxLossPct": null,
+        "src": "FRESH"
+      },
+      {
+        "ticker": "SOL",
+        "layer": "L4c",
+        "price": 66.81,
+        "sma50": 83.77,
+        "sma200": 101.7,
+        "sma200_prev": 178,
+        "rsiD": 28.69,
+        "rsiW": 28.85,
+        "rangePos": 0.038,
+        "bucket": "bitcoin",
+        "type": "token",
+        "maxLossPct": null,
+        "src": "FRESH"
+      },
+      {
+        "ticker": "HYPE",
+        "layer": "L4c",
+        "price": 63.79,
+        "sma50": 50.43,
+        "sma200": 36.51,
+        "sma200_prev": 39,
+        "rsiD": 55.64,
+        "rsiW": 64.58,
+        "rangePos": 0.005,
+        "bucket": "bitcoin",
+        "type": "token",
+        "maxLossPct": null,
+        "src": "FRESH"
+      },
+      {
+        "ticker": "SUI",
+        "layer": "L4c",
+        "price": 0.7551,
+        "sma50": 0.98,
+        "sma200": 1.17,
+        "sma200_prev": 3.85,
+        "rsiD": 32.59,
+        "rsiW": 32.04,
+        "rangePos": 0.168,
+        "bucket": "bitcoin",
+        "type": "token",
+        "maxLossPct": null,
+        "src": "FRESH"
+      },
+      {
+        "ticker": "MARA",
+        "layer": "L4c",
+        "price": 13.78,
+        "sma50": 11.77,
+        "sma200": 12.62,
+        "sma200_prev": 18.3,
+        "rsiD": 55.18,
+        "rsiW": 56.34,
+        "rangePos": 0.424,
+        "bucket": "satellite",
+        "type": "contrarian",
+        "maxLossPct": 45,
+        "src": "FRESH"
+      },
+      {
+        "ticker": "RIOT",
+        "layer": "L4c",
+        "price": 25.69,
+        "sma50": 20.52,
+        "sma200": 17.28,
+        "sma200_prev": 13.2,
+        "rsiD": 56.26,
+        "rsiW": 66.83,
+        "rangePos": 0.838,
+        "bucket": "satellite",
+        "type": "contrarian",
+        "maxLossPct": 45,
+        "src": "FRESH"
+      },
+      {
+        "ticker": "LHX",
+        "layer": "L9",
+        "price": 302.1,
+        "sma50": 324.97,
+        "sma200": 314.52,
+        "sma200_prev": 237,
+        "rsiD": 39.64,
+        "rsiW": 42.4,
+        "rangePos": 0.456,
+        "bucket": "core",
+        "type": "trend",
+        "maxLossPct": null,
+        "src": "FRESH"
+      },
+      {
+        "ticker": "RTX",
+        "layer": "L9",
+        "price": 178.66,
+        "sma50": 183.2,
+        "sma200": 181.39,
+        "sma200_prev": 148,
+        "rsiD": 50.15,
+        "rsiW": 45.75,
+        "rangePos": 0.547,
+        "bucket": "core",
+        "type": "trend",
+        "maxLossPct": null,
+        "src": "FRESH"
+      },
+      {
+        "ticker": "LMT",
+        "layer": "L9",
+        "price": 520.07,
+        "sma50": 551.42,
+        "sma200": 535.24,
+        "sma200_prev": 468,
+        "rsiD": 43.28,
+        "rsiW": 41.95,
+        "rangePos": 0.39,
+        "bucket": "core",
+        "type": "trend",
+        "maxLossPct": null,
+        "src": "FRESH"
+      },
+      {
+        "ticker": "HII",
+        "layer": "L9",
+        "price": 292.26,
+        "sma50": 350.45,
+        "sma200": 345.22,
+        "sma200_prev": 251,
+        "rsiD": 28.68,
+        "rsiW": 33.23,
+        "rangePos": 0.315,
+        "bucket": "core",
+        "type": "trend",
+        "maxLossPct": null,
+        "src": "FRESH"
+      },
+      {
+        "ticker": "PL",
+        "layer": "L8",
+        "price": 32.74,
+        "sma50": 38.7,
+        "sma200": 22.92,
+        "sma200_prev": 7.3,
+        "rsiD": 36.01,
+        "rsiW": 52.25,
+        "rangePos": 0.594,
+        "bucket": "satellite",
+        "type": "contrarian",
+        "maxLossPct": 45,
+        "src": "FRESH"
+      },
+      {
+        "ticker": "IRDM",
+        "layer": "L8",
+        "price": 47.475,
+        "sma50": 40.84,
+        "sma200": 25.23,
+        "sma200_prev": 25.8,
+        "rsiD": 54.95,
+        "rsiW": 73.97,
+        "rangePos": 0.834,
+        "bucket": "satellite",
+        "type": "contrarian",
+        "maxLossPct": 40,
+        "src": "FRESH"
+      },
+      {
+        "ticker": "SATS",
+        "layer": "L8",
+        "price": 116.62,
+        "sma50": 125.64,
+        "sma200": 99.99,
+        "sma200_prev": 23.5,
+        "rsiD": 40.52,
+        "rsiW": 52.33,
+        "rangePos": 0.769,
+        "bucket": "satellite",
+        "type": "contrarian",
+        "maxLossPct": 45,
+        "src": "FRESH"
+      },
+      {
+        "ticker": "SHLD",
+        "layer": "L9",
+        "price": 63.07,
+        "sma50": 68.25,
+        "sma200": 68.87,
+        "sma200_prev": 47,
+        "rsiD": 38.65,
+        "rsiW": 41.58,
+        "rangePos": 0.314,
+        "bucket": "core",
+        "type": "etf",
+        "maxLossPct": null,
+        "src": "FRESH"
+      },
+      {
+        "ticker": "XAR",
+        "layer": "L9",
+        "price": 271.11,
+        "sma50": 266.79,
+        "sma200": 253.6,
+        "sma200_prev": 197,
+        "rsiD": 49.34,
+        "rsiW": 53.81,
+        "rangePos": 0.761,
+        "bucket": "core",
+        "type": "etf",
+        "maxLossPct": null,
+        "src": "FRESH"
+      },
+      {
+        "ticker": "ITA",
+        "layer": "L9",
+        "price": 227.26,
+        "sma50": 224.33,
+        "sma200": 219.28,
+        "sma200_prev": 213,
+        "rsiD": 51.04,
+        "rsiW": 52.5,
+        "rangePos": 0.688,
+        "bucket": "core",
+        "type": "etf",
+        "maxLossPct": null,
+        "src": "FRESH"
+      },
+      {
+        "ticker": "JEDI",
+        "layer": "L8",
+        "price": 34.31,
+        "sma50": 30.69,
+        "sma200": null,
+        "sma200_prev": 80,
+        "rsiD": 50.63,
+        "rsiW": 61.78,
+        "rangePos": 0.588,
+        "bucket": "satellite",
+        "type": "etf",
+        "maxLossPct": null,
+        "src": "FRESH"
+      },
+      {
+        "ticker": "UFO",
+        "layer": "L8",
+        "price": 54.85,
+        "sma50": 54.27,
+        "sma200": 43.1,
+        "sma200_prev": 49,
+        "rsiD": 43.82,
+        "rsiW": 58.85,
+        "rangePos": 0.688,
+        "bucket": "satellite",
+        "type": "etf",
+        "maxLossPct": null,
+        "src": "FRESH"
+      }
+    ],
+    "macro": {
+      "y30": 5.01,
+      "tbill": 3.78,
+      "tbill_is_proxy": false,
+      "cpi": 4.13,
+      "pce": 3.77,
+      "hyperWk": 2
+    },
+    "as_of": "2026-06-09",
+    "generated_at": "2026-06-09T17:24:01Z"
+  },
   "yahoo_prices": {
     "DXY": {
       "price": null,
       "source": "FRED:DTWEXBGS",
       "note": "populated from fred_macro.dollar_gold",
-      "fetched_at": "2026-06-09T14:58:16Z"
+      "fetched_at": "2026-06-09T18:39:09Z"
     },
     "BTC": {
       "price": 63078.49,
@@ -5697,7 +6753,7 @@
         }
       ],
       "source": "Massive/Polygon",
-      "fetched_at": "2026-06-09T14:58:16Z"
+      "fetched_at": "2026-06-09T18:39:10Z"
     },
     "ETH": {
       "price": 1690.28,
@@ -7227,7 +8283,7 @@
         }
       ],
       "source": "Massive/Polygon",
-      "fetched_at": "2026-06-09T14:58:32Z"
+      "fetched_at": "2026-06-09T18:39:25Z"
     },
     "NVDA": {
       "price": 208.64,
@@ -8277,7 +9333,7 @@
         }
       ],
       "source": "Massive/Polygon",
-      "fetched_at": "2026-06-09T14:58:47Z"
+      "fetched_at": "2026-06-09T18:39:40Z"
     },
     "MSTR": {
       "price": 127.2,
@@ -9327,7 +10383,7 @@
         }
       ],
       "source": "Massive/Polygon",
-      "fetched_at": "2026-06-09T14:59:02Z"
+      "fetched_at": "2026-06-09T18:39:55Z"
     },
     "SOXX": {
       "price": 571.45,
@@ -10377,7 +11433,7 @@
         }
       ],
       "source": "Massive/Polygon",
-      "fetched_at": "2026-06-09T14:59:17Z"
+      "fetched_at": "2026-06-09T18:40:11Z"
     },
     "SPY": {
       "price": 739.22,
@@ -11427,7 +12483,7 @@
         }
       ],
       "source": "Massive/Polygon",
-      "fetched_at": "2026-06-09T14:59:32Z"
+      "fetched_at": "2026-06-09T18:40:26Z"
     },
     "QQQ": {
       "price": 716.07,
@@ -12477,7 +13533,7 @@
         }
       ],
       "source": "Massive/Polygon",
-      "fetched_at": "2026-06-09T14:59:47Z"
+      "fetched_at": "2026-06-09T18:40:41Z"
     },
     "GLD": {
       "price": 397.27,
@@ -13527,14 +14583,1057 @@
         }
       ],
       "source": "Massive/Polygon",
-      "fetched_at": "2026-06-09T15:00:03Z"
+      "fetched_at": "2026-06-09T18:40:56Z"
     },
     "ETN": {
-      "price": null,
-      "changePct": null,
-      "currency": null,
-      "error": "all sources failed",
-      "fetched_at": "2026-06-09T14:58:16Z"
+      "price": 403.14,
+      "changePct": 1.8185,
+      "currency": "USD",
+      "latest_date": "2026-06-08",
+      "observations": [
+        {
+          "d": "2025-05-27",
+          "v": 328.16
+        },
+        {
+          "d": "2025-05-28",
+          "v": 325.67
+        },
+        {
+          "d": "2025-05-29",
+          "v": 324.81
+        },
+        {
+          "d": "2025-05-30",
+          "v": 320.2
+        },
+        {
+          "d": "2025-06-02",
+          "v": 318.86
+        },
+        {
+          "d": "2025-06-03",
+          "v": 325.84
+        },
+        {
+          "d": "2025-06-04",
+          "v": 327.08
+        },
+        {
+          "d": "2025-06-05",
+          "v": 326.48
+        },
+        {
+          "d": "2025-06-06",
+          "v": 331.45
+        },
+        {
+          "d": "2025-06-09",
+          "v": 325.81
+        },
+        {
+          "d": "2025-06-10",
+          "v": 324.24
+        },
+        {
+          "d": "2025-06-11",
+          "v": 325.71
+        },
+        {
+          "d": "2025-06-12",
+          "v": 330.34
+        },
+        {
+          "d": "2025-06-13",
+          "v": 323.66
+        },
+        {
+          "d": "2025-06-16",
+          "v": 338.01
+        },
+        {
+          "d": "2025-06-17",
+          "v": 330.51
+        },
+        {
+          "d": "2025-06-18",
+          "v": 334.86
+        },
+        {
+          "d": "2025-06-20",
+          "v": 331.23
+        },
+        {
+          "d": "2025-06-23",
+          "v": 332.95
+        },
+        {
+          "d": "2025-06-24",
+          "v": 343.26
+        },
+        {
+          "d": "2025-06-25",
+          "v": 342.35
+        },
+        {
+          "d": "2025-06-26",
+          "v": 348.14
+        },
+        {
+          "d": "2025-06-27",
+          "v": 353.23
+        },
+        {
+          "d": "2025-06-30",
+          "v": 356.99
+        },
+        {
+          "d": "2025-07-01",
+          "v": 355.04
+        },
+        {
+          "d": "2025-07-02",
+          "v": 358.19
+        },
+        {
+          "d": "2025-07-03",
+          "v": 362.22
+        },
+        {
+          "d": "2025-07-07",
+          "v": 358.49
+        },
+        {
+          "d": "2025-07-08",
+          "v": 356.98
+        },
+        {
+          "d": "2025-07-09",
+          "v": 359.78
+        },
+        {
+          "d": "2025-07-10",
+          "v": 357.64
+        },
+        {
+          "d": "2025-07-11",
+          "v": 360.62
+        },
+        {
+          "d": "2025-07-14",
+          "v": 360.29
+        },
+        {
+          "d": "2025-07-15",
+          "v": 362.11
+        },
+        {
+          "d": "2025-07-16",
+          "v": 362.89
+        },
+        {
+          "d": "2025-07-17",
+          "v": 380.72
+        },
+        {
+          "d": "2025-07-18",
+          "v": 378.62
+        },
+        {
+          "d": "2025-07-21",
+          "v": 373.66
+        },
+        {
+          "d": "2025-07-22",
+          "v": 372.65
+        },
+        {
+          "d": "2025-07-23",
+          "v": 380.24
+        },
+        {
+          "d": "2025-07-24",
+          "v": 384.9
+        },
+        {
+          "d": "2025-07-25",
+          "v": 392.17
+        },
+        {
+          "d": "2025-07-28",
+          "v": 392.76
+        },
+        {
+          "d": "2025-07-29",
+          "v": 390.01
+        },
+        {
+          "d": "2025-07-30",
+          "v": 390.09
+        },
+        {
+          "d": "2025-07-31",
+          "v": 384.72
+        },
+        {
+          "d": "2025-08-01",
+          "v": 381.29
+        },
+        {
+          "d": "2025-08-04",
+          "v": 384.76
+        },
+        {
+          "d": "2025-08-05",
+          "v": 356.45
+        },
+        {
+          "d": "2025-08-06",
+          "v": 358.16
+        },
+        {
+          "d": "2025-08-07",
+          "v": 360.16
+        },
+        {
+          "d": "2025-08-08",
+          "v": 362.84
+        },
+        {
+          "d": "2025-08-11",
+          "v": 360.11
+        },
+        {
+          "d": "2025-08-12",
+          "v": 363.3
+        },
+        {
+          "d": "2025-08-13",
+          "v": 357.49
+        },
+        {
+          "d": "2025-08-14",
+          "v": 355.1
+        },
+        {
+          "d": "2025-08-15",
+          "v": 351.03
+        },
+        {
+          "d": "2025-08-18",
+          "v": 353.5
+        },
+        {
+          "d": "2025-08-19",
+          "v": 349.0
+        },
+        {
+          "d": "2025-08-20",
+          "v": 346.22
+        },
+        {
+          "d": "2025-08-21",
+          "v": 345.38
+        },
+        {
+          "d": "2025-08-22",
+          "v": 347.61
+        },
+        {
+          "d": "2025-08-25",
+          "v": 345.76
+        },
+        {
+          "d": "2025-08-26",
+          "v": 352.02
+        },
+        {
+          "d": "2025-08-27",
+          "v": 351.4
+        },
+        {
+          "d": "2025-08-28",
+          "v": 355.34
+        },
+        {
+          "d": "2025-08-29",
+          "v": 349.14
+        },
+        {
+          "d": "2025-09-02",
+          "v": 343.75
+        },
+        {
+          "d": "2025-09-03",
+          "v": 342.99
+        },
+        {
+          "d": "2025-09-04",
+          "v": 348.22
+        },
+        {
+          "d": "2025-09-05",
+          "v": 349.03
+        },
+        {
+          "d": "2025-09-08",
+          "v": 349.49
+        },
+        {
+          "d": "2025-09-09",
+          "v": 348.23
+        },
+        {
+          "d": "2025-09-10",
+          "v": 362.25
+        },
+        {
+          "d": "2025-09-11",
+          "v": 360.08
+        },
+        {
+          "d": "2025-09-12",
+          "v": 365.9
+        },
+        {
+          "d": "2025-09-15",
+          "v": 375.54
+        },
+        {
+          "d": "2025-09-16",
+          "v": 371.19
+        },
+        {
+          "d": "2025-09-17",
+          "v": 363.35
+        },
+        {
+          "d": "2025-09-18",
+          "v": 371.27
+        },
+        {
+          "d": "2025-09-19",
+          "v": 374.5
+        },
+        {
+          "d": "2025-09-22",
+          "v": 378.31
+        },
+        {
+          "d": "2025-09-23",
+          "v": 368.52
+        },
+        {
+          "d": "2025-09-24",
+          "v": 372.21
+        },
+        {
+          "d": "2025-09-25",
+          "v": 364.74
+        },
+        {
+          "d": "2025-09-26",
+          "v": 365.58
+        },
+        {
+          "d": "2025-09-29",
+          "v": 367.15
+        },
+        {
+          "d": "2025-09-30",
+          "v": 374.25
+        },
+        {
+          "d": "2025-10-01",
+          "v": 373.84
+        },
+        {
+          "d": "2025-10-02",
+          "v": 376.76
+        },
+        {
+          "d": "2025-10-03",
+          "v": 373.46
+        },
+        {
+          "d": "2025-10-06",
+          "v": 380.02
+        },
+        {
+          "d": "2025-10-07",
+          "v": 370.94
+        },
+        {
+          "d": "2025-10-08",
+          "v": 376.7
+        },
+        {
+          "d": "2025-10-09",
+          "v": 377.19
+        },
+        {
+          "d": "2025-10-10",
+          "v": 369.08
+        },
+        {
+          "d": "2025-10-13",
+          "v": 375.37
+        },
+        {
+          "d": "2025-10-14",
+          "v": 374.35
+        },
+        {
+          "d": "2025-10-15",
+          "v": 381.72
+        },
+        {
+          "d": "2025-10-16",
+          "v": 375.59
+        },
+        {
+          "d": "2025-10-17",
+          "v": 373.3
+        },
+        {
+          "d": "2025-10-20",
+          "v": 377.69
+        },
+        {
+          "d": "2025-10-21",
+          "v": 373.46
+        },
+        {
+          "d": "2025-10-22",
+          "v": 360.6
+        },
+        {
+          "d": "2025-10-23",
+          "v": 372.4
+        },
+        {
+          "d": "2025-10-24",
+          "v": 376.29
+        },
+        {
+          "d": "2025-10-27",
+          "v": 379.74
+        },
+        {
+          "d": "2025-10-28",
+          "v": 376.01
+        },
+        {
+          "d": "2025-10-29",
+          "v": 387.75
+        },
+        {
+          "d": "2025-10-30",
+          "v": 383.09
+        },
+        {
+          "d": "2025-10-31",
+          "v": 381.56
+        },
+        {
+          "d": "2025-11-03",
+          "v": 386.57
+        },
+        {
+          "d": "2025-11-04",
+          "v": 377.72
+        },
+        {
+          "d": "2025-11-05",
+          "v": 385.44
+        },
+        {
+          "d": "2025-11-06",
+          "v": 377.4
+        },
+        {
+          "d": "2025-11-07",
+          "v": 373.77
+        },
+        {
+          "d": "2025-11-10",
+          "v": 379.57
+        },
+        {
+          "d": "2025-11-11",
+          "v": 367.91
+        },
+        {
+          "d": "2025-11-12",
+          "v": 369.4
+        },
+        {
+          "d": "2025-11-13",
+          "v": 354.07
+        },
+        {
+          "d": "2025-11-14",
+          "v": 352.39
+        },
+        {
+          "d": "2025-11-17",
+          "v": 342.75
+        },
+        {
+          "d": "2025-11-18",
+          "v": 338.29
+        },
+        {
+          "d": "2025-11-19",
+          "v": 345.65
+        },
+        {
+          "d": "2025-11-20",
+          "v": 328.19
+        },
+        {
+          "d": "2025-11-21",
+          "v": 331.71
+        },
+        {
+          "d": "2025-11-24",
+          "v": 330.43
+        },
+        {
+          "d": "2025-11-25",
+          "v": 336.65
+        },
+        {
+          "d": "2025-11-26",
+          "v": 341.69
+        },
+        {
+          "d": "2025-11-28",
+          "v": 345.89
+        },
+        {
+          "d": "2025-12-01",
+          "v": 339.71
+        },
+        {
+          "d": "2025-12-02",
+          "v": 333.11
+        },
+        {
+          "d": "2025-12-03",
+          "v": 335.57
+        },
+        {
+          "d": "2025-12-04",
+          "v": 338.93
+        },
+        {
+          "d": "2025-12-05",
+          "v": 337.66
+        },
+        {
+          "d": "2025-12-08",
+          "v": 343.39
+        },
+        {
+          "d": "2025-12-09",
+          "v": 341.76
+        },
+        {
+          "d": "2025-12-10",
+          "v": 353.45
+        },
+        {
+          "d": "2025-12-11",
+          "v": 350.36
+        },
+        {
+          "d": "2025-12-12",
+          "v": 331.98
+        },
+        {
+          "d": "2025-12-15",
+          "v": 333.21
+        },
+        {
+          "d": "2025-12-16",
+          "v": 329.93
+        },
+        {
+          "d": "2025-12-17",
+          "v": 315.82
+        },
+        {
+          "d": "2025-12-18",
+          "v": 315.95
+        },
+        {
+          "d": "2025-12-19",
+          "v": 317.8
+        },
+        {
+          "d": "2025-12-22",
+          "v": 320.39
+        },
+        {
+          "d": "2025-12-23",
+          "v": 322.81
+        },
+        {
+          "d": "2025-12-24",
+          "v": 323.67
+        },
+        {
+          "d": "2025-12-26",
+          "v": 322.17
+        },
+        {
+          "d": "2025-12-29",
+          "v": 321.45
+        },
+        {
+          "d": "2025-12-30",
+          "v": 320.86
+        },
+        {
+          "d": "2025-12-31",
+          "v": 318.51
+        },
+        {
+          "d": "2026-01-02",
+          "v": 327.31
+        },
+        {
+          "d": "2026-01-05",
+          "v": 322.26
+        },
+        {
+          "d": "2026-01-06",
+          "v": 332.97
+        },
+        {
+          "d": "2026-01-07",
+          "v": 322.67
+        },
+        {
+          "d": "2026-01-08",
+          "v": 320.58
+        },
+        {
+          "d": "2026-01-09",
+          "v": 324.51
+        },
+        {
+          "d": "2026-01-12",
+          "v": 329.1
+        },
+        {
+          "d": "2026-01-13",
+          "v": 332.38
+        },
+        {
+          "d": "2026-01-14",
+          "v": 331.14
+        },
+        {
+          "d": "2026-01-15",
+          "v": 333.46
+        },
+        {
+          "d": "2026-01-16",
+          "v": 343.75
+        },
+        {
+          "d": "2026-01-20",
+          "v": 337.59
+        },
+        {
+          "d": "2026-01-21",
+          "v": 337.96
+        },
+        {
+          "d": "2026-01-22",
+          "v": 334.04
+        },
+        {
+          "d": "2026-01-23",
+          "v": 331.22
+        },
+        {
+          "d": "2026-01-26",
+          "v": 332.28
+        },
+        {
+          "d": "2026-01-27",
+          "v": 341.19
+        },
+        {
+          "d": "2026-01-28",
+          "v": 347.32
+        },
+        {
+          "d": "2026-01-29",
+          "v": 354.37
+        },
+        {
+          "d": "2026-01-30",
+          "v": 351.42
+        },
+        {
+          "d": "2026-02-02",
+          "v": 359.44
+        },
+        {
+          "d": "2026-02-03",
+          "v": 362.53
+        },
+        {
+          "d": "2026-02-04",
+          "v": 365.0
+        },
+        {
+          "d": "2026-02-05",
+          "v": 354.67
+        },
+        {
+          "d": "2026-02-06",
+          "v": 373.82
+        },
+        {
+          "d": "2026-02-09",
+          "v": 377.06
+        },
+        {
+          "d": "2026-02-10",
+          "v": 377.47
+        },
+        {
+          "d": "2026-02-11",
+          "v": 396.09
+        },
+        {
+          "d": "2026-02-12",
+          "v": 390.33
+        },
+        {
+          "d": "2026-02-13",
+          "v": 389.25
+        },
+        {
+          "d": "2026-02-17",
+          "v": 391.49
+        },
+        {
+          "d": "2026-02-18",
+          "v": 380.38
+        },
+        {
+          "d": "2026-02-19",
+          "v": 377.32
+        },
+        {
+          "d": "2026-02-20",
+          "v": 373.38
+        },
+        {
+          "d": "2026-02-23",
+          "v": 362.05
+        },
+        {
+          "d": "2026-02-24",
+          "v": 374.56
+        },
+        {
+          "d": "2026-02-25",
+          "v": 373.53
+        },
+        {
+          "d": "2026-02-26",
+          "v": 374.59
+        },
+        {
+          "d": "2026-02-27",
+          "v": 375.92
+        },
+        {
+          "d": "2026-03-02",
+          "v": 377.4
+        },
+        {
+          "d": "2026-03-03",
+          "v": 355.56
+        },
+        {
+          "d": "2026-03-04",
+          "v": 354.46
+        },
+        {
+          "d": "2026-03-05",
+          "v": 354.79
+        },
+        {
+          "d": "2026-03-06",
+          "v": 347.75
+        },
+        {
+          "d": "2026-03-09",
+          "v": 353.87
+        },
+        {
+          "d": "2026-03-10",
+          "v": 361.06
+        },
+        {
+          "d": "2026-03-11",
+          "v": 355.79
+        },
+        {
+          "d": "2026-03-12",
+          "v": 348.64
+        },
+        {
+          "d": "2026-03-13",
+          "v": 355.4
+        },
+        {
+          "d": "2026-03-16",
+          "v": 361.04
+        },
+        {
+          "d": "2026-03-17",
+          "v": 363.95
+        },
+        {
+          "d": "2026-03-18",
+          "v": 360.54
+        },
+        {
+          "d": "2026-03-19",
+          "v": 360.23
+        },
+        {
+          "d": "2026-03-20",
+          "v": 356.8
+        },
+        {
+          "d": "2026-03-23",
+          "v": 359.74
+        },
+        {
+          "d": "2026-03-24",
+          "v": 374.1
+        },
+        {
+          "d": "2026-03-25",
+          "v": 375.0
+        },
+        {
+          "d": "2026-03-26",
+          "v": 357.1
+        },
+        {
+          "d": "2026-03-27",
+          "v": 357.36
+        },
+        {
+          "d": "2026-03-30",
+          "v": 343.53
+        },
+        {
+          "d": "2026-03-31",
+          "v": 357.67
+        },
+        {
+          "d": "2026-04-01",
+          "v": 365.56
+        },
+        {
+          "d": "2026-04-02",
+          "v": 361.1
+        },
+        {
+          "d": "2026-04-06",
+          "v": 363.89
+        },
+        {
+          "d": "2026-04-07",
+          "v": 368.85
+        },
+        {
+          "d": "2026-04-08",
+          "v": 385.58
+        },
+        {
+          "d": "2026-04-09",
+          "v": 400.44
+        },
+        {
+          "d": "2026-04-10",
+          "v": 403.0
+        },
+        {
+          "d": "2026-04-13",
+          "v": 403.36
+        },
+        {
+          "d": "2026-04-14",
+          "v": 401.9
+        },
+        {
+          "d": "2026-04-15",
+          "v": 395.06
+        },
+        {
+          "d": "2026-04-16",
+          "v": 392.73
+        },
+        {
+          "d": "2026-04-17",
+          "v": 406.21
+        },
+        {
+          "d": "2026-04-20",
+          "v": 407.57
+        },
+        {
+          "d": "2026-04-21",
+          "v": 409.7
+        },
+        {
+          "d": "2026-04-22",
+          "v": 413.87
+        },
+        {
+          "d": "2026-04-23",
+          "v": 424.5
+        },
+        {
+          "d": "2026-04-24",
+          "v": 423.92
+        },
+        {
+          "d": "2026-04-27",
+          "v": 416.77
+        },
+        {
+          "d": "2026-04-28",
+          "v": 413.07
+        },
+        {
+          "d": "2026-04-29",
+          "v": 410.77
+        },
+        {
+          "d": "2026-04-30",
+          "v": 433.01
+        },
+        {
+          "d": "2026-05-01",
+          "v": 425.55
+        },
+        {
+          "d": "2026-05-04",
+          "v": 422.44
+        },
+        {
+          "d": "2026-05-05",
+          "v": 410.86
+        },
+        {
+          "d": "2026-05-06",
+          "v": 421.39
+        },
+        {
+          "d": "2026-05-07",
+          "v": 399.15
+        },
+        {
+          "d": "2026-05-08",
+          "v": 401.51
+        },
+        {
+          "d": "2026-05-11",
+          "v": 419.0
+        },
+        {
+          "d": "2026-05-12",
+          "v": 401.53
+        },
+        {
+          "d": "2026-05-13",
+          "v": 406.94
+        },
+        {
+          "d": "2026-05-14",
+          "v": 408.1
+        },
+        {
+          "d": "2026-05-15",
+          "v": 399.44
+        },
+        {
+          "d": "2026-05-18",
+          "v": 381.87
+        },
+        {
+          "d": "2026-05-19",
+          "v": 371.88
+        },
+        {
+          "d": "2026-05-20",
+          "v": 379.69
+        },
+        {
+          "d": "2026-05-21",
+          "v": 381.51
+        },
+        {
+          "d": "2026-05-22",
+          "v": 391.35
+        },
+        {
+          "d": "2026-05-26",
+          "v": 403.13
+        },
+        {
+          "d": "2026-05-27",
+          "v": 406.37
+        },
+        {
+          "d": "2026-05-28",
+          "v": 401.94
+        },
+        {
+          "d": "2026-05-29",
+          "v": 400.6
+        },
+        {
+          "d": "2026-06-01",
+          "v": 400.08
+        },
+        {
+          "d": "2026-06-02",
+          "v": 417.62
+        },
+        {
+          "d": "2026-06-03",
+          "v": 421.21
+        },
+        {
+          "d": "2026-06-04",
+          "v": 418.61
+        },
+        {
+          "d": "2026-06-05",
+          "v": 395.94
+        },
+        {
+          "d": "2026-06-08",
+          "v": 403.14
+        }
+      ],
+      "source": "Massive/Polygon",
+      "fetched_at": "2026-06-09T18:41:11Z"
     },
     "VRT": {
       "price": 300.57,
@@ -14584,7 +16683,7 @@
         }
       ],
       "source": "Massive/Polygon",
-      "fetched_at": "2026-06-09T15:00:52Z"
+      "fetched_at": "2026-06-09T18:41:27Z"
     },
     "GEV": {
       "price": 933.85,
@@ -15634,7 +17733,7 @@
         }
       ],
       "source": "Massive/Polygon",
-      "fetched_at": "2026-06-09T15:01:13Z"
+      "fetched_at": "2026-06-09T18:41:42Z"
     },
     "CEG": {
       "price": 250.67,
@@ -16684,7 +18783,7 @@
         }
       ],
       "source": "Massive/Polygon",
-      "fetched_at": "2026-06-09T15:01:28Z"
+      "fetched_at": "2026-06-09T18:41:57Z"
     },
     "ROBO": {
       "price": 84.33,
@@ -17734,7 +19833,7 @@
         }
       ],
       "source": "Massive/Polygon",
-      "fetched_at": "2026-06-09T15:01:49Z"
+      "fetched_at": "2026-06-09T18:42:12Z"
     },
     "COIN": {
       "price": 162.11,
@@ -18784,7 +20883,7 @@
         }
       ],
       "source": "Massive/Polygon",
-      "fetched_at": "2026-06-09T15:02:05Z"
+      "fetched_at": "2026-06-09T18:42:27Z"
     },
     "IONQ": {
       "price": 62.8,
@@ -19834,1057 +21933,14 @@
         }
       ],
       "source": "Massive/Polygon",
-      "fetched_at": "2026-06-09T15:02:20Z"
+      "fetched_at": "2026-06-09T18:42:43Z"
     },
     "QBTS": {
-      "price": 25.83,
-      "changePct": 8.3019,
-      "currency": "USD",
-      "latest_date": "2026-06-08",
-      "observations": [
-        {
-          "d": "2025-05-27",
-          "v": 17.55
-        },
-        {
-          "d": "2025-05-28",
-          "v": 17.55
-        },
-        {
-          "d": "2025-05-29",
-          "v": 16.27
-        },
-        {
-          "d": "2025-05-30",
-          "v": 16.33
-        },
-        {
-          "d": "2025-06-02",
-          "v": 17.11
-        },
-        {
-          "d": "2025-06-03",
-          "v": 17.68
-        },
-        {
-          "d": "2025-06-04",
-          "v": 17.82
-        },
-        {
-          "d": "2025-06-05",
-          "v": 16.47
-        },
-        {
-          "d": "2025-06-06",
-          "v": 18.62
-        },
-        {
-          "d": "2025-06-09",
-          "v": 17.95
-        },
-        {
-          "d": "2025-06-10",
-          "v": 16.93
-        },
-        {
-          "d": "2025-06-11",
-          "v": 16.53
-        },
-        {
-          "d": "2025-06-12",
-          "v": 15.88
-        },
-        {
-          "d": "2025-06-13",
-          "v": 15.17
-        },
-        {
-          "d": "2025-06-16",
-          "v": 16.0
-        },
-        {
-          "d": "2025-06-17",
-          "v": 15.55
-        },
-        {
-          "d": "2025-06-18",
-          "v": 15.71
-        },
-        {
-          "d": "2025-06-20",
-          "v": 15.65
-        },
-        {
-          "d": "2025-06-23",
-          "v": 14.94
-        },
-        {
-          "d": "2025-06-24",
-          "v": 14.97
-        },
-        {
-          "d": "2025-06-25",
-          "v": 14.18
-        },
-        {
-          "d": "2025-06-26",
-          "v": 14.06
-        },
-        {
-          "d": "2025-06-27",
-          "v": 14.02
-        },
-        {
-          "d": "2025-06-30",
-          "v": 14.64
-        },
-        {
-          "d": "2025-07-01",
-          "v": 14.82
-        },
-        {
-          "d": "2025-07-02",
-          "v": 15.98
-        },
-        {
-          "d": "2025-07-03",
-          "v": 16.79
-        },
-        {
-          "d": "2025-07-07",
-          "v": 16.76
-        },
-        {
-          "d": "2025-07-08",
-          "v": 15.99
-        },
-        {
-          "d": "2025-07-09",
-          "v": 16.39
-        },
-        {
-          "d": "2025-07-10",
-          "v": 16.01
-        },
-        {
-          "d": "2025-07-11",
-          "v": 14.81
-        },
-        {
-          "d": "2025-07-14",
-          "v": 15.83
-        },
-        {
-          "d": "2025-07-15",
-          "v": 16.15
-        },
-        {
-          "d": "2025-07-16",
-          "v": 16.91
-        },
-        {
-          "d": "2025-07-17",
-          "v": 19.24
-        },
-        {
-          "d": "2025-07-18",
-          "v": 18.89
-        },
-        {
-          "d": "2025-07-21",
-          "v": 18.39
-        },
-        {
-          "d": "2025-07-22",
-          "v": 17.59
-        },
-        {
-          "d": "2025-07-23",
-          "v": 20.3
-        },
-        {
-          "d": "2025-07-24",
-          "v": 19.76
-        },
-        {
-          "d": "2025-07-25",
-          "v": 18.87
-        },
-        {
-          "d": "2025-07-28",
-          "v": 18.35
-        },
-        {
-          "d": "2025-07-29",
-          "v": 17.67
-        },
-        {
-          "d": "2025-07-30",
-          "v": 17.06
-        },
-        {
-          "d": "2025-07-31",
-          "v": 17.19
-        },
-        {
-          "d": "2025-08-01",
-          "v": 16.38
-        },
-        {
-          "d": "2025-08-04",
-          "v": 17.18
-        },
-        {
-          "d": "2025-08-05",
-          "v": 18.3
-        },
-        {
-          "d": "2025-08-06",
-          "v": 17.58
-        },
-        {
-          "d": "2025-08-07",
-          "v": 17.17
-        },
-        {
-          "d": "2025-08-08",
-          "v": 16.9
-        },
-        {
-          "d": "2025-08-11",
-          "v": 17.37
-        },
-        {
-          "d": "2025-08-12",
-          "v": 18.51
-        },
-        {
-          "d": "2025-08-13",
-          "v": 18.65
-        },
-        {
-          "d": "2025-08-14",
-          "v": 18.18
-        },
-        {
-          "d": "2025-08-15",
-          "v": 17.01
-        },
-        {
-          "d": "2025-08-18",
-          "v": 16.56
-        },
-        {
-          "d": "2025-08-19",
-          "v": 15.32
-        },
-        {
-          "d": "2025-08-20",
-          "v": 15.06
-        },
-        {
-          "d": "2025-08-21",
-          "v": 14.81
-        },
-        {
-          "d": "2025-08-22",
-          "v": 15.54
-        },
-        {
-          "d": "2025-08-25",
-          "v": 15.02
-        },
-        {
-          "d": "2025-08-26",
-          "v": 15.45
-        },
-        {
-          "d": "2025-08-27",
-          "v": 15.23
-        },
-        {
-          "d": "2025-08-28",
-          "v": 15.92
-        },
-        {
-          "d": "2025-08-29",
-          "v": 15.62
-        },
-        {
-          "d": "2025-09-02",
-          "v": 15.85
-        },
-        {
-          "d": "2025-09-03",
-          "v": 15.3
-        },
-        {
-          "d": "2025-09-04",
-          "v": 15.29
-        },
-        {
-          "d": "2025-09-05",
-          "v": 15.37
-        },
-        {
-          "d": "2025-09-08",
-          "v": 15.42
-        },
-        {
-          "d": "2025-09-09",
-          "v": 16.15
-        },
-        {
-          "d": "2025-09-10",
-          "v": 16.04
-        },
-        {
-          "d": "2025-09-11",
-          "v": 16.52
-        },
-        {
-          "d": "2025-09-12",
-          "v": 17.76
-        },
-        {
-          "d": "2025-09-15",
-          "v": 18.32
-        },
-        {
-          "d": "2025-09-16",
-          "v": 18.98
-        },
-        {
-          "d": "2025-09-17",
-          "v": 22.54
-        },
-        {
-          "d": "2025-09-18",
-          "v": 24.02
-        },
-        {
-          "d": "2025-09-19",
-          "v": 26.88
-        },
-        {
-          "d": "2025-09-22",
-          "v": 25.67
-        },
-        {
-          "d": "2025-09-23",
-          "v": 27.52
-        },
-        {
-          "d": "2025-09-24",
-          "v": 27.72
-        },
-        {
-          "d": "2025-09-25",
-          "v": 26.34
-        },
-        {
-          "d": "2025-09-26",
-          "v": 26.76
-        },
-        {
-          "d": "2025-09-29",
-          "v": 25.31
-        },
-        {
-          "d": "2025-09-30",
-          "v": 24.71
-        },
-        {
-          "d": "2025-10-01",
-          "v": 25.63
-        },
-        {
-          "d": "2025-10-02",
-          "v": 29.21
-        },
-        {
-          "d": "2025-10-03",
-          "v": 32.7
-        },
-        {
-          "d": "2025-10-06",
-          "v": 35.02
-        },
-        {
-          "d": "2025-10-07",
-          "v": 35.72
-        },
-        {
-          "d": "2025-10-08",
-          "v": 34.25
-        },
-        {
-          "d": "2025-10-09",
-          "v": 35.07
-        },
-        {
-          "d": "2025-10-10",
-          "v": 33.02
-        },
-        {
-          "d": "2025-10-13",
-          "v": 40.62
-        },
-        {
-          "d": "2025-10-14",
-          "v": 43.06
-        },
-        {
-          "d": "2025-10-15",
-          "v": 44.78
-        },
-        {
-          "d": "2025-10-16",
-          "v": 40.46
-        },
-        {
-          "d": "2025-10-17",
-          "v": 38.33
-        },
-        {
-          "d": "2025-10-20",
-          "v": 34.4
-        },
-        {
-          "d": "2025-10-21",
-          "v": 32.19
-        },
-        {
-          "d": "2025-10-22",
-          "v": 27.29
-        },
-        {
-          "d": "2025-10-23",
-          "v": 31.06
-        },
-        {
-          "d": "2025-10-24",
-          "v": 32.65
-        },
-        {
-          "d": "2025-10-27",
-          "v": 35.04
-        },
-        {
-          "d": "2025-10-28",
-          "v": 32.0
-        },
-        {
-          "d": "2025-10-29",
-          "v": 34.26
-        },
-        {
-          "d": "2025-10-30",
-          "v": 36.11
-        },
-        {
-          "d": "2025-10-31",
-          "v": 37.06
-        },
-        {
-          "d": "2025-11-03",
-          "v": 33.09
-        },
-        {
-          "d": "2025-11-04",
-          "v": 29.74
-        },
-        {
-          "d": "2025-11-05",
-          "v": 31.02
-        },
-        {
-          "d": "2025-11-06",
-          "v": 28.39
-        },
-        {
-          "d": "2025-11-07",
-          "v": 29.5
-        },
-        {
-          "d": "2025-11-10",
-          "v": 29.37
-        },
-        {
-          "d": "2025-11-11",
-          "v": 28.99
-        },
-        {
-          "d": "2025-11-12",
-          "v": 26.4
-        },
-        {
-          "d": "2025-11-13",
-          "v": 23.39
-        },
-        {
-          "d": "2025-11-14",
-          "v": 23.61
-        },
-        {
-          "d": "2025-11-17",
-          "v": 22.83
-        },
-        {
-          "d": "2025-11-18",
-          "v": 22.93
-        },
-        {
-          "d": "2025-11-19",
-          "v": 23.44
-        },
-        {
-          "d": "2025-11-20",
-          "v": 20.51
-        },
-        {
-          "d": "2025-11-21",
-          "v": 20.41
-        },
-        {
-          "d": "2025-11-24",
-          "v": 23.11
-        },
-        {
-          "d": "2025-11-25",
-          "v": 22.59
-        },
-        {
-          "d": "2025-11-26",
-          "v": 22.41
-        },
-        {
-          "d": "2025-11-28",
-          "v": 22.67
-        },
-        {
-          "d": "2025-12-01",
-          "v": 21.42
-        },
-        {
-          "d": "2025-12-02",
-          "v": 22.5
-        },
-        {
-          "d": "2025-12-03",
-          "v": 25.08
-        },
-        {
-          "d": "2025-12-04",
-          "v": 28.73
-        },
-        {
-          "d": "2025-12-05",
-          "v": 27.0
-        },
-        {
-          "d": "2025-12-08",
-          "v": 28.44
-        },
-        {
-          "d": "2025-12-09",
-          "v": 28.33
-        },
-        {
-          "d": "2025-12-10",
-          "v": 26.8
-        },
-        {
-          "d": "2025-12-11",
-          "v": 27.98
-        },
-        {
-          "d": "2025-12-12",
-          "v": 26.1
-        },
-        {
-          "d": "2025-12-15",
-          "v": 23.74
-        },
-        {
-          "d": "2025-12-16",
-          "v": 25.52
-        },
-        {
-          "d": "2025-12-17",
-          "v": 23.8
-        },
-        {
-          "d": "2025-12-18",
-          "v": 24.89
-        },
-        {
-          "d": "2025-12-19",
-          "v": 26.82
-        },
-        {
-          "d": "2025-12-22",
-          "v": 32.19
-        },
-        {
-          "d": "2025-12-23",
-          "v": 29.12
-        },
-        {
-          "d": "2025-12-24",
-          "v": 27.52
-        },
-        {
-          "d": "2025-12-26",
-          "v": 25.29
-        },
-        {
-          "d": "2025-12-29",
-          "v": 26.15
-        },
-        {
-          "d": "2025-12-30",
-          "v": 26.25
-        },
-        {
-          "d": "2025-12-31",
-          "v": 26.15
-        },
-        {
-          "d": "2026-01-02",
-          "v": 28.13
-        },
-        {
-          "d": "2026-01-05",
-          "v": 30.64
-        },
-        {
-          "d": "2026-01-06",
-          "v": 31.27
-        },
-        {
-          "d": "2026-01-07",
-          "v": 30.2
-        },
-        {
-          "d": "2026-01-08",
-          "v": 29.28
-        },
-        {
-          "d": "2026-01-09",
-          "v": 28.11
-        },
-        {
-          "d": "2026-01-12",
-          "v": 28.8
-        },
-        {
-          "d": "2026-01-13",
-          "v": 28.82
-        },
-        {
-          "d": "2026-01-14",
-          "v": 30.15
-        },
-        {
-          "d": "2026-01-15",
-          "v": 28.72
-        },
-        {
-          "d": "2026-01-16",
-          "v": 28.83
-        },
-        {
-          "d": "2026-01-20",
-          "v": 27.04
-        },
-        {
-          "d": "2026-01-21",
-          "v": 26.04
-        },
-        {
-          "d": "2026-01-22",
-          "v": 27.43
-        },
-        {
-          "d": "2026-01-23",
-          "v": 25.63
-        },
-        {
-          "d": "2026-01-26",
-          "v": 23.75
-        },
-        {
-          "d": "2026-01-27",
-          "v": 24.69
-        },
-        {
-          "d": "2026-01-28",
-          "v": 24.97
-        },
-        {
-          "d": "2026-01-29",
-          "v": 23.22
-        },
-        {
-          "d": "2026-01-30",
-          "v": 21.22
-        },
-        {
-          "d": "2026-02-02",
-          "v": 20.97
-        },
-        {
-          "d": "2026-02-03",
-          "v": 21.4
-        },
-        {
-          "d": "2026-02-04",
-          "v": 20.11
-        },
-        {
-          "d": "2026-02-05",
-          "v": 17.21
-        },
-        {
-          "d": "2026-02-06",
-          "v": 20.72
-        },
-        {
-          "d": "2026-02-09",
-          "v": 21.21
-        },
-        {
-          "d": "2026-02-10",
-          "v": 20.44
-        },
-        {
-          "d": "2026-02-11",
-          "v": 19.64
-        },
-        {
-          "d": "2026-02-12",
-          "v": 18.82
-        },
-        {
-          "d": "2026-02-13",
-          "v": 19.67
-        },
-        {
-          "d": "2026-02-17",
-          "v": 18.44
-        },
-        {
-          "d": "2026-02-18",
-          "v": 19.07
-        },
-        {
-          "d": "2026-02-19",
-          "v": 19.38
-        },
-        {
-          "d": "2026-02-20",
-          "v": 18.06
-        },
-        {
-          "d": "2026-02-23",
-          "v": 18.05
-        },
-        {
-          "d": "2026-02-24",
-          "v": 18.66
-        },
-        {
-          "d": "2026-02-25",
-          "v": 19.65
-        },
-        {
-          "d": "2026-02-26",
-          "v": 20.14
-        },
-        {
-          "d": "2026-02-27",
-          "v": 18.78
-        },
-        {
-          "d": "2026-03-02",
-          "v": 18.94
-        },
-        {
-          "d": "2026-03-03",
-          "v": 18.24
-        },
-        {
-          "d": "2026-03-04",
-          "v": 18.91
-        },
-        {
-          "d": "2026-03-05",
-          "v": 18.83
-        },
-        {
-          "d": "2026-03-06",
-          "v": 18.59
-        },
-        {
-          "d": "2026-03-09",
-          "v": 19.04
-        },
-        {
-          "d": "2026-03-10",
-          "v": 18.76
-        },
-        {
-          "d": "2026-03-11",
-          "v": 18.91
-        },
-        {
-          "d": "2026-03-12",
-          "v": 17.83
-        },
-        {
-          "d": "2026-03-13",
-          "v": 17.55
-        },
-        {
-          "d": "2026-03-16",
-          "v": 17.46
-        },
-        {
-          "d": "2026-03-17",
-          "v": 17.47
-        },
-        {
-          "d": "2026-03-18",
-          "v": 16.49
-        },
-        {
-          "d": "2026-03-19",
-          "v": 16.1
-        },
-        {
-          "d": "2026-03-20",
-          "v": 15.73
-        },
-        {
-          "d": "2026-03-23",
-          "v": 16.31
-        },
-        {
-          "d": "2026-03-24",
-          "v": 15.93
-        },
-        {
-          "d": "2026-03-25",
-          "v": 16.19
-        },
-        {
-          "d": "2026-03-26",
-          "v": 14.65
-        },
-        {
-          "d": "2026-03-27",
-          "v": 13.9
-        },
-        {
-          "d": "2026-03-30",
-          "v": 12.98
-        },
-        {
-          "d": "2026-03-31",
-          "v": 14.43
-        },
-        {
-          "d": "2026-04-01",
-          "v": 13.7
-        },
-        {
-          "d": "2026-04-02",
-          "v": 14.32
-        },
-        {
-          "d": "2026-04-06",
-          "v": 14.14
-        },
-        {
-          "d": "2026-04-07",
-          "v": 13.74
-        },
-        {
-          "d": "2026-04-08",
-          "v": 14.57
-        },
-        {
-          "d": "2026-04-09",
-          "v": 13.87
-        },
-        {
-          "d": "2026-04-10",
-          "v": 14.25
-        },
-        {
-          "d": "2026-04-13",
-          "v": 14.65
-        },
-        {
-          "d": "2026-04-14",
-          "v": 16.97
-        },
-        {
-          "d": "2026-04-15",
-          "v": 20.81
-        },
-        {
-          "d": "2026-04-16",
-          "v": 21.52
-        },
-        {
-          "d": "2026-04-17",
-          "v": 21.69
-        },
-        {
-          "d": "2026-04-20",
-          "v": 21.66
-        },
-        {
-          "d": "2026-04-21",
-          "v": 20.36
-        },
-        {
-          "d": "2026-04-22",
-          "v": 21.24
-        },
-        {
-          "d": "2026-04-23",
-          "v": 19.31
-        },
-        {
-          "d": "2026-04-24",
-          "v": 18.49
-        },
-        {
-          "d": "2026-04-27",
-          "v": 18.8
-        },
-        {
-          "d": "2026-04-28",
-          "v": 18.11
-        },
-        {
-          "d": "2026-04-29",
-          "v": 18.27
-        },
-        {
-          "d": "2026-04-30",
-          "v": 20.28
-        },
-        {
-          "d": "2026-05-01",
-          "v": 20.49
-        },
-        {
-          "d": "2026-05-04",
-          "v": 20.92
-        },
-        {
-          "d": "2026-05-05",
-          "v": 21.54
-        },
-        {
-          "d": "2026-05-06",
-          "v": 23.83
-        },
-        {
-          "d": "2026-05-07",
-          "v": 21.99
-        },
-        {
-          "d": "2026-05-08",
-          "v": 22.57
-        },
-        {
-          "d": "2026-05-11",
-          "v": 24.03
-        },
-        {
-          "d": "2026-05-12",
-          "v": 22.35
-        },
-        {
-          "d": "2026-05-13",
-          "v": 21.44
-        },
-        {
-          "d": "2026-05-14",
-          "v": 22.13
-        },
-        {
-          "d": "2026-05-15",
-          "v": 20.35
-        },
-        {
-          "d": "2026-05-18",
-          "v": 19.06
-        },
-        {
-          "d": "2026-05-19",
-          "v": 18.19
-        },
-        {
-          "d": "2026-05-20",
-          "v": 19.3
-        },
-        {
-          "d": "2026-05-21",
-          "v": 25.74
-        },
-        {
-          "d": "2026-05-22",
-          "v": 29.4
-        },
-        {
-          "d": "2026-05-26",
-          "v": 27.82
-        },
-        {
-          "d": "2026-05-27",
-          "v": 27.48
-        },
-        {
-          "d": "2026-05-28",
-          "v": 29.49
-        },
-        {
-          "d": "2026-05-29",
-          "v": 30.14
-        },
-        {
-          "d": "2026-06-01",
-          "v": 29.18
-        },
-        {
-          "d": "2026-06-02",
-          "v": 29.91
-        },
-        {
-          "d": "2026-06-03",
-          "v": 27.55
-        },
-        {
-          "d": "2026-06-04",
-          "v": 27.64
-        },
-        {
-          "d": "2026-06-05",
-          "v": 23.85
-        },
-        {
-          "d": "2026-06-08",
-          "v": 25.83
-        }
-      ],
-      "source": "Massive/Polygon",
-      "fetched_at": "2026-06-09T15:02:35Z"
+      "price": null,
+      "changePct": null,
+      "currency": null,
+      "error": "all sources failed",
+      "fetched_at": "2026-06-09T18:39:09Z"
     },
     "RGTI": {
       "price": 21.765,
@@ -21934,7 +22990,7 @@
         }
       ],
       "source": "Massive/Polygon",
-      "fetched_at": "2026-06-09T15:02:50Z"
+      "fetched_at": "2026-06-09T18:43:28Z"
     },
     "QTUM": {
       "price": 157.74,
@@ -22984,7 +24040,7 @@
         }
       ],
       "source": "Massive/Polygon",
-      "fetched_at": "2026-06-09T15:03:06Z"
+      "fetched_at": "2026-06-09T18:43:43Z"
     },
     "RKLB": {
       "price": 113.65,
@@ -24034,7 +25090,7 @@
         }
       ],
       "source": "Massive/Polygon",
-      "fetched_at": "2026-06-09T15:03:21Z"
+      "fetched_at": "2026-06-09T18:43:59Z"
     },
     "ASTS": {
       "price": 92.06,
@@ -25084,7 +26140,7 @@
         }
       ],
       "source": "Massive/Polygon",
-      "fetched_at": "2026-06-09T15:03:36Z"
+      "fetched_at": "2026-06-09T18:44:14Z"
     },
     "UFO": {
       "price": 54.85,
@@ -26134,7 +27190,7 @@
         }
       ],
       "source": "Massive/Polygon",
-      "fetched_at": "2026-06-09T15:03:57Z"
+      "fetched_at": "2026-06-09T18:44:29Z"
     },
     "KTOS": {
       "price": 57.73,
@@ -27184,7 +28240,7 @@
         }
       ],
       "source": "Massive/Polygon",
-      "fetched_at": "2026-06-09T15:04:13Z"
+      "fetched_at": "2026-06-09T18:44:44Z"
     },
     "AXON": {
       "price": 471.06,
@@ -28234,7 +29290,7 @@
         }
       ],
       "source": "Massive/Polygon",
-      "fetched_at": "2026-06-09T15:04:28Z"
+      "fetched_at": "2026-06-09T18:44:59Z"
     },
     "ITA": {
       "price": 227.26,
@@ -29284,7 +30340,7 @@
         }
       ],
       "source": "Massive/Polygon",
-      "fetched_at": "2026-06-09T15:04:43Z"
+      "fetched_at": "2026-06-09T18:45:15Z"
     },
     "XAR": {
       "price": 271.11,
@@ -30334,7 +31390,7 @@
         }
       ],
       "source": "Massive/Polygon",
-      "fetched_at": "2026-06-09T15:04:59Z"
+      "fetched_at": "2026-06-09T18:45:31Z"
     }
   },
   "dashboard": {
@@ -30408,23 +31464,23 @@
       {
         "id": "soxx_pe",
         "label": "SOXX Fwd P/E",
-        "value": 70.9694,
-        "value_fmt": "71.0x",
-        "delta": -2.7144,
-        "delta_fmt": "-2.7x",
+        "value": 71.1545,
+        "value_fmt": "71.2x",
+        "delta": -2.5293,
+        "delta_fmt": "-2.5x",
         "trend": "bearish",
         "color": "green",
-        "note": "3yr avg: 71.9x"
+        "note": "3yr avg: 71.8x"
       },
       {
         "id": "soxx_pcr",
         "label": "SOXX Put/Call",
-        "value": 3.8474,
-        "value_fmt": "3.8",
+        "value": null,
+        "value_fmt": "\u2014",
         "delta": null,
         "delta_fmt": "\u2014",
         "trend": "flat",
-        "color": "red",
+        "color": "muted",
         "note": ">1.2 fear | <0.6 complacency"
       }
     ],
@@ -30435,7 +31491,7 @@
       "winter": 36.3
     },
     "current_regime": "winter",
-    "regime_narrative": "Layer 1 crowding score 68/100 \u2014 moderate. Layer 2 opportunity score 100/100 \u2014 rotation thesis active. Layer 3 score 60/100 \u2014 building. Layer 4 readiness 47/100 \u2014 early institutional. Macro regime n/a/100 \u2014 n/a. Software deterioration n/a/100 \u2014 n/a. Concentration risk n/a/100 \u2014 n/a.",
+    "regime_narrative": "Layer 1 crowding score 68/100 \u2014 moderate. Layer 2 opportunity score 100/100 \u2014 rotation thesis active. Layer 3 score 40/100 \u2014 early. Layer 4 readiness 60/100 \u2014 early institutional. Macro regime n/a/100 \u2014 n/a. Software deterioration n/a/100 \u2014 n/a. Concentration risk n/a/100 \u2014 n/a.",
     "what_you_need_to_know": [
       "Korea electronics exports +47.9% YoY \u2014 strong AI demand confirmation (4-8w ISM lead).",
       "HY spread 3bps \u2014 benign credit conditions. Risk appetite intact.",
@@ -30446,9 +31502,9 @@
     "layer_sentiment": {
       "L1": {
         "name": "Semis & AI Silicon",
-        "signal": "neutral",
-        "score": 51.0784,
-        "key_metric": "Breadth 100%, PCR 3.85",
+        "signal": "bullish",
+        "score": 76.1888,
+        "key_metric": "\u2014",
         "assets": [
           "SOXX",
           "NVDA",
@@ -30520,6 +31576,6 @@
         ]
       }
     },
-    "computed_at": "2026-06-09T15:05:14Z"
+    "computed_at": "2026-06-09T18:45:46Z"
   }
 }
