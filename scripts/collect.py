@@ -728,10 +728,12 @@ def collect_fred_macro(
     be_10yr = _val("breakeven_inflation_10yr")
     ry_10yr = _val("real_yield_10yr")
 
+    # PCEPI and PPIFID are published as index LEVELS (~130, ~158), not rates.
+    # The 2-obs fetch returns the level; compute true YoY % from a 13-obs history.
     inflation_block: dict = {
-        "pce_yoy":                          _val("pce_yoy"),
+        "pce_yoy":                          _fred_yoy("PCEPI", api_key),
         "pce_yoy_date":                     _date("pce_yoy"),
-        "ppi_final_demand_yoy":             _val("ppi_final_demand_yoy"),
+        "ppi_final_demand_yoy":             _fred_yoy("PPIFID", api_key),
         "breakeven_inflation_5yr":          _val("breakeven_inflation_5yr"),
         "breakeven_inflation_10yr":         be_10yr,
         "real_yield_5yr_tips":              _val("real_yield_5yr"),
@@ -748,8 +750,16 @@ def collect_fred_macro(
     # ------------------------------------------------------------------
     # Credit conditions block
     # ------------------------------------------------------------------
-    hy_spread = _val("hy_credit_spread")
-    ig_spread = _val("ig_credit_spread")
+    # ICE BofA OAS series (BAMLH0A0HYM2 / BAMLC0A0CM) are reported in PERCENT
+    # (e.g. 2.78 = 2.78%). Multiply by 100 so these fields genuinely hold basis
+    # points, matching the `_bps` field names and the >350/>500 thresholds used
+    # for stress classification both here and downstream (liquidity driver, drivers grid).
+    _hy_pct = _val("hy_credit_spread")
+    _ig_pct = _val("ig_credit_spread")
+    hy_spread = round(_hy_pct * 100, 1) if _hy_pct is not None else None
+    ig_spread = round(_ig_pct * 100, 1) if _ig_pct is not None else None
+    _hy_mom_pct = _mom_chg("hy_credit_spread")
+    hy_spread_mom_bps = round(_hy_mom_pct * 100, 1) if _hy_mom_pct is not None else None
     nfci      = _val("financial_conditions_idx")
 
     if hy_spread is not None:
@@ -784,7 +794,7 @@ def collect_fred_macro(
         "hy_credit_spread_date":        _date("hy_credit_spread"),
         "ig_credit_spread_bps":         ig_spread,
         "financial_conditions_idx":     nfci,
-        "hy_spread_mom_chg":            _mom_chg("hy_credit_spread"),
+        "hy_spread_mom_chg":            hy_spread_mom_bps,
         "move_index":                   move_index,
         "move_index_date":              _date("move_index"),
         "credit_signal":                credit_signal,
@@ -845,8 +855,11 @@ def collect_fred_macro(
                 "api_key":          api_key,
                 "file_type":        "json",
                 "sort_order":       "desc",
-                "limit":            210,
-                "observation_start": "2023-01-01",
+                "limit":            260,
+                # WSHOTSL is WEEKLY: a 200-period MA needs ~200 weeks of history.
+                # Starting at 2023-01-01 yields only ~178 obs, so the >=200 gate
+                # below never passed and fed_treasury stayed permanently null.
+                "observation_start": "2020-01-01",
             }
             _resp = _req.get(
                 "https://api.stlouisfed.org/fred/series/observations",
@@ -859,8 +872,11 @@ def collect_fred_macro(
                     for o in _resp.json().get("observations", [])
                     if o.get("value") not in (".", None, "")
                 ]
-                if len(_obs) >= 200:
-                    tsy_200dma = round(sum(_obs[:200]) / 200, 2)
+                # Use a full 200-week window when available; fall back to the
+                # longest available window (>=100 obs) rather than returning nothing.
+                if len(_obs) >= 100:
+                    _win = min(200, len(_obs))
+                    tsy_200dma = round(sum(_obs[:_win]) / _win, 2)
         except Exception as _e:
             logging.warning("Could not compute Fed Treasury 200DMA: %s", _e)
 
@@ -1011,13 +1027,17 @@ def compute_liquidity_driver(output: dict) -> dict:
         repo_vol         = pl.get("overnight_repo_volume_B")
         repo_wow         = pl.get("repo_wow_change_B")
         tsy_pct_vs_200   = pl.get("fed_treasury_pct_vs_200dma")
-        hy_spread        = cc.get("hy_credit_spread")       # bps — lower = looser
+        hy_spread        = cc.get("hy_credit_spread_bps")   # bps — lower = looser
         nfci             = cc.get("financial_conditions_idx")  # negative = easy
 
         scores: dict[str, float | None] = {}
 
-        # Component 1 — Repo volume vs $2.5T threshold (0-100 linear, capped at $3.5T)
-        if repo_vol is not None:
+        # Component 1 — Repo volume vs $2.5T threshold (0-100 linear, capped at $3.5T).
+        # A drained facility (≈0) is NOT a contraction signal post-eSLR reform — the
+        # private repo market absorbed the balances the Fed RRP used to hold. Treat
+        # near-zero as "no signal" (excluded from the composite), not a hard 0, so the
+        # score isn't dragged to CONTRACTING purely by a wound-down facility.
+        if repo_vol is not None and repo_vol >= 50:
             scores["repo_volume"] = min(100.0, max(0.0, (repo_vol - 1500) / (3500 - 1500) * 100))
         else:
             scores["repo_volume"] = None

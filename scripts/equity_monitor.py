@@ -915,13 +915,20 @@ def build_heatmap_universe(
         if r.get("bucket") not in ("core", "satellite", "bitcoin"):
             unassigned.append(t)
 
-        out_rows.append({
+        row = {
             "ticker": t, "layer": layer,
             "price": price, "sma50": sma50, "sma200": sma200, "sma200_prev": sma200_prev,
             "rsiD": rsi_d, "rsiW": rsi_w, "rangePos": rng,
             "bucket": r.get("bucket"), "type": r.get("type"),
             "maxLossPct": r.get("maxLossPct"), "src": src,
-        })
+        }
+        # Carry editorial override fields onto the live row so the dashboard reads the
+        # structural-breakout flag from pipeline data, not just its hardcoded EMBEDDED_META.
+        if r.get("overrideClause"):
+            row["overrideClause"] = r["overrideClause"]
+        if r.get("exitWhen"):
+            row["exitWhen"] = r["exitWhen"]
+        out_rows.append(row)
 
     if unassigned:
         logger.warning("Heatmap rows with no bucket (render UNASSIGNED): %s", unassigned)

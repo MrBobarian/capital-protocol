@@ -152,26 +152,43 @@ The Structural Breakout Override Clause only affects the exhaustion gradient lay
 
 ### Structural Breakout Override Clause
 
-When `meta.overrideClause === 'structural_breakout'` AND ≥3 of 4 signals active → compress HOT→65, EASE→50:
+When `meta.overrideClause === 'structural_breakout'` AND ≥3 of 4 global sector signals active
+AND the name is **not parabolic** → compress HOT→65, EASE→50. The override returns `{s, state}`:
 
 ```javascript
-function applyOverrideClause(rawScore, meta, macroSignals) {
-  if (!meta || meta.overrideClause !== 'structural_breakout') return rawScore;
-  if (!macroSignals) return rawScore;
-  const confirmations = [
-    (macroSignals.koreaExportsYoY != null && macroSignals.koreaExportsYoY > 40),
-    macroSignals.gpuSpotPriceAtATH === true,
-    macroSignals.hyperscalerBacklogConfirmed === true,
-    (macroSignals.soxxBreadthPct != null && macroSignals.soxxBreadthPct > 80),
-  ].filter(Boolean).length;
-  if (confirmations < 3) return rawScore;
-  if (rawScore > 80) return 65;
-  if (rawScore > 62) return 50;
-  return rawScore;
+const PARABOLIC_EXT200 = 2.0, PARABOLIC_RSIW = 80;
+
+// Per-name guard: has THIS name already PRICED the structural move?
+function isParabolic(h) {
+  const ext200 = (h.sma200 > 0) ? h.price / h.sma200 : null;
+  return (ext200 != null && ext200 >= PARABOLIC_EXT200) || (h.rsiW != null && h.rsiW >= PARABOLIC_RSIW);
+}
+
+function applyOverrideClause(raw, meta, ms, h) {
+  if (!meta || meta.overrideClause !== 'structural_breakout') return { s: raw, state: 'none' };
+  if (overrideConfirmCount(ms) < 3) return { s: raw, state: 'unconfirmed' };
+  if (isParabolic(h)) return { s: raw, state: 'parabolic' };   // GUARD — withhold rescue
+  if (raw > 80) return { s: 65, state: 'active' };
+  if (raw > 62) return { s: 50, state: 'active' };
+  return { s: raw, state: 'active_nochange' };
 }
 ```
 
-Current override-eligible names: **LRCX** (added Jun 13, 2026, all 4 signals active).
+**Why the parabolic guard exists (the MU / SNDK lesson):** `exh()` is a mean-reversion tool;
+on a genuine structural re-rating a HOT reading is the wrong signal (MU scored 95–100 at ~$130;
+now $981). But once a name has *already priced* the move it is parabolic exhaustion, not a
+structural breakout, and the rescue must NOT apply (SNDK +500% YTD, ~3.5× its 200DMA). The
+guard discriminates per-name using fields already on every row: `price/200DMA ≥ 2.0` OR
+`weekly RSI ≥ 80` → override withheld, name stays HOT. The global confirmations
+(`overrideConfirmCount`: Korea >40, GPU ATH, hyperscaler backlog, SOXX breadth >80) confirm the
+*sector* is re-rating; the parabolic guard decides whether *this name* still has room.
+
+The `structural_breakout` flag is read from the live universe row (`overrideClause`, merged from
+`heatmap_meta.json` by `build_heatmap_universe`), falling back to `EMBEDDED_META` in `index.html`.
+
+Override-eligible cohort (flag the structural semis; the guard discriminates):
+**LRCX** (active — 1.4× 200DMA, structural), **MU / SNDK / WDC** (currently parabolic — flagged
+but rescue withheld), **MRVL, TSM** (flagged; rescue applies only when hot-but-not-parabolic).
 
 ---
 

@@ -25,6 +25,9 @@
       "bucket": "core",
       "type": "trend",
       "maxLossPct": null,
+      "overrideClause": "structural_breakout",
+      "overrideReason": "Foundry backbone; CoWoS advanced-packaging booked through 2026. Parabolic guard governs entry: override rescues only while <2.0x its own 200DMA and weekly RSI <80.",
+      "exitWhen": "CoWoS bookings ease materially AND Korea exports YoY <+20%",
       "seed": {
         "price": 205,
         "sma50": 198,
@@ -41,6 +44,9 @@
       "bucket": "core",
       "type": "trend",
       "maxLossPct": null,
+      "overrideClause": "structural_breakout",
+      "overrideReason": "Custom silicon + optical/CPO bottleneck (Phase 1->2), Jensen-endorsed. Parabolic guard governs entry: override rescues only while <2.0x its own 200DMA and weekly RSI <80.",
+      "exitWhen": "Custom-silicon design-win cadence stalls AND revenue guidance lowered",
       "seed": {
         "price": 92,
         "sma50": 86,
@@ -89,6 +95,9 @@
       "bucket": "core",
       "type": "trend",
       "maxLossPct": null,
+      "overrideClause": "structural_breakout",
+      "overrideReason": "HBM/DRAM structural re-rating — AI memory bottleneck, Korea exports + hyperscaler backlog. Parabolic guard governs entry: override rescues only while <2.0x its own 200DMA and weekly RSI <80 (otherwise the move is already priced).",
+      "exitWhen": "DRAM/HBM pricing rolls over 2 consecutive months AND Korea exports YoY <+20%",
       "seed": {
         "price": 971,
         "sma50": 557.56,
@@ -121,6 +130,9 @@
       "bucket": "core",
       "type": "trend",
       "maxLossPct": null,
+      "overrideClause": "structural_breakout",
+      "overrideReason": "NAND/storage structural re-rating on AI data-gravity demand. Parabolic guard governs entry: override rescues only while <2.0x its own 200DMA and weekly RSI <80. As of Jun 2026 SNDK is ~3.5x 200DMA / +500% YTD = parabolic — override correctly withheld, stays HOT.",
+      "exitWhen": "NAND pricing rolls over 2 consecutive months AND Korea exports YoY <+20%",
       "seed": {
         "price": 1694.98,
         "sma50": 1078.61,
@@ -841,6 +853,9 @@
       "bucket": "core",
       "type": "trend",
       "maxLossPct": null,
+      "overrideClause": "structural_breakout",
+      "overrideReason": "HBM/DRAM structural re-rating — AI memory bottleneck, Korea exports + hyperscaler backlog. Parabolic guard governs entry: override rescues only while <2.0x its own 200DMA and weekly RSI <80 (otherwise the move is already priced).",
+      "exitWhen": "DRAM/HBM pricing rolls over 2 consecutive months AND Korea exports YoY <+20%",
       "seed": {
         "price": 971,
         "sma50": 557.56,
@@ -857,6 +872,9 @@
       "bucket": "core",
       "type": "trend",
       "maxLossPct": null,
+      "overrideClause": "structural_breakout",
+      "overrideReason": "NAND/storage structural re-rating on AI data-gravity demand. Parabolic guard governs entry: override rescues only while <2.0x its own 200DMA and weekly RSI <80. As of Jun 2026 SNDK is ~3.5x 200DMA / +500% YTD = parabolic — override correctly withheld, stays HOT.",
+      "exitWhen": "NAND pricing rolls over 2 consecutive months AND Korea exports YoY <+20%",
       "seed": {
         "price": 1694.98,
         "sma50": 1078.61,
@@ -873,6 +891,9 @@
       "bucket": "core",
       "type": "trend",
       "maxLossPct": null,
+      "overrideClause": "structural_breakout",
+      "overrideReason": "NAND/HDD post-spinoff storage re-rating on AI data demand. Parabolic guard governs entry: override rescues only while <2.0x its own 200DMA and weekly RSI <80.",
+      "exitWhen": "NAND/HDD pricing rolls over 2 consecutive months AND Korea exports YoY <+20%",
       "seed": {
         "price": 180,
         "sma50": 150,
