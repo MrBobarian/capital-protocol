@@ -35,6 +35,8 @@ EQUITY_UNIVERSE: list[UniverseEntry] = [
 
     # ── PRIORITY 1: ASK HOLDINGS ─────────────────────────────────────────────
     {"ticker": "MU",   "name": "Micron Technology",     "theme": "AI_INFRA",  "layer": "L1",    "exchange": "NASDAQ", "priority": 1, "notes": "HBM sold out 2026; DRAM_ROC flag active; 3-5yr thesis intact"},
+    {"ticker": "LRCX", "name": "Lam Research",          "theme": "AI_INFRA",  "layer": "L1",    "exchange": "NASDAQ", "priority": 1, "notes": "Semi equipment, etch/deposition moat; Korea exports +85.9% YoY; structural_breakout override active. Added Jun 13 2026."},
+    {"ticker": "AMAT", "name": "Applied Materials",     "theme": "AI_INFRA",  "layer": "L1",    "exchange": "NASDAQ", "priority": 1, "notes": "Semi equipment peer to LRCX; CVD/PVD/etch; structural demand re-rating from AI buildout"},
     {"ticker": "ENTG", "name": "Entegris",              "theme": "AI_INFRA",  "layer": "L1→L2", "exchange": "NASDAQ", "priority": 1, "notes": "Specialty chemicals; Hormuz risk; 5% revenue growth vs L2 peers"},
     {"ticker": "HUBB", "name": "Hubbell Inc",           "theme": "AI_INFRA",  "layer": "L2",    "exchange": "NYSE",   "priority": 1, "notes": "Grid switchgear; held in existing collection; not new deployment"},
 
@@ -49,7 +51,8 @@ EQUITY_UNIVERSE: list[UniverseEntry] = [
     {"ticker": "STRL", "name": "Sterling Infrastructure","theme": "AI_INFRA", "layer": "L2",    "exchange": "NASDAQ", "priority": 2, "notes": "DC civil construction; Jordi must-read; PE 3-4x historical avg flag"},
     {"ticker": "BE",   "name": "Bloom Energy",          "theme": "ENERGY",    "layer": "L2→P3", "exchange": "NYSE",   "priority": 2, "notes": "Fuel cells; Oracle 2.8GW; 55-day delivery vs 3yr gas turbines; RSI_EXTREME"},
     {"ticker": "TLN",  "name": "Talen Energy",          "theme": "ENERGY",    "layer": "L2→P3", "exchange": "NASDAQ", "priority": 2, "notes": "Nuclear + gas merchant power; Cornerstone AI campus acquisition"},
-    {"ticker": "FLNC", "name": "Fluence Energy",        "theme": "ENERGY",    "layer": "L2→P3", "exchange": "NASDAQ", "priority": 2, "notes": "Grid-scale battery; $5.5B backlog; Jordi flagged; secondary offerings pressure"},
+    {"ticker": "FLNC", "name": "Fluence Energy",        "theme": "ENERGY",    "layer": "L2→P3", "exchange": "NASDAQ", "priority": 2, "notes": "Grid-scale battery; $5.5B backlog; Jordi flagged; secondary offerings pressure; income test pending — flag as EST in heatmap"},
+    {"ticker": "XOM",  "name": "Exxon Mobil",           "theme": "ENERGY",    "layer": "L2",    "exchange": "NYSE",   "priority": 1, "notes": "Ballast sleeve. Energy cash-flow engine. October 2026 Steno energy deadline catalyst. Exit: Hormuz reopened AND WTI below $70 4+ weeks. Added Jun 13 2026."},
     {"ticker": "COIN", "name": "Coinbase",              "theme": "CRYPTO_RAILS","layer": "L4",  "exchange": "NASDAQ", "priority": 2, "notes": "Agent payment rails; Amazon Bedrock integration; Clarity Act 72% odds"},
     {"ticker": "HOOD", "name": "Robinhood Markets",     "theme": "CRYPTO_RAILS","layer": "L4",  "exchange": "NASDAQ", "priority": 2, "notes": "Retail crypto gateway; tokenisation rails beneficiary; wealth management pivot"},
     {"ticker": "RKLB", "name": "Rocket Lab",            "theme": "SPACE",     "layer": "L5",    "exchange": "NASDAQ", "priority": 2, "notes": "SpaceX IPO proxy; Pal/Brigden up 600%; rising wedge — timing caution"},

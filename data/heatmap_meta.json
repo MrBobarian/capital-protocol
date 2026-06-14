@@ -1,5 +1,5 @@
 {
-  "updated_date": "2026-05-29",
+  "updated_date": "2026-06-13",
   "source": "Seeded from thesis_heatmap_dashboard.html prototype (v5, three-bucket).",
   "notes": "Editorial fields (layer/bucket/type/maxLossPct) are authoritative and persist. Keyed by (ticker, layer) \u2014 duplicates intentional (e.g. MU/SNDK under L1 and L1b). seed.* numerics render only when no live pipeline data exists (src=EST).",
   "rows": [
@@ -1345,6 +1345,47 @@
         "rsiD": 60,
         "rsiW": 58,
         "rangePos": 0.85
+      }
+    },
+    {
+      "ticker": "LRCX",
+      "layer": "L1",
+      "bucket": "core",
+      "type": "trend",
+      "maxLossPct": null,
+      "overrideClause": "structural_breakout",
+      "overrideReason": "Korea semi exports +85.9% YoY Jun 2026 (42-yr high) + GPU spot ATH + hyperscaler capex raised 2+ consecutive quarters + SOXX breadth >80%. Structural demand re-rating, not cyclical exhaustion.",
+      "exitWhen": "Korea export YoY drops below +20% for 2 consecutive months AND LRCX revenue guidance lowered",
+      "addedDate": "2026-06-13",
+      "notes": "Semi equipment, etch/deposition moat. First tranche 8,700 DKK executed Jun 13. Monthly DCA until weekly RSI < 65.",
+      "seed": {
+        "price": 1033.0,
+        "sma50": 885.0,
+        "sma200": 720.0,
+        "sma200_prev": 715.0,
+        "rsiD": 68,
+        "rsiW": 76,
+        "rangePos": 0.96
+      }
+    },
+    {
+      "ticker": "XOM",
+      "layer": "ballast",
+      "bucket": "ballast",
+      "type": "trend",
+      "maxLossPct": null,
+      "overrideClause": null,
+      "exitWhen": "Hormuz Strait formally reopened AND WTI sustained below $70 for 4+ weeks",
+      "addedDate": "2026-06-13",
+      "notes": "Non-correlated ballast sleeve. Energy cash-flow engine. October 2026 Steno energy deadline is primary catalyst. First brick ~10,000 DKK executed Jun 13.",
+      "seed": {
+        "price": 115.0,
+        "sma50": 110.0,
+        "sma200": 105.0,
+        "sma200_prev": 104.0,
+        "rsiD": 48,
+        "rsiW": 46,
+        "rangePos": 0.58
       }
     }
   ]

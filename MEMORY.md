@@ -1,0 +1,3 @@
+- [User profile](memory/user_profile.md) — Danish investor Emil Skriver, personal capital protocol dashboard
+- [Structural Breakout Override](memory/structural_breakout_override.md) — Override clause logic added Jun 13 for LRCX
+- [Ballast Sleeve](memory/ballast_sleeve.md) — XOM ballast bucket added Jun 13, separate from core

@@ -1259,6 +1259,36 @@
       "type": "etf",
       "maxLossPct": null,
       "src": "FRESH"
+    },
+    {
+      "ticker": "LRCX",
+      "layer": "L1",
+      "price": 1033.0,
+      "sma50": 885.0,
+      "sma200": 720.0,
+      "sma200_prev": 715.0,
+      "rsiD": 68,
+      "rsiW": 76,
+      "rangePos": 0.96,
+      "bucket": "core",
+      "type": "trend",
+      "maxLossPct": null,
+      "src": "EST"
+    },
+    {
+      "ticker": "XOM",
+      "layer": "L2",
+      "price": 115.0,
+      "sma50": 110.0,
+      "sma200": 105.0,
+      "sma200_prev": 104.0,
+      "rsiD": 48,
+      "rsiW": 46,
+      "rangePos": 0.58,
+      "bucket": "ballast",
+      "type": "trend",
+      "maxLossPct": null,
+      "src": "EST"
     }
   ],
   "macro": {

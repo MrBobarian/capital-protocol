@@ -1,0 +1,24 @@
+{
+  "plutoCoreTargetWeights": {
+    "ETN":  0.15,
+    "CEG":  0.12,
+    "MRVL": 0.11,
+    "VRT":  0.09,
+    "HUBB": 0.09,
+    "FLR":  0.08,
+    "GEV":  0.06,
+    "LLY":  0.06,
+    "MP":   0.06,
+    "TSM":  0.05,
+    "LRCX": 0.05,
+    "COIN": 0.04,
+    "KTOS": 0.04,
+    "CRCL": 0.03,
+    "QBTS": 0.02
+  },
+  "plutoCoreTotal": 150000,
+  "ballastTarget": 10000,
+  "ballastNames": ["XOM"],
+  "lastUpdated": "2026-06-13",
+  "note": "15-name Pluto collection. LRCX added Jun 13. XOM is separate ballast sleeve (not counted in core weights). Total weights sum to 1.0 across 15 names."
+}
