@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-06-23T10:49:11Z",
+  "generated_at": "2026-06-23T18:34:44Z",
   "data_date": "2026-06-23",
   "pipeline": {
     "available": true,
-    "run_mode": "full",
-    "last_run_at": "2026-06-23T10:49:11Z",
+    "run_mode": "daily",
+    "last_run_at": "2026-06-23T18:34:44Z",
     "data_date": "2026-06-23"
   },
   "sentiment": {
@@ -47,7 +47,7 @@
       "score": 23,
       "label": "Extreme Fear",
       "score_7d_avg": 20.0,
-      "fetched_at": "2026-06-23T10:49:11Z"
+      "fetched_at": "2026-06-23T18:34:44Z"
     }
   },
   "valuation": {
@@ -5734,7 +5734,7 @@
       "price": null,
       "source": "FRED:DTWEXBGS",
       "note": "populated from fred_macro.dollar_gold",
-      "fetched_at": "2026-06-23T10:42:50Z"
+      "fetched_at": "2026-06-23T18:28:24Z"
     },
     "BTC": {
       "price": 63941.16,
@@ -7264,7 +7264,7 @@
         }
       ],
       "source": "Massive/Polygon",
-      "fetched_at": "2026-06-23T10:42:50Z"
+      "fetched_at": "2026-06-23T18:28:24Z"
     },
     "ETH": {
       "price": 1726.23,
@@ -8794,7 +8794,7 @@
         }
       ],
       "source": "Massive/Polygon",
-      "fetched_at": "2026-06-23T10:43:05Z"
+      "fetched_at": "2026-06-23T18:28:40Z"
     },
     "NVDA": {
       "price": 208.65,
@@ -9844,7 +9844,7 @@
         }
       ],
       "source": "Massive/Polygon",
-      "fetched_at": "2026-06-23T10:43:20Z"
+      "fetched_at": "2026-06-23T18:28:55Z"
     },
     "MSTR": {
       "price": 109.46,
@@ -10894,7 +10894,7 @@
         }
       ],
       "source": "Massive/Polygon",
-      "fetched_at": "2026-06-23T10:43:36Z"
+      "fetched_at": "2026-06-23T18:29:10Z"
     },
     "SOXX": {
       "price": 655.01,
@@ -11944,7 +11944,7 @@
         }
       ],
       "source": "Massive/Polygon",
-      "fetched_at": "2026-06-23T10:43:51Z"
+      "fetched_at": "2026-06-23T18:29:25Z"
     },
     "SPY": {
       "price": 744.39,
@@ -12994,7 +12994,7 @@
         }
       ],
       "source": "Massive/Polygon",
-      "fetched_at": "2026-06-23T10:44:06Z"
+      "fetched_at": "2026-06-23T18:29:40Z"
     },
     "QQQ": {
       "price": 737.95,
@@ -14044,7 +14044,7 @@
         }
       ],
       "source": "Massive/Polygon",
-      "fetched_at": "2026-06-23T10:44:21Z"
+      "fetched_at": "2026-06-23T18:29:56Z"
     },
     "GLD": {
       "price": 384.59,
@@ -15094,7 +15094,7 @@
         }
       ],
       "source": "Massive/Polygon",
-      "fetched_at": "2026-06-23T10:44:37Z"
+      "fetched_at": "2026-06-23T18:30:11Z"
     },
     "ETN": {
       "price": 435.78,
@@ -16144,7 +16144,7 @@
         }
       ],
       "source": "Massive/Polygon",
-      "fetched_at": "2026-06-23T10:44:52Z"
+      "fetched_at": "2026-06-23T18:30:26Z"
     },
     "VRT": {
       "price": 357.96,
@@ -17194,7 +17194,7 @@
         }
       ],
       "source": "Massive/Polygon",
-      "fetched_at": "2026-06-23T10:45:07Z"
+      "fetched_at": "2026-06-23T18:30:41Z"
     },
     "GEV": {
       "price": 1127.59,
@@ -18244,7 +18244,7 @@
         }
       ],
       "source": "Massive/Polygon",
-      "fetched_at": "2026-06-23T10:45:22Z"
+      "fetched_at": "2026-06-23T18:30:57Z"
     },
     "CEG": {
       "price": 275.53,
@@ -19294,7 +19294,7 @@
         }
       ],
       "source": "Massive/Polygon",
-      "fetched_at": "2026-06-23T10:45:38Z"
+      "fetched_at": "2026-06-23T18:31:12Z"
     },
     "ROBO": {
       "price": 86.65,
@@ -20344,7 +20344,7 @@
         }
       ],
       "source": "Massive/Polygon",
-      "fetched_at": "2026-06-23T10:45:53Z"
+      "fetched_at": "2026-06-23T18:31:27Z"
     },
     "COIN": {
       "price": 164.84,
@@ -21394,7 +21394,7 @@
         }
       ],
       "source": "Massive/Polygon",
-      "fetched_at": "2026-06-23T10:46:08Z"
+      "fetched_at": "2026-06-23T18:31:42Z"
     },
     "IONQ": {
       "price": 58.32,
@@ -22444,7 +22444,7 @@
         }
       ],
       "source": "Massive/Polygon",
-      "fetched_at": "2026-06-23T10:46:24Z"
+      "fetched_at": "2026-06-23T18:31:57Z"
     },
     "QBTS": {
       "price": 24.47,
@@ -23494,7 +23494,7 @@
         }
       ],
       "source": "Massive/Polygon",
-      "fetched_at": "2026-06-23T10:46:39Z"
+      "fetched_at": "2026-06-23T18:32:13Z"
     },
     "RGTI": {
       "price": 21.38,
@@ -24544,7 +24544,7 @@
         }
       ],
       "source": "Massive/Polygon",
-      "fetched_at": "2026-06-23T10:46:54Z"
+      "fetched_at": "2026-06-23T18:32:28Z"
     },
     "QTUM": {
       "price": 168.6,
@@ -25594,7 +25594,7 @@
         }
       ],
       "source": "Massive/Polygon",
-      "fetched_at": "2026-06-23T10:47:09Z"
+      "fetched_at": "2026-06-23T18:32:43Z"
     },
     "RKLB": {
       "price": 100.29,
@@ -26644,7 +26644,7 @@
         }
       ],
       "source": "Massive/Polygon",
-      "fetched_at": "2026-06-23T10:47:25Z"
+      "fetched_at": "2026-06-23T18:32:58Z"
     },
     "ASTS": {
       "price": 73.19,
@@ -27694,7 +27694,7 @@
         }
       ],
       "source": "Massive/Polygon",
-      "fetched_at": "2026-06-23T10:47:40Z"
+      "fetched_at": "2026-06-23T18:33:13Z"
     },
     "UFO": {
       "price": 48.72,
@@ -28744,7 +28744,7 @@
         }
       ],
       "source": "Massive/Polygon",
-      "fetched_at": "2026-06-23T10:47:55Z"
+      "fetched_at": "2026-06-23T18:33:28Z"
     },
     "KTOS": {
       "price": 51.09,
@@ -29794,7 +29794,7 @@
         }
       ],
       "source": "Massive/Polygon",
-      "fetched_at": "2026-06-23T10:48:10Z"
+      "fetched_at": "2026-06-23T18:33:44Z"
     },
     "AXON": {
       "price": 410.03,
@@ -30844,7 +30844,7 @@
         }
       ],
       "source": "Massive/Polygon",
-      "fetched_at": "2026-06-23T10:48:26Z"
+      "fetched_at": "2026-06-23T18:33:59Z"
     },
     "ITA": {
       "price": 235.51,
@@ -31894,7 +31894,7 @@
         }
       ],
       "source": "Massive/Polygon",
-      "fetched_at": "2026-06-23T10:48:41Z"
+      "fetched_at": "2026-06-23T18:34:14Z"
     },
     "XAR": {
       "price": 277.87,
@@ -32944,7 +32944,7 @@
         }
       ],
       "source": "Massive/Polygon",
-      "fetched_at": "2026-06-23T10:48:56Z"
+      "fetched_at": "2026-06-23T18:34:29Z"
     }
   },
   "dashboard": {
@@ -33130,6 +33130,6 @@
         ]
       }
     },
-    "computed_at": "2026-06-23T10:49:11Z"
+    "computed_at": "2026-06-23T18:34:44Z"
   }
 }
