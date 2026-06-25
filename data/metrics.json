@@ -1,15 +1,15 @@
 {
-  "generated_at": "2026-06-25T18:21:19Z",
+  "generated_at": "2026-06-25T18:47:10Z",
   "data_date": "2026-06-25",
   "pipeline": {
     "available": true,
-    "run_mode": "full",
-    "last_run_at": "2026-06-25T18:21:19Z",
+    "run_mode": "daily",
+    "last_run_at": "2026-06-25T18:47:10Z",
     "data_date": "2026-06-25"
   },
   "sentiment": {
-    "soxx_put_call_ratio": null,
-    "soxx_put_call_ratio_note": null,
+    "soxx_put_call_ratio": 2.941,
+    "soxx_put_call_ratio_note": "Above 1.2: elevated hedging/fear. Below 0.6: complacency. Range 0.6\u20131.2: neutral positioning.",
     "soxx_short_interest_ratio": 0.3867,
     "soxx_short_interest_ratio_note": "Above 0.55: elevated short positioning. Below 0.40: consensus long. Range 0.40\u20130.55: neutral.",
     "bofams_survey_month": null,
@@ -47,7 +47,7 @@
       "score": 12,
       "label": "Extreme Fear",
       "score_7d_avg": 18.9,
-      "fetched_at": "2026-06-25T18:21:19Z"
+      "fetched_at": "2026-06-25T18:47:10Z"
     }
   },
   "valuation": {
@@ -5876,7 +5876,7 @@
       "price": null,
       "source": "FRED:DTWEXBGS",
       "note": "populated from fred_macro.dollar_gold",
-      "fetched_at": "2026-06-25T18:14:53Z"
+      "fetched_at": "2026-06-25T18:40:46Z"
     },
     "BTC": {
       "price": 60975.56,
@@ -7406,7 +7406,7 @@
         }
       ],
       "source": "Massive/Polygon",
-      "fetched_at": "2026-06-25T18:14:53Z"
+      "fetched_at": "2026-06-25T18:40:47Z"
     },
     "ETH": {
       "price": 1623.1,
@@ -8936,7 +8936,7 @@
         }
       ],
       "source": "Massive/Polygon",
-      "fetched_at": "2026-06-25T18:15:08Z"
+      "fetched_at": "2026-06-25T18:41:02Z"
     },
     "NVDA": {
       "price": 199.0,
@@ -9990,7 +9990,7 @@
         }
       ],
       "source": "Massive/Polygon",
-      "fetched_at": "2026-06-25T18:15:23Z"
+      "fetched_at": "2026-06-25T18:41:17Z"
     },
     "MSTR": {
       "price": 94.13,
@@ -11044,7 +11044,7 @@
         }
       ],
       "source": "Massive/Polygon",
-      "fetched_at": "2026-06-25T18:15:39Z"
+      "fetched_at": "2026-06-25T18:41:32Z"
     },
     "SOXX": {
       "price": 601.5,
@@ -12098,7 +12098,7 @@
         }
       ],
       "source": "Massive/Polygon",
-      "fetched_at": "2026-06-25T18:15:54Z"
+      "fetched_at": "2026-06-25T18:41:48Z"
     },
     "SPY": {
       "price": 733.24,
@@ -13152,7 +13152,7 @@
         }
       ],
       "source": "Massive/Polygon",
-      "fetched_at": "2026-06-25T18:16:12Z"
+      "fetched_at": "2026-06-25T18:42:03Z"
     },
     "QQQ": {
       "price": 710.62,
@@ -14206,7 +14206,7 @@
         }
       ],
       "source": "Massive/Polygon",
-      "fetched_at": "2026-06-25T18:16:28Z"
+      "fetched_at": "2026-06-25T18:42:19Z"
     },
     "GLD": {
       "price": 365.92,
@@ -15260,7 +15260,7 @@
         }
       ],
       "source": "Massive/Polygon",
-      "fetched_at": "2026-06-25T18:16:43Z"
+      "fetched_at": "2026-06-25T18:42:35Z"
     },
     "ETN": {
       "price": 404.59,
@@ -16314,7 +16314,7 @@
         }
       ],
       "source": "Massive/Polygon",
-      "fetched_at": "2026-06-25T18:16:58Z"
+      "fetched_at": "2026-06-25T18:42:50Z"
     },
     "VRT": {
       "price": 316.43,
@@ -17368,7 +17368,7 @@
         }
       ],
       "source": "Massive/Polygon",
-      "fetched_at": "2026-06-25T18:17:13Z"
+      "fetched_at": "2026-06-25T18:43:05Z"
     },
     "GEV": {
       "price": 1057.65,
@@ -18422,7 +18422,7 @@
         }
       ],
       "source": "Massive/Polygon",
-      "fetched_at": "2026-06-25T18:17:28Z"
+      "fetched_at": "2026-06-25T18:43:21Z"
     },
     "CEG": {
       "price": 267.97,
@@ -19476,7 +19476,7 @@
         }
       ],
       "source": "Massive/Polygon",
-      "fetched_at": "2026-06-25T18:17:44Z"
+      "fetched_at": "2026-06-25T18:43:36Z"
     },
     "ROBO": {
       "price": 82.35,
@@ -20530,7 +20530,7 @@
         }
       ],
       "source": "Massive/Polygon",
-      "fetched_at": "2026-06-25T18:17:59Z"
+      "fetched_at": "2026-06-25T18:43:51Z"
     },
     "COIN": {
       "price": 150.11,
@@ -21584,7 +21584,7 @@
         }
       ],
       "source": "Massive/Polygon",
-      "fetched_at": "2026-06-25T18:18:14Z"
+      "fetched_at": "2026-06-25T18:44:06Z"
     },
     "IONQ": {
       "price": 53.6,
@@ -22638,7 +22638,7 @@
         }
       ],
       "source": "Massive/Polygon",
-      "fetched_at": "2026-06-25T18:18:30Z"
+      "fetched_at": "2026-06-25T18:44:22Z"
     },
     "QBTS": {
       "price": 22.98,
@@ -23692,7 +23692,7 @@
         }
       ],
       "source": "Massive/Polygon",
-      "fetched_at": "2026-06-25T18:18:45Z"
+      "fetched_at": "2026-06-25T18:44:37Z"
     },
     "RGTI": {
       "price": 19.53,
@@ -24746,7 +24746,7 @@
         }
       ],
       "source": "Massive/Polygon",
-      "fetched_at": "2026-06-25T18:19:00Z"
+      "fetched_at": "2026-06-25T18:44:53Z"
     },
     "QTUM": {
       "price": 159.89,
@@ -25800,7 +25800,7 @@
         }
       ],
       "source": "Massive/Polygon",
-      "fetched_at": "2026-06-25T18:19:16Z"
+      "fetched_at": "2026-06-25T18:45:08Z"
     },
     "RKLB": {
       "price": 85.41,
@@ -26854,7 +26854,7 @@
         }
       ],
       "source": "Massive/Polygon",
-      "fetched_at": "2026-06-25T18:19:31Z"
+      "fetched_at": "2026-06-25T18:45:23Z"
     },
     "ASTS": {
       "price": 68.01,
@@ -27908,7 +27908,7 @@
         }
       ],
       "source": "Massive/Polygon",
-      "fetched_at": "2026-06-25T18:19:46Z"
+      "fetched_at": "2026-06-25T18:45:38Z"
     },
     "UFO": {
       "price": 46.48,
@@ -28962,7 +28962,7 @@
         }
       ],
       "source": "Massive/Polygon",
-      "fetched_at": "2026-06-25T18:20:02Z"
+      "fetched_at": "2026-06-25T18:45:54Z"
     },
     "KTOS": {
       "price": 47.95,
@@ -30016,7 +30016,7 @@
         }
       ],
       "source": "Massive/Polygon",
-      "fetched_at": "2026-06-25T18:20:17Z"
+      "fetched_at": "2026-06-25T18:46:09Z"
     },
     "AXON": {
       "price": 456.73,
@@ -31070,7 +31070,7 @@
         }
       ],
       "source": "Massive/Polygon",
-      "fetched_at": "2026-06-25T18:20:32Z"
+      "fetched_at": "2026-06-25T18:46:24Z"
     },
     "ITA": {
       "price": 236.19,
@@ -32124,7 +32124,7 @@
         }
       ],
       "source": "Massive/Polygon",
-      "fetched_at": "2026-06-25T18:20:48Z"
+      "fetched_at": "2026-06-25T18:46:40Z"
     },
     "XAR": {
       "price": 272.41,
@@ -33178,7 +33178,7 @@
         }
       ],
       "source": "Massive/Polygon",
-      "fetched_at": "2026-06-25T18:21:04Z"
+      "fetched_at": "2026-06-25T18:46:55Z"
     }
   },
   "dashboard": {
@@ -33263,12 +33263,12 @@
       {
         "id": "soxx_pcr",
         "label": "SOXX Put/Call",
-        "value": null,
-        "value_fmt": "\u2014",
+        "value": 2.941,
+        "value_fmt": "2.9",
         "delta": null,
         "delta_fmt": "\u2014",
         "trend": "flat",
-        "color": "muted",
+        "color": "red",
         "note": ">1.2 fear | <0.6 complacency"
       }
     ],
@@ -33290,9 +33290,9 @@
     "layer_sentiment": {
       "L1": {
         "name": "Semis & AI Silicon",
-        "signal": "bullish",
-        "score": 71.5691,
-        "key_metric": "\u2014",
+        "signal": "neutral",
+        "score": 47.7127,
+        "key_metric": "Breadth 97%, PCR 2.94",
         "assets": [
           "SOXX",
           "NVDA",
@@ -33364,6 +33364,6 @@
         ]
       }
     },
-    "computed_at": "2026-06-25T18:21:19Z"
+    "computed_at": "2026-06-25T18:47:10Z"
   }
 }
