@@ -18,6 +18,11 @@ on:
           - weekly
           - full
 
+# Never run two collection jobs at once — they would race on the push
+concurrency:
+  group: collect
+  cancel-in-progress: false
+
 jobs:
   collect:
     runs-on: ubuntu-latest
@@ -87,7 +92,18 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add data/metrics.json data/archive/ data/heatmap_universe.json
           git commit -m "chore(data): update metrics [$(date -u +%Y-%m-%d)] mode=${{ steps.mode.outputs.mode }} [skip ci]"
-          git push
+          # Collection takes minutes — main may have moved since checkout.
+          # Rebase our data commit onto the latest remote before pushing.
+          # -X theirs: on conflict in the data files, keep this run's (fresher) output.
+          for attempt in 1 2 3; do
+            git fetch origin main
+            git rebase -X theirs origin/main || { git rebase --abort; exit 1; }
+            git push && exit 0
+            echo "push rejected (attempt $attempt) — remote moved again, retrying"
+            sleep 15
+          done
+          echo "::error::push failed after 3 attempts"
+          exit 1
 
       - name: No changes to commit
         if: steps.diff.outputs.changed != 'true'
