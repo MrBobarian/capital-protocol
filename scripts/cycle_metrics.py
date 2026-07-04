@@ -186,15 +186,24 @@ def _fetch_close_batched(
 
 
 def _compute_returns(
-    series: Any, lookback_days: int
-) -> float | None:
+    series: Any, lookback_days: "int | list[int]"
+) -> "float | None | dict[int, float | None]":
     """Compute total return over the last `lookback_days` calendar days.
 
     Finds the row closest to (today - lookback_days) and computes
     (latest_price / past_price - 1) * 100 as a percentage.
     Returns None if data is insufficient.
+
+    If `lookback_days` is a list/tuple of periods, returns a dict mapping each
+    period to its return (or None). This form is used by the Jordi Visser
+    collectors (macro regime, benchmark arbitrage, market structure), which
+    read the result as ``ret.get(period)`` / ``ret[period]``.
     """
     import pandas as pd
+
+    # Multi-period form: recurse per lookback and return a {period: return} dict.
+    if isinstance(lookback_days, (list, tuple)):
+        return {lb: _compute_returns(series, lb) for lb in lookback_days}
 
     if series is None or len(series) < 2:
         return None
@@ -290,23 +299,65 @@ def _basket_breadth(
     return (above_count / total_valid) * 100.0
 
 
-def _basket_valuation(tickers: list[str]) -> dict[str, Any]:
+def _fetch_ratios_massive(tickers: list[str]) -> dict[str, dict]:
+    """Fetch TTM P/E and P/B for a basket of tickers via Massive (one bulk call).
+
+    Massive is the sanctioned primary fundamentals source (see
+    massive_client.collect_valuation_massive); this avoids the per-ticker
+    yfinance ``.info`` calls that Yahoo aggressively rate-limits on CI.
+
+    Returns {ticker: {"pe": float|None, "pb": float|None}}. Empty dict if no
+    MASSIVE_API_KEY or the call fails — callers degrade to empty averages.
+
+    NOTE: ``price_to_earnings`` here is TTM (trailing), not forward P/E — the
+    same substitution collect_valuation_massive makes for soxx_forward_pe, so
+    downstream P/E spreads stay apples-to-apples (TTM vs TTM).
+    """
+    import os
+
+    api_key = os.environ.get("MASSIVE_API_KEY", "")
+    if not api_key:
+        logging.debug("_fetch_ratios_massive: no MASSIVE_API_KEY")
+        return {}
+    try:
+        from massive_client import MassiveClient
+        raw = MassiveClient(api_key).get_ratios(tickers)
+    except Exception as exc:
+        logging.warning("_fetch_ratios_massive failed: %s", exc)
+        return {}
+
+    out: dict[str, dict] = {}
+    for ticker, r in raw.items():
+        out[ticker] = {
+            "pe": safe_float(r.get("price_to_earnings")),
+            "pb": safe_float(r.get("price_to_book")),
+        }
+    return out
+
+
+def _basket_valuation(
+    tickers: list[str], ratios: dict[str, dict] | None = None
+) -> dict[str, Any]:
     """Fetch fundamental valuation data for a basket of tickers.
 
-    Returns unweighted averages of forwardPE and priceToBook across valid tickers.
+    Returns unweighted averages of TTM P/E and P/B across valid tickers, sourced
+    from Massive. Pass a pre-fetched `ratios` map (from _fetch_ratios_massive) to
+    reuse a single bulk call across baskets; otherwise one is fetched here.
     """
+    if ratios is None:
+        ratios = _fetch_ratios_massive(tickers)
+
     pe_values: list[float] = []
     pb_values: list[float] = []
 
     for ticker in tickers:
-        info = _fetch_info_safe(ticker)
-        pe = safe_float(info.get("forwardPE"))
-        pb = safe_float(info.get("priceToBook"))
+        r = ratios.get(ticker, {})
+        pe = r.get("pe")
+        pb = r.get("pb")
         if pe is not None and pe > 0:
             pe_values.append(pe)
         if pb is not None and pb > 0:
             pb_values.append(pb)
-        time.sleep(0.3)
 
     forward_pe: float | None = (
         safe_float(sum(pe_values) / len(pe_values)) if pe_values else None
@@ -326,8 +377,25 @@ def _basket_valuation(tickers: list[str]) -> dict[str, Any]:
 def _fetch_info_safe(ticker: str) -> dict:
     """Fetch yfinance Ticker.info with up to 3 retries and exponential backoff.
 
-    Never raises. Returns empty dict on failure.
+    Yahoo-only fields (analyst targets, forwardPE) — used only where Massive has
+    no equivalent (L1c analyst upside, L4 TSLA-aware valuation). Gated behind the
+    same yfinance enablement flags as the rest of the pipeline: on CI
+    (YFINANCE_ENABLED=false, ALLOW_YAHOO_FALLBACK=false) Yahoo is disabled, so
+    this returns {} immediately rather than hammering a blocked/rate-limited host
+    with 3 retries per ticker. Callers degrade to None/partial gracefully.
+
+    Never raises. Returns empty dict when disabled or on failure.
     """
+    import os
+
+    yahoo_enabled = (
+        os.environ.get("YFINANCE_ENABLED", "false").lower() == "true"
+        or os.environ.get("ALLOW_YAHOO_FALLBACK", "false").lower() == "true"
+    )
+    if not yahoo_enabled:
+        logging.debug("_fetch_info_safe: Yahoo disabled — skipping %s", ticker)
+        return {}
+
     import yfinance as yf
 
     delays = [1.0, 2.0, 4.0]
@@ -529,11 +597,18 @@ def collect_layer2(existing_metrics: dict) -> dict:
         baskets_out: dict[str, dict] = {}
         pe_values_for_avg: list[float] = []
 
+        # Single bulk ratios fetch shared across all baskets (free tier is
+        # rate-limited — avoid one API call per basket).
+        all_basket_tickers = [
+            t for b in LAYER2_BASKETS.values() for t in b["tickers"]
+        ]
+        l2_ratios = _fetch_ratios_massive(list(dict.fromkeys(all_basket_tickers)))
+
         for basket_key, basket in LAYER2_BASKETS.items():
             tickers = basket["tickers"]
 
             # Valuation
-            val = _basket_valuation(tickers)
+            val = _basket_valuation(tickers, ratios=l2_ratios)
             if val["forward_pe"] is not None:
                 pe_values_for_avg.append(val["forward_pe"])
 
@@ -709,15 +784,16 @@ def collect_layer4() -> dict:
         pe_values: list[float] = []
         pb_values: list[float] = []
 
+        proxy_ratios = _fetch_ratios_massive(proxy_tickers)
         for ticker in proxy_tickers:
-            info = _fetch_info_safe(ticker)
-            raw_pe = safe_float(info.get("forwardPE"))
-            raw_pb = safe_float(info.get("priceToBook"))
+            r = proxy_ratios.get(ticker, {})
+            raw_pe = r.get("pe")
+            raw_pb = r.get("pb")
 
             if ticker == "TSLA":
                 if raw_pe is None or raw_pe > 500 or raw_pe < 0:
                     tsla_distortion_note = (
-                        f"TSLA forwardPE ({raw_pe}) excluded from basket average — "
+                        f"TSLA P/E ({raw_pe}) excluded from basket average — "
                         "value is None, negative, or >500, indicating distortion."
                     )
                     raw_pe = None
@@ -726,8 +802,6 @@ def collect_layer4() -> dict:
                 pe_values.append(raw_pe)
             if raw_pb is not None and raw_pb > 0:
                 pb_values.append(raw_pb)
-
-            time.sleep(0.3)
 
         forward_pe: float | None = (
             safe_float(sum(pe_values) / len(pe_values)) if pe_values else None
