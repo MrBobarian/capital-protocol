@@ -95,9 +95,11 @@ jobs:
           # Collection takes minutes — main may have moved since checkout.
           # Rebase our data commit onto the latest remote before pushing.
           # -X theirs: on conflict in the data files, keep this run's (fresher) output.
+          # --autostash: the pipeline leaves other files dirty (override JSONs we
+          # don't commit); stash/unstash them so rebase sees a clean tree.
           for attempt in 1 2 3; do
             git fetch origin main
-            git rebase -X theirs origin/main || { git rebase --abort; exit 1; }
+            git rebase --autostash -X theirs origin/main || { git rebase --abort; exit 1; }
             git push && exit 0
             echo "push rejected (attempt $attempt) — remote moved again, retrying"
             sleep 15
