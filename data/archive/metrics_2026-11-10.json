@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-11-10T00:36:20Z",
+  "generated_at": "2026-11-10T22:07:35Z",
   "data_date": "2026-11-10",
   "pipeline": {
     "available": true,
     "run_mode": "daily",
-    "last_run_at": "2026-11-10T00:36:20Z",
+    "last_run_at": "2026-11-10T22:07:35Z",
     "data_date": "2026-11-10"
   },
   "sentiment": {
@@ -17,27 +17,27 @@
     "bofams_semis_allocation": null,
     "technicals": {
       "available": true,
-      "soxx_rsi_14": 30.43,
+      "soxx_rsi_14": 39.18,
       "soxx_rsi_signal": "neutral",
-      "soxx_macd": -9.7262,
-      "soxx_macd_signal_line": -6.5383,
-      "soxx_macd_histogram": -3.1879,
+      "soxx_macd": -9.5976,
+      "soxx_macd_signal_line": -7.1502,
+      "soxx_macd_histogram": -2.4474,
       "soxx_macd_crossover": "bearish",
-      "soxx_bb_upper": 189.1,
-      "soxx_bb_middle": 162.78,
-      "soxx_bb_lower": 136.47,
-      "soxx_bb_pct_b": 0.0011,
+      "soxx_bb_upper": 186.71,
+      "soxx_bb_middle": 161.04,
+      "soxx_bb_lower": 135.37,
+      "soxx_bb_pct_b": 0.2218,
       "soxx_bb_squeeze": false,
       "constituent_rsi": {
-        "NVDA": 30.75,
-        "AVGO": 32.6,
-        "AMD": 38.39,
-        "QCOM": 44.28,
-        "INTC": 25.7
+        "NVDA": 27.39,
+        "AVGO": 44.67,
+        "AMD": 47.66,
+        "QCOM": 48.5,
+        "INTC": 29.46
       },
-      "constituent_rsi_avg": 34.35,
+      "constituent_rsi_avg": 39.54,
       "constituent_overbought_count": 0,
-      "constituent_oversold_count": 1,
+      "constituent_oversold_count": 2,
       "momentum_composite": "neutral",
       "technicals_date": "2026-11-10",
       "source": "Massive/Polygon daily bars \u2014 SOXX: RSI(14), MACD(12,26,9), Bollinger Bands(20,2); constituents RSI(14): NVDA, AVGO, AMD, QCOM, INTC. Indicators computed locally with pandas."
@@ -47,7 +47,7 @@
       "score": 32,
       "label": "Fear",
       "score_7d_avg": 32.3,
-      "fetched_at": "2026-11-10T00:36:20Z"
+      "fetched_at": "2026-11-10T22:07:35Z"
     }
   },
   "valuation": {
@@ -61,178 +61,178 @@
     "soxx_valuation_baseline_weeks_available": 145
   },
   "breadth": {
-    "soxx_breadth_above_200ma_pct": 14.2857,
-    "soxx_breadth_above_200ma_weighted_pct": 14.1971,
+    "soxx_breadth_above_200ma_pct": 25.0,
+    "soxx_breadth_above_200ma_weighted_pct": 25.9448,
     "soxx_breadth_sample_size": 28,
     "soxx_breadth_note": "Below 40%: narrow/fragile rally. 40\u201370%: mixed participation. Above 70%: broad participation.",
     "soxx_breadth_detail": [
       {
         "ticker": "ACLS",
         "above_200ma": false,
-        "close": 99.24,
-        "ma200": 123.1737
+        "close": 107.64,
+        "ma200": 123.2563
       },
       {
         "ticker": "ADI",
-        "above_200ma": false,
-        "close": 363.56,
-        "ma200": 374.3906
+        "above_200ma": true,
+        "close": 394.66,
+        "ma200": 374.8359
       },
       {
         "ticker": "AMAT",
         "above_200ma": false,
-        "close": 332.715,
-        "ma200": 445.3546
+        "close": 370.55,
+        "ma200": 445.5955
       },
       {
         "ticker": "AMD",
         "above_200ma": true,
-        "close": 449.04,
-        "ma200": 415.9774
+        "close": 508.58,
+        "ma200": 417.2219
       },
       {
         "ticker": "ASML",
         "above_200ma": false,
-        "close": 1424.75,
-        "ma200": 1600.1499
+        "close": 1513.25,
+        "ma200": 1600.771
       },
       {
         "ticker": "AVGO",
         "above_200ma": false,
-        "close": 293.69,
-        "ma200": 367.0916
+        "close": 319.48,
+        "ma200": 367.0887
       },
       {
         "ticker": "CRUS",
         "above_200ma": false,
-        "close": 113.58,
-        "ma200": 138.5042
+        "close": 118.28,
+        "ma200": 138.459
       },
       {
         "ticker": "DIOD",
         "above_200ma": false,
-        "close": 77.36,
-        "ma200": 88.4324
+        "close": 85.89,
+        "ma200": 88.5795
       },
       {
         "ticker": "ENPH",
         "above_200ma": false,
-        "close": 28.465,
-        "ma200": 40.7589
+        "close": 29.08,
+        "ma200": 40.707
       },
       {
         "ticker": "FORM",
         "above_200ma": false,
-        "close": 81.12,
-        "ma200": 114.1903
+        "close": 85.2,
+        "ma200": 114.2503
       },
       {
         "ticker": "INTC",
         "above_200ma": false,
-        "close": 56.28,
-        "ma200": 87.0395
+        "close": 59.37,
+        "ma200": 87.111
       },
       {
         "ticker": "KLAC",
         "above_200ma": false,
-        "close": 138.49,
-        "ma200": 181.8887
+        "close": 151.38,
+        "ma200": 181.8892
       },
       {
         "ticker": "LRCX",
         "above_200ma": false,
-        "close": 200.44,
-        "ma200": 284.0104
+        "close": 221.31,
+        "ma200": 284.0273
       },
       {
         "ticker": "MCHP",
         "above_200ma": false,
-        "close": 58.35,
-        "ma200": 79.6011
+        "close": 61.495,
+        "ma200": 79.535
       },
       {
         "ticker": "MPWR",
-        "above_200ma": false,
-        "close": 1190.44,
-        "ma200": 1320.8696
+        "above_200ma": true,
+        "close": 1388.05,
+        "ma200": 1322.4912
       },
       {
         "ticker": "MRVL",
         "above_200ma": false,
-        "close": 141.2,
-        "ma200": 185.053
+        "close": 154.6,
+        "ma200": 185.4249
       },
       {
         "ticker": "MU",
         "above_200ma": false,
-        "close": 690.0,
-        "ma200": 756.7251
+        "close": 733.15,
+        "ma200": 758.3926
       },
       {
         "ticker": "NVDA",
         "above_200ma": false,
-        "close": 186.64,
-        "ma200": 204.6726
+        "close": 178.67,
+        "ma200": 204.6276
       },
       {
         "ticker": "NXPI",
         "above_200ma": true,
-        "close": 248.29,
-        "ma200": 247.1217
+        "close": 256.42,
+        "ma200": 247.2415
       },
       {
         "ticker": "ON",
         "above_200ma": false,
-        "close": 63.31,
-        "ma200": 82.5576
+        "close": 69.11,
+        "ma200": 82.5933
       },
       {
         "ticker": "ONTO",
         "above_200ma": false,
-        "close": 173.28,
-        "ma200": 260.1675
+        "close": 194.04,
+        "ma200": 260.0784
       },
       {
         "ticker": "POWI",
         "above_200ma": false,
-        "close": 40.26,
-        "ma200": 58.8469
+        "close": 44.29,
+        "ma200": 58.8459
       },
       {
         "ticker": "QCOM",
-        "above_200ma": false,
-        "close": 165.41,
-        "ma200": 169.6854
+        "above_200ma": true,
+        "close": 171.47,
+        "ma200": 169.7637
       },
       {
         "ticker": "SITM",
         "above_200ma": false,
-        "close": 416.915,
-        "ma200": 548.1834
+        "close": 457.05,
+        "ma200": 548.7542
       },
       {
         "ticker": "SMCI",
         "above_200ma": false,
-        "close": 28.76,
-        "ma200": 32.6132
+        "close": 28.6,
+        "ma200": 32.5977
       },
       {
         "ticker": "SWKS",
         "above_200ma": true,
-        "close": 82.19,
-        "ma200": 68.2753
+        "close": 82.83,
+        "ma200": 68.3947
       },
       {
         "ticker": "TXN",
         "above_200ma": true,
-        "close": 277.36,
-        "ma200": 262.2707
+        "close": 295.73,
+        "ma200": 262.7828
       },
       {
         "ticker": "WOLF",
         "above_200ma": false,
-        "close": 23.79,
-        "ma200": 30.362
+        "close": 26.12,
+        "ma200": 30.4028
       }
     ],
     "soxx_breadth_source": "Massive API (/v2/aggs daily bars)"
@@ -5927,7 +5927,7 @@
       "price": null,
       "source": "FRED:DTWEXBGS",
       "note": "populated from fred_macro.dollar_gold",
-      "fetched_at": "2026-11-10T00:29:59Z"
+      "fetched_at": "2026-11-10T22:01:17Z"
     },
     "BTC": {
       "price": 75259.28,
@@ -7457,7 +7457,7 @@
         }
       ],
       "source": "Massive/Polygon",
-      "fetched_at": "2026-11-10T00:29:59Z"
+      "fetched_at": "2026-11-10T22:01:17Z"
     },
     "ETH": {
       "price": 2132.15,
@@ -8987,13 +8987,13 @@
         }
       ],
       "source": "Massive/Polygon",
-      "fetched_at": "2026-11-10T00:30:15Z"
+      "fetched_at": "2026-11-10T22:01:32Z"
     },
     "NVDA": {
-      "price": 186.64,
-      "changePct": 2.7753,
+      "price": 178.67,
+      "changePct": -4.2703,
       "currency": "USD",
-      "latest_date": "2026-11-06",
+      "latest_date": "2026-11-09",
       "observations": [
         {
           "d": "2025-10-27",
@@ -10034,16 +10034,20 @@
         {
           "d": "2026-11-06",
           "v": 186.64
+        },
+        {
+          "d": "2026-11-09",
+          "v": 178.67
         }
       ],
       "source": "Massive/Polygon",
-      "fetched_at": "2026-11-10T00:30:30Z"
+      "fetched_at": "2026-11-10T22:01:47Z"
     },
     "MSTR": {
-      "price": 128.93,
-      "changePct": -0.2862,
+      "price": 125.59,
+      "changePct": -2.5906,
       "currency": "USD",
-      "latest_date": "2026-11-06",
+      "latest_date": "2026-11-09",
       "observations": [
         {
           "d": "2025-10-27",
@@ -11084,16 +11088,20 @@
         {
           "d": "2026-11-06",
           "v": 128.93
+        },
+        {
+          "d": "2026-11-09",
+          "v": 125.59
         }
       ],
       "source": "Massive/Polygon",
-      "fetched_at": "2026-11-10T00:30:45Z"
+      "fetched_at": "2026-11-10T22:02:03Z"
     },
     "SOXX": {
-      "price": 136.53,
-      "changePct": 3.5102,
+      "price": 146.76,
+      "changePct": 7.4929,
       "currency": "USD",
-      "latest_date": "2026-11-06",
+      "latest_date": "2026-11-09",
       "observations": [
         {
           "d": "2025-10-27",
@@ -12134,16 +12142,20 @@
         {
           "d": "2026-11-06",
           "v": 136.53
+        },
+        {
+          "d": "2026-11-09",
+          "v": 146.76
         }
       ],
       "source": "Massive/Polygon",
-      "fetched_at": "2026-11-10T00:31:00Z"
+      "fetched_at": "2026-11-10T22:02:18Z"
     },
     "SPY": {
-      "price": 735.29,
-      "changePct": 0.3124,
+      "price": 752.69,
+      "changePct": 2.3664,
       "currency": "USD",
-      "latest_date": "2026-11-06",
+      "latest_date": "2026-11-09",
       "observations": [
         {
           "d": "2025-10-27",
@@ -13184,16 +13196,20 @@
         {
           "d": "2026-11-06",
           "v": 735.29
+        },
+        {
+          "d": "2026-11-09",
+          "v": 752.69
         }
       ],
       "source": "Massive/Polygon",
-      "fetched_at": "2026-11-10T00:31:15Z"
+      "fetched_at": "2026-11-10T22:02:33Z"
     },
     "QQQ": {
-      "price": 656.1,
-      "changePct": 1.3987,
+      "price": 679.35,
+      "changePct": 3.5437,
       "currency": "USD",
-      "latest_date": "2026-11-06",
+      "latest_date": "2026-11-09",
       "observations": [
         {
           "d": "2025-10-27",
@@ -14234,16 +14250,20 @@
         {
           "d": "2026-11-06",
           "v": 656.1
+        },
+        {
+          "d": "2026-11-09",
+          "v": 679.35
         }
       ],
       "source": "Massive/Polygon",
-      "fetched_at": "2026-11-10T00:31:31Z"
+      "fetched_at": "2026-11-10T22:02:48Z"
     },
     "GLD": {
-      "price": 372.52,
-      "changePct": -0.791,
+      "price": 379.53,
+      "changePct": 1.8818,
       "currency": "USD",
-      "latest_date": "2026-11-06",
+      "latest_date": "2026-11-09",
       "observations": [
         {
           "d": "2025-10-27",
@@ -15284,16 +15304,20 @@
         {
           "d": "2026-11-06",
           "v": 372.52
+        },
+        {
+          "d": "2026-11-09",
+          "v": 379.53
         }
       ],
       "source": "Massive/Polygon",
-      "fetched_at": "2026-11-10T00:31:46Z"
+      "fetched_at": "2026-11-10T22:03:03Z"
     },
     "ETN": {
-      "price": 341.72,
-      "changePct": 4.4951,
+      "price": 359.3,
+      "changePct": 5.1446,
       "currency": "USD",
-      "latest_date": "2026-11-06",
+      "latest_date": "2026-11-09",
       "observations": [
         {
           "d": "2025-10-27",
@@ -16334,16 +16358,20 @@
         {
           "d": "2026-11-06",
           "v": 341.72
+        },
+        {
+          "d": "2026-11-09",
+          "v": 359.3
         }
       ],
       "source": "Massive/Polygon",
-      "fetched_at": "2026-11-10T00:32:01Z"
+      "fetched_at": "2026-11-10T22:03:18Z"
     },
     "VRT": {
-      "price": 182.86,
-      "changePct": 3.4686,
+      "price": 200.47,
+      "changePct": 9.6303,
       "currency": "USD",
-      "latest_date": "2026-11-06",
+      "latest_date": "2026-11-09",
       "observations": [
         {
           "d": "2025-10-27",
@@ -17384,16 +17412,20 @@
         {
           "d": "2026-11-06",
           "v": 182.86
+        },
+        {
+          "d": "2026-11-09",
+          "v": 200.47
         }
       ],
       "source": "Massive/Polygon",
-      "fetched_at": "2026-11-10T00:32:16Z"
+      "fetched_at": "2026-11-10T22:03:33Z"
     },
     "GEV": {
-      "price": 774.11,
-      "changePct": 0.4672,
+      "price": 829.34,
+      "changePct": 7.1346,
       "currency": "USD",
-      "latest_date": "2026-11-06",
+      "latest_date": "2026-11-09",
       "observations": [
         {
           "d": "2025-10-27",
@@ -18434,16 +18466,20 @@
         {
           "d": "2026-11-06",
           "v": 774.11
+        },
+        {
+          "d": "2026-11-09",
+          "v": 829.34
         }
       ],
       "source": "Massive/Polygon",
-      "fetched_at": "2026-11-10T00:32:31Z"
+      "fetched_at": "2026-11-10T22:03:48Z"
     },
     "CEG": {
-      "price": 249.95,
-      "changePct": 4.2979,
+      "price": 276.09,
+      "changePct": 10.4581,
       "currency": "USD",
-      "latest_date": "2026-11-06",
+      "latest_date": "2026-11-09",
       "observations": [
         {
           "d": "2025-10-27",
@@ -19484,16 +19520,20 @@
         {
           "d": "2026-11-06",
           "v": 249.95
+        },
+        {
+          "d": "2026-11-09",
+          "v": 276.09
         }
       ],
       "source": "Massive/Polygon",
-      "fetched_at": "2026-11-10T00:32:47Z"
+      "fetched_at": "2026-11-10T22:04:03Z"
     },
     "ROBO": {
-      "price": 70.07,
-      "changePct": 1.8163,
+      "price": 73.2,
+      "changePct": 4.467,
       "currency": "USD",
-      "latest_date": "2026-11-06",
+      "latest_date": "2026-11-09",
       "observations": [
         {
           "d": "2025-10-27",
@@ -20534,16 +20574,20 @@
         {
           "d": "2026-11-06",
           "v": 70.07
+        },
+        {
+          "d": "2026-11-09",
+          "v": 73.2
         }
       ],
       "source": "Massive/Polygon",
-      "fetched_at": "2026-11-10T00:33:02Z"
+      "fetched_at": "2026-11-10T22:04:19Z"
     },
     "COIN": {
-      "price": 134.76,
-      "changePct": -1.5056,
+      "price": 136.1,
+      "changePct": 0.9944,
       "currency": "USD",
-      "latest_date": "2026-11-06",
+      "latest_date": "2026-11-09",
       "observations": [
         {
           "d": "2025-10-27",
@@ -21584,16 +21628,20 @@
         {
           "d": "2026-11-06",
           "v": 134.76
+        },
+        {
+          "d": "2026-11-09",
+          "v": 136.1
         }
       ],
       "source": "Massive/Polygon",
-      "fetched_at": "2026-11-10T00:33:17Z"
+      "fetched_at": "2026-11-10T22:04:34Z"
     },
     "IONQ": {
-      "price": 32.62,
-      "changePct": 23.4204,
+      "price": 35.34,
+      "changePct": 8.3384,
       "currency": "USD",
-      "latest_date": "2026-11-06",
+      "latest_date": "2026-11-09",
       "observations": [
         {
           "d": "2025-10-27",
@@ -22634,16 +22682,20 @@
         {
           "d": "2026-11-06",
           "v": 32.62
+        },
+        {
+          "d": "2026-11-09",
+          "v": 35.34
         }
       ],
       "source": "Massive/Polygon",
-      "fetched_at": "2026-11-10T00:33:32Z"
+      "fetched_at": "2026-11-10T22:04:49Z"
     },
     "QBTS": {
-      "price": 10.68,
-      "changePct": 18.011,
+      "price": 11.47,
+      "changePct": 7.397,
       "currency": "USD",
-      "latest_date": "2026-11-06",
+      "latest_date": "2026-11-09",
       "observations": [
         {
           "d": "2025-10-27",
@@ -23684,16 +23736,20 @@
         {
           "d": "2026-11-06",
           "v": 10.68
+        },
+        {
+          "d": "2026-11-09",
+          "v": 11.47
         }
       ],
       "source": "Massive/Polygon",
-      "fetched_at": "2026-11-10T00:33:47Z"
+      "fetched_at": "2026-11-10T22:05:04Z"
     },
     "RGTI": {
-      "price": 11.75,
-      "changePct": 19.2893,
+      "price": 12.98,
+      "changePct": 10.4681,
       "currency": "USD",
-      "latest_date": "2026-11-06",
+      "latest_date": "2026-11-09",
       "observations": [
         {
           "d": "2025-10-27",
@@ -24734,16 +24790,20 @@
         {
           "d": "2026-11-06",
           "v": 11.75
+        },
+        {
+          "d": "2026-11-09",
+          "v": 12.98
         }
       ],
       "source": "Massive/Polygon",
-      "fetched_at": "2026-11-10T00:34:03Z"
+      "fetched_at": "2026-11-10T22:05:19Z"
     },
     "QTUM": {
-      "price": 123.37,
-      "changePct": 3.4116,
+      "price": 130.72,
+      "changePct": 5.9577,
       "currency": "USD",
-      "latest_date": "2026-11-06",
+      "latest_date": "2026-11-09",
       "observations": [
         {
           "d": "2025-10-27",
@@ -25784,16 +25844,20 @@
         {
           "d": "2026-11-06",
           "v": 123.37
+        },
+        {
+          "d": "2026-11-09",
+          "v": 130.72
         }
       ],
       "source": "Massive/Polygon",
-      "fetched_at": "2026-11-10T00:34:18Z"
+      "fetched_at": "2026-11-10T22:05:34Z"
     },
     "RKLB": {
-      "price": 53.07,
-      "changePct": 15.3947,
+      "price": 58.86,
+      "changePct": 10.9101,
       "currency": "USD",
-      "latest_date": "2026-11-06",
+      "latest_date": "2026-11-09",
       "observations": [
         {
           "d": "2025-10-27",
@@ -26834,16 +26898,20 @@
         {
           "d": "2026-11-06",
           "v": 53.07
+        },
+        {
+          "d": "2026-11-09",
+          "v": 58.86
         }
       ],
       "source": "Massive/Polygon",
-      "fetched_at": "2026-11-10T00:34:33Z"
+      "fetched_at": "2026-11-10T22:05:49Z"
     },
     "ASTS": {
-      "price": 32.33,
-      "changePct": 7.053,
+      "price": 36.89,
+      "changePct": 14.1045,
       "currency": "USD",
-      "latest_date": "2026-11-06",
+      "latest_date": "2026-11-09",
       "observations": [
         {
           "d": "2025-10-27",
@@ -27884,16 +27952,20 @@
         {
           "d": "2026-11-06",
           "v": 32.33
+        },
+        {
+          "d": "2026-11-09",
+          "v": 36.89
         }
       ],
       "source": "Massive/Polygon",
-      "fetched_at": "2026-11-10T00:34:48Z"
+      "fetched_at": "2026-11-10T22:06:04Z"
     },
     "UFO": {
-      "price": 39.01,
-      "changePct": 4.8374,
+      "price": 41.57,
+      "changePct": 6.5624,
       "currency": "USD",
-      "latest_date": "2026-11-06",
+      "latest_date": "2026-11-09",
       "observations": [
         {
           "d": "2025-10-27",
@@ -28934,16 +29006,20 @@
         {
           "d": "2026-11-06",
           "v": 39.01
+        },
+        {
+          "d": "2026-11-09",
+          "v": 41.57
         }
       ],
       "source": "Massive/Polygon",
-      "fetched_at": "2026-11-10T00:35:04Z"
+      "fetched_at": "2026-11-10T22:06:19Z"
     },
     "KTOS": {
-      "price": 35.1,
-      "changePct": 5.1213,
+      "price": 37.69,
+      "changePct": 7.3789,
       "currency": "USD",
-      "latest_date": "2026-11-06",
+      "latest_date": "2026-11-09",
       "observations": [
         {
           "d": "2025-10-27",
@@ -29984,16 +30060,20 @@
         {
           "d": "2026-11-06",
           "v": 35.1
+        },
+        {
+          "d": "2026-11-09",
+          "v": 37.69
         }
       ],
       "source": "Massive/Polygon",
-      "fetched_at": "2026-11-10T00:35:19Z"
+      "fetched_at": "2026-11-10T22:06:35Z"
     },
     "AXON": {
-      "price": 313.0,
-      "changePct": -18.1828,
+      "price": 303.18,
+      "changePct": -3.1374,
       "currency": "USD",
-      "latest_date": "2026-11-06",
+      "latest_date": "2026-11-09",
       "observations": [
         {
           "d": "2025-10-27",
@@ -31034,16 +31114,20 @@
         {
           "d": "2026-11-06",
           "v": 313.0
+        },
+        {
+          "d": "2026-11-09",
+          "v": 303.18
         }
       ],
       "source": "Massive/Polygon",
-      "fetched_at": "2026-11-10T00:35:34Z"
+      "fetched_at": "2026-11-10T22:06:50Z"
     },
     "ITA": {
-      "price": 68.98,
-      "changePct": 1.2773,
+      "price": 71.67,
+      "changePct": 3.8997,
       "currency": "USD",
-      "latest_date": "2026-11-06",
+      "latest_date": "2026-11-09",
       "observations": [
         {
           "d": "2025-10-27",
@@ -32084,16 +32168,20 @@
         {
           "d": "2026-11-06",
           "v": 68.98
+        },
+        {
+          "d": "2026-11-09",
+          "v": 71.67
         }
       ],
       "source": "Massive/Polygon",
-      "fetched_at": "2026-11-10T00:35:49Z"
+      "fetched_at": "2026-11-10T22:07:05Z"
     },
     "XAR": {
-      "price": 224.02,
-      "changePct": 4.5699,
+      "price": 236.4,
+      "changePct": 5.5263,
       "currency": "USD",
-      "latest_date": "2026-11-06",
+      "latest_date": "2026-11-09",
       "observations": [
         {
           "d": "2025-10-27",
@@ -33134,10 +33222,14 @@
         {
           "d": "2026-11-06",
           "v": 224.02
+        },
+        {
+          "d": "2026-11-09",
+          "v": 236.4
         }
       ],
       "source": "Massive/Polygon",
-      "fetched_at": "2026-11-10T00:36:04Z"
+      "fetched_at": "2026-11-10T22:07:20Z"
     }
   },
   "dashboard": {
@@ -33145,10 +33237,10 @@
       {
         "id": "breadth",
         "label": "SOXX Breadth",
-        "value": 14.2857,
-        "value_fmt": "14.3%",
-        "delta": -35.7143,
-        "delta_fmt": "-35.7%",
+        "value": 25.0,
+        "value_fmt": "25.0%",
+        "delta": -7.1429,
+        "delta_fmt": "-7.1%",
         "trend": "bearish",
         "color": "red",
         "note": "% of SOXX constituents above 200d MA"
@@ -33158,8 +33250,8 @@
         "label": "HY Credit Spread",
         "value": 348.0,
         "value_fmt": "348.0bps",
-        "delta": 8.0,
-        "delta_fmt": "+8.0bps",
+        "delta": 22.0,
+        "delta_fmt": "+22.0bps",
         "trend": "bearish",
         "color": "green",
         "note": "ICE BofA US HY OAS"
@@ -33191,7 +33283,7 @@
         "label": "Real Yield 10yr",
         "value": 2.6,
         "value_fmt": "2.6%",
-        "delta": -0.04,
+        "delta": -0.03,
         "delta_fmt": "-0.0%",
         "trend": "bullish",
         "color": "red",
@@ -33213,8 +33305,8 @@
         "label": "SOXX Fwd P/E",
         "value": 45.5299,
         "value_fmt": "45.5x",
-        "delta": -5.8979,
-        "delta_fmt": "-5.9x",
+        "delta": -5.5188,
+        "delta_fmt": "-5.5x",
         "trend": "bearish",
         "color": "green",
         "note": "3yr avg: 62.2x"
@@ -33232,25 +33324,25 @@
       }
     ],
     "regime_probs": {
-      "spring": 7.6,
-      "summer": 3.1,
-      "fall": 26.1,
-      "winter": 63.2
+      "spring": 10.6,
+      "summer": 4.4,
+      "fall": 24.8,
+      "winter": 60.2
     },
     "current_regime": "winter",
     "regime_narrative": "Layer 1 crowding score 25/100 \u2014 low. Layer 2 opportunity score 37/100 \u2014 not yet signalling. Layer 3 score 68/100 \u2014 building. Layer 4 readiness 13/100 \u2014 pre-positioning only. Macro regime 56/100 \u2014 mixed. Software deterioration 63/100 \u2014 building. Concentration risk 31/100 \u2014 healthy breadth.",
     "what_you_need_to_know": [
       "Korea electronics exports +67.8% YoY \u2014 strong AI demand confirmation (4-8w ISM lead).",
       "HY spread 348bps \u2014 benign credit conditions. Risk appetite intact.",
-      "SOXX breadth 14% below 200d MA \u2014 narrow rally. Concentration risk elevated.",
+      "SOXX breadth 25% below 200d MA \u2014 narrow rally. Concentration risk elevated.",
       "10yr real yield 2.60% \u2014 elevated. High-multiple semis facing valuation headwind.",
       "Harvest window in -40d (Oct 2026). Begin de-risking plan if regime deteriorates."
     ],
     "layer_sentiment": {
       "L1": {
         "name": "Semis & AI Silicon",
-        "signal": "neutral",
-        "score": 57.1429,
+        "signal": "bullish",
+        "score": 62.5,
         "key_metric": "\u2014",
         "assets": [
           "SOXX",
@@ -33323,6 +33415,6 @@
         ]
       }
     },
-    "computed_at": "2026-11-10T00:36:20Z"
+    "computed_at": "2026-11-10T22:07:35Z"
   }
 }
